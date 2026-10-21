@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Camera</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    .dropdown { position: relative; }
+    .dropdown-menu { position: absolute; right: 0; top: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); min-width: 240px; padding: 6px; z-index: 30; display: none; }
+    .dropdown.open .dropdown-menu { display: block; }
+    .dropdown-menu button { display: flex; gap: 10px; align-items: center; width: 100%; padding: 8px 10px; border: 0; background: transparent; color: var(--text); text-align: left; border-radius: 6px; cursor: pointer; font: inherit; }
+    .dropdown-menu button:hover { background: var(--surface-2); }
+    .bulkbar { display: none; background: var(--primary-weak); border-radius: 8px; padding: 8px 12px; }
+    .bulkbar.show { display: flex; }
+    .scan { display: flex; align-items: center; gap: 10px; }
+    .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--primary); animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body data-page="cameras" data-title="Camera" data-subtitle="16 camera · 3 địa điểm">
+  <!-- UC-10 đến UC-16 · US-01 đến US-07, US-05 AC4 (chuyển camera giữ video) -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <div class="split">
+          <section class="card">
+            <div class="card-head"><h3>Địa điểm và nhóm</h3><span class="spacer"></span><button class="icon-btn" title="Thêm địa điểm / khu vực" aria-label="Thêm"><i data-icon="plus"></i></button></div>
+            <div class="tree" id="tree"></div>
+            <div class="card-body" style="border-top:1px solid var(--border)">
+              <h3 style="margin-bottom:8px">Nhóm camera</h3>
+              <div class="stack small">
+                <div class="row"><i data-icon="grid" class="sm"></i> Kho cửa hàng <span class="muted">(2)</span></div>
+                <div class="row"><i data-icon="grid" class="sm"></i> Lối ra vào <span class="muted">(5)</span></div>
+                <div class="row"><i data-icon="grid" class="sm"></i> Quầy tiền <span class="muted">(3)</span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="stack">
+            <div class="row">
+              <label class="search" style="display:flex">
+                <i data-icon="search"></i><input id="q" placeholder="Tìm theo tên, IP…">
+              </label>
+              <select class="input" id="fStatus" style="width:auto"><option value="">Mọi trạng thái</option><option value="on">Trực tuyến</option><option value="off">Mất kết nối</option></select>
+              <select class="input" id="fBrand" style="width:auto"><option value="">Mọi hãng</option></select>
+              <span class="spacer"></span>
+              <div class="dropdown" id="addDd">
+                <button class="btn btn-primary" id="addBtn"><i data-icon="plus" class="sm"></i>Thêm camera <i data-icon="down" class="sm"></i></button>
+                <div class="dropdown-menu">
+                  <button data-open="discoverModal"><i data-icon="search"></i><span><b>Dò tìm ONVIF</b><br><span class="small muted">Tìm camera trong mạng của địa điểm</span></span></button>
+                  <button data-open="manualModal"><i data-icon="edit"></i><span><b>Thêm thủ công</b><br><span class="small muted">IP/cổng hoặc URL RTSP</span></span></button>
+                  <button data-open="nvrModal"><i data-icon="server"></i><span><b>Thêm đầu ghi NVR/DVR</b><br><span class="small muted">Nhận toàn bộ kênh</span></span></button>
+                  <button data-open="importModal"><i data-icon="upload"></i><span><b>Nhập từ file</b><br><span class="small muted">.xlsx hoặc .csv theo mẫu</span></span></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="bulkbar row" id="bulk">
+              <b id="bulkCount">0 camera đã chọn</b><span class="spacer"></span>
+              <a class="btn btn-sm" href="templates.html"><i data-icon="template" class="sm"></i>Áp cấu hình mẫu</a>
+              <button class="btn btn-sm" data-open="moveModal"><i data-icon="move" class="sm"></i>Chuyển khu vực</button>
+              <button class="btn btn-sm"><i data-icon="grid" class="sm"></i>Gán nhóm</button>
+              <button class="btn btn-sm" data-open="pwdModal"><i data-icon="key" class="sm"></i>Đổi mật khẩu</button>
+            </div>
+
+            <div class="card">
+              <div class="table-wrap">
+                <table class="table">
+                  <thead><tr><th><input type="checkbox" id="all" aria-label="Chọn tất cả"></th><th>Camera</th><th>Trạng thái</th><th>Địa điểm / khu vực</th><th>Hãng / model</th><th class="hide-sm">IP</th><th class="hide-sm">Ghi hình</th><th></th></tr></thead>
+                  <tbody id="rows"></tbody>
+                </table>
+              </div>
+            </div>
+            <p class="small muted" id="countText"></p>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Dò tìm ONVIF (UC-10) -->
+  <div class="modal-backdrop" id="discoverModal">
+    <div class="modal">
+      <div class="modal-head"><h2>Dò tìm camera ONVIF</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="steps"><span class="step done"><b>1</b>Chọn địa điểm</span><span class="step current"><b>2</b>Chọn camera</span><span class="step"><b>3</b>Tài khoản & khu vực</span><span class="step"><b>4</b>Kết quả</span></div>
+        <div class="row">
+          <div class="field" style="flex:1"><label>Địa điểm</label><select class="input"><option>Kho Bắc Ninh (qua bộ kết nối KBN-01)</option><option>Chi nhánh Hà Nội (LAN)</option></select></div>
+          <button class="btn" id="rescan" style="align-self:flex-end"><i data-icon="refresh" class="sm"></i>Dò lại</button>
+        </div>
+        <div class="scan" id="scanning"><span class="spinner"></span><span>Đang dò tìm trong mạng của địa điểm… (tối đa 30 giây)</span></div>
+        <div class="card hidden" id="scanResult">
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th></th><th>IP</th><th>Hãng</th><th>Model</th><th>MAC</th><th>Trạng thái</th></tr></thead>
+              <tbody>
+                <tr><td><input type="checkbox" checked></td><td class="mono">10.20.1.41</td><td>Hikvision</td><td>DS-2CD2386G2-IU</td><td class="mono">BC:AD:28:11:4F:02</td><td><span class="badge badge-info no-dot">Mới</span></td></tr>
+                <tr><td><input type="checkbox" checked></td><td class="mono">10.20.1.42</td><td>Hikvision</td><td>DS-2CD2386G2-IU</td><td class="mono">BC:AD:28:11:4F:03</td><td><span class="badge badge-info no-dot">Mới</span></td></tr>
+                <tr><td><input type="checkbox" checked></td><td class="mono">10.20.1.43</td><td>Dahua</td><td>IPC-HDW3441EM</td><td class="mono">3C:EF:8C:90:12:7A</td><td><span class="badge badge-info no-dot">Mới</span></td></tr>
+                <tr><td><input type="checkbox" disabled></td><td class="mono">10.20.1.11</td><td>Hikvision</td><td>DS-2CD2386G2</td><td class="mono">BC:AD:28:10:01:11</td><td><span class="badge badge-muted no-dot">Đã thêm: Cổng chính</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="form-grid hidden" id="credForm">
+          <div class="field"><label>Tài khoản chung</label><input class="input" value="admin"></div>
+          <div class="field"><label>Mật khẩu</label><input class="input" type="password" value="••••••••"></div>
+          <div class="field"><label>Khu vực</label><select class="input"><option>Kho A</option><option>Kho B</option><option>Cổng & bãi xe</option></select></div>
+          <div class="field"><label class="check" style="margin-top:22px"><input type="checkbox"> Mỗi camera một tài khoản riêng</label></div>
+        </div>
+        <div class="card hidden" id="addResult">
+          <div class="list">
+            <div class="list-item"><span class="badge badge-ok">Thành công</span><span class="grow mono">10.20.1.41</span><span class="small muted">Luồng chính 4K H.265 · luồng phụ 640×360</span></div>
+            <div class="list-item"><span class="badge badge-ok">Thành công</span><span class="grow mono">10.20.1.42</span><span class="small muted">Luồng chính 4K H.265 · luồng phụ 640×360</span></div>
+            <div class="list-item"><span class="badge badge-danger">Lỗi</span><span class="grow mono">10.20.1.43</span><span class="small" style="color:var(--danger)">Sai mật khẩu</span><button class="btn btn-sm">Nhập lại</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Đóng</button><button class="btn btn-primary" id="discNext" disabled>Tiếp tục</button></div>
+    </div>
+  </div>
+
+  <!-- Thêm thủ công (UC-11) -->
+  <div class="modal-backdrop" id="manualModal">
+    <div class="modal">
+      <div class="modal-head"><h2>Thêm camera thủ công</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="tabs" data-tabs><button class="tab active" data-tab="m-onvif">ONVIF</button><button class="tab" data-tab="m-rtsp">RTSP</button></div>
+        <div class="tab-panel active" id="m-onvif">
+          <div class="form-grid">
+            <div class="field"><label>Tên camera</label><input class="input" value="Kho A – Lối 3"></div>
+            <div class="field"><label>Khu vực</label><select class="input"><option>Kho Bắc Ninh › Kho A</option></select></div>
+            <div class="field"><label>Địa chỉ IP</label><input class="input mono" value="10.20.1.23"></div>
+            <div class="field"><label>Cổng ONVIF</label><input class="input mono" value="80"></div>
+            <div class="field"><label>Tài khoản</label><input class="input" value="admin"></div>
+            <div class="field"><label>Mật khẩu</label><input class="input" type="password" value="••••••••"></div>
+          </div>
+        </div>
+        <div class="tab-panel" id="m-rtsp">
+          <div class="form-grid">
+            <div class="field"><label>Tên camera</label><input class="input"></div>
+            <div class="field"><label>Khu vực</label><select class="input"><option>Kho Bắc Ninh › Kho A</option></select></div>
+            <div class="field full"><label>URL RTSP</label><input class="input mono" placeholder="rtsp://user:pass@10.20.1.50:554/Streaming/Channels/101"><span class="hint">Camera RTSP chỉ hỗ trợ xem và ghi; không cấu hình, PTZ được qua CamHub.</span></div>
+          </div>
+        </div>
+        <div class="row"><button class="btn" id="testConn"><i data-icon="refresh" class="sm"></i>Kiểm tra kết nối</button><span class="small muted" id="testText">Chưa kiểm tra</span></div>
+        <div class="tile hidden" id="preview" style="max-width:360px"><div class="scene scene-4"></div><div class="overlay-top"><span class="name">Xem trước</span></div><div class="overlay-bottom"><span class="small">Hikvision DS-2CD2143G2-I</span><span class="chip">1080p H.264</span></div></div>
+      </div>
+      <div class="modal-foot"><label class="check small" style="margin-right:auto"><input type="checkbox"> Lưu dù chưa kết nối được</label><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="saveManual" disabled data-close>Lưu camera</button></div>
+    </div>
+  </div>
+
+  <!-- Thêm đầu ghi (UC-12) -->
+  <div class="modal-backdrop" id="nvrModal">
+    <div class="modal">
+      <div class="modal-head"><h2>Thêm đầu ghi NVR/DVR</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field"><label>Địa chỉ IP</label><input class="input mono" value="10.40.1.5"></div>
+          <div class="field"><label>Cổng</label><input class="input mono" value="80"></div>
+          <div class="field"><label>Tài khoản</label><input class="input" value="admin"></div>
+          <div class="field"><label>Mật khẩu</label><input class="input" type="password" value="••••••••"></div>
+        </div>
+        <div class="alert-box info"><i data-icon="info"></i><span>Đã kết nối: <b>Dahua NVR4216-16P</b> · 16 kênh. Chọn kênh cần thêm; mỗi kênh trở thành một camera liên kết với đầu ghi.</span></div>
+        <div class="card"><div class="table-wrap"><table class="table">
+          <thead><tr><th><input type="checkbox" checked></th><th>Kênh</th><th>Tên trên đầu ghi</th><th>Độ phân giải</th><th>Trạng thái</th></tr></thead>
+          <tbody>
+            <tr><td><input type="checkbox" checked></td><td>D1</td><td>Cua chinh</td><td>2560×1440</td><td><span class="badge badge-ok">Có tín hiệu</span></td></tr>
+            <tr><td><input type="checkbox" checked></td><td>D2</td><td>Quay thu ngan</td><td>1920×1080</td><td><span class="badge badge-ok">Có tín hiệu</span></td></tr>
+            <tr><td><input type="checkbox" checked></td><td>D3</td><td>Kho sau</td><td>1920×1080</td><td><span class="badge badge-ok">Có tín hiệu</span></td></tr>
+            <tr><td><input type="checkbox"></td><td>D4</td><td>—</td><td>—</td><td><span class="badge badge-muted">Không có tín hiệu</span></td></tr>
+          </tbody>
+        </table></div></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close onclick="toast('Đã thêm 3 kênh từ đầu ghi Dahua NVR4216-16P')">Thêm 3 kênh</button></div>
+    </div>
+  </div>
+
+  <!-- Nhập từ file (UC-13) -->
+  <div class="modal-backdrop" id="importModal">
+    <div class="modal">
+      <div class="modal-head"><h2>Nhập camera từ file</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="row"><button class="btn btn-sm"><i data-icon="download" class="sm"></i>Tải file mẫu .xlsx</button><button class="btn btn-sm"><i data-icon="download" class="sm"></i>Tải file mẫu .csv</button></div>
+        <div class="card" style="border-style:dashed;padding:24px;text-align:center"><i data-icon="upload"></i><p>Kéo thả file vào đây hoặc <a href="#">chọn file</a></p><p class="small muted">camera_kho_bac_ninh.xlsx · 6 dòng</p></div>
+        <div class="card"><div class="table-wrap"><table class="table">
+          <thead><tr><th>Dòng</th><th>Tên</th><th>IP</th><th>Khu vực</th><th>Kiểm tra</th></tr></thead>
+          <tbody>
+            <tr><td>2</td><td>Kho C – Lối 1</td><td class="mono">10.20.1.51</td><td>Kho C</td><td><span class="badge badge-ok">Hợp lệ</span></td></tr>
+            <tr><td>3</td><td>Kho C – Lối 2</td><td class="mono">10.20.1.52</td><td>Kho C</td><td><span class="badge badge-ok">Hợp lệ</span></td></tr>
+            <tr><td>4</td><td>Kho C – Lối 3</td><td class="mono">10.20.1.5x</td><td>Kho C</td><td><span class="badge badge-danger">IP không hợp lệ</span></td></tr>
+            <tr><td>5</td><td>Cổng phụ</td><td class="mono">10.20.1.11</td><td>Cổng & bãi xe</td><td><span class="badge badge-danger">Trùng IP với "Cổng chính"</span></td></tr>
+            <tr><td>6</td><td>Bãi xe tải</td><td class="mono">10.20.1.53</td><td>Khu chưa có</td><td><span class="badge badge-warn">Khu vực sẽ được tạo mới</span></td></tr>
+          </tbody>
+        </table></div></div>
+      </div>
+      <div class="modal-foot"><span class="small muted" style="margin-right:auto">3 dòng hợp lệ · 2 dòng lỗi (bỏ qua)</span><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close onclick="toast('Đã thêm 3 camera. 2 dòng lỗi đã bỏ qua – tải báo cáo')">Nhập 3 camera</button></div>
+    </div>
+  </div>
+
+  <!-- Chuyển khu vực (US-05 AC4, RULE-07) -->
+  <div class="modal-backdrop" id="moveModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Chuyển camera sang khu vực khác</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="field"><label>Khu vực mới</label><select class="input"><option>Chi nhánh Hà Nội › Tầng 2</option><option>Kho Bắc Ninh › Kho B</option></select></div>
+        <div class="alert-box warn"><i data-icon="info"></i><span>Video, cảnh báo và đánh dấu giữ lại đã có <b>được giữ nguyên</b>. Sau khi chuyển, người có quyền trên <b>vị trí mới</b> sẽ xem được cả video cũ. Thao tác được ghi nhật ký.</span></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close onclick="toast('Đã chuyển camera. Video cũ được giữ nguyên.')">Chuyển</button></div>
+    </div>
+  </div>
+
+  <!-- Đổi mật khẩu hàng loạt (UC-42) -->
+  <div class="modal-backdrop" id="pwdModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Đổi mật khẩu camera</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="field"><label>Mật khẩu mới</label><input class="input" type="password"></div>
+        <div class="field"><label>Nhập lại</label><input class="input" type="password"></div>
+        <p class="small muted">CamHub đổi mật khẩu trên từng camera và tự cập nhật mật khẩu đã lưu khi đổi thành công.</p>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close>Đổi mật khẩu</button></div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("tree").innerHTML = cameraTreeHTML();
+      const fb = document.getElementById("fBrand");
+      [...new Set(CAMERAS.map((c) => c.brand))].sort().forEach((b) => fb.insertAdjacentHTML("beforeend", `<option>${b}</option>`));
+      const rows = document.getElementById("rows");
+      function render() {
+        const q = document.getElementById("q").value.toLowerCase(), s = document.getElementById("fStatus").value, b = fb.value;
+        const list = CAMERAS.filter((c) => (!q || c.name.toLowerCase().includes(q) || c.ip.includes(q)) && (!s || c.status === s) && (!b || c.brand === b));
+        rows.innerHTML = list.map((c) => `
+          <tr>
+            <td><input type="checkbox" class="pick" aria-label="Chọn ${c.name}"></td>
+            <td><a href="camera-detail.html"><b>${c.name}</b></a>${c.ptz ? ' <span class="badge badge-muted no-dot">PTZ</span>' : ""}</td>
+            <td>${c.status === "on" ? '<span class="badge badge-ok">Trực tuyến</span>' : '<span class="badge badge-danger">Mất kết nối</span><div class="small muted">từ 14:32</div>'}</td>
+            <td>${c.site}<div class="small muted">${c.zone}</div></td>
+            <td>${c.brand}<div class="small muted">${c.model}</div></td>
+            <td class="mono hide-sm">${c.ip}</td>
+            <td class="hide-sm">${c.rec ? "Theo sự kiện" : '<span class="muted">Tắt</span>'}</td>
+            <td><a class="btn btn-sm btn-ghost" href="live.html" title="Xem trực tiếp">${icon("video", "icon icon-sm")}</a><a class="btn btn-sm btn-ghost" href="camera-detail.html" title="Cấu hình">${icon("edit", "icon icon-sm")}</a></td>
+          </tr>`).join("");
+        document.getElementById("countText").textContent = `Hiển thị ${list.length} / ${CAMERAS.length} camera`;
+        updateBulk();
+      }
+      function updateBulk() {
+        const n = document.querySelectorAll(".pick:checked").length;
+        document.getElementById("bulk").classList.toggle("show", n > 0);
+        document.getElementById("bulkCount").textContent = `${n} camera đã chọn`;
+      }
+      rows.addEventListener("change", updateBulk);
+      document.getElementById("all").addEventListener("change", (e) => { document.querySelectorAll(".pick").forEach((p) => (p.checked = e.target.checked)); updateBulk(); });
+      ["q", "fStatus", "fBrand"].forEach((id) => document.getElementById(id).addEventListener("input", render));
+      render();
+
+      // Dropdown
+      const dd = document.getElementById("addDd");
+      document.getElementById("addBtn").onclick = (e) => { e.stopPropagation(); dd.classList.toggle("open"); };
+      document.addEventListener("click", () => dd.classList.remove("open"));
+
+      // Discovery wizard
+      let step = 2;
+      const steps = document.querySelectorAll("#discoverModal .step");
+      const next = document.getElementById("discNext");
+      const scan = () => {
+        document.getElementById("scanning").classList.remove("hidden");
+        document.getElementById("scanResult").classList.add("hidden");
+        next.disabled = true;
+        setTimeout(() => { document.getElementById("scanning").classList.add("hidden"); document.getElementById("scanResult").classList.remove("hidden"); next.disabled = false; }, 1500);
+      };
+      document.querySelector('[data-open="discoverModal"]').addEventListener("click", () => { step = 2; showStep(); scan(); });
+      document.getElementById("rescan").onclick = scan;
+      function showStep() {
+        steps.forEach((s, i) => { s.classList.toggle("done", i + 1 < step); s.classList.toggle("current", i + 1 === step); });
+        document.getElementById("scanResult").classList.toggle("hidden", step !== 2);
+        document.getElementById("credForm").classList.toggle("hidden", step !== 3);
+        document.getElementById("addResult").classList.toggle("hidden", step !== 4);
+        next.textContent = step === 3 ? "Thêm 3 camera" : step === 4 ? "Xong" : "Tiếp tục";
+      }
+      next.onclick = (e) => { if (step === 4) { closeModal(e.target); return; } step++; showStep(); };
+
+      // Manual test connection
+      document.getElementById("testConn").onclick = () => {
+        const t = document.getElementById("testText"); t.textContent = "Đang kiểm tra…";
+        setTimeout(() => { t.innerHTML = '<span class="badge badge-ok">Kết nối thành công</span>'; document.getElementById("preview").classList.remove("hidden"); document.getElementById("saveManual").disabled = false; }, 1000);
+      };
+    });
+  </script>
+</body>
+</html>

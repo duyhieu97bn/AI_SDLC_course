@@ -1,10 +1,13 @@
 # Đặc tả Yêu cầu Nghiệp vụ (BRS) – Nền tảng Web quản lý Camera IP
 
 > Tuân theo cấu trúc *Business Requirements Specification* tại ISO/IEC/IEEE 29148:2018, mục 9.3.
-> Ngày: 21/10/2026 · Người soạn: Business Analyst · Phiên bản: 0.3 (Bản nháp)
+> Ngày: 21/10/2026 · Người soạn: Business Analyst · Phiên bản: 0.6 (Bản nháp)
 
 | Phiên bản | Ngày | Người sửa | Thay đổi |
 | --- | --- | --- | --- |
+| 0.6 | 21/10/2026 | BA | Làm rõ quyền của Site Manager (tạo người dùng), chuyển giao cảnh báo, và việc khôi phục hệ thống chỉ do đội vận hành IT thực hiện |
+| 0.5 | 21/10/2026 | BA | Chốt OQ-05 (có LDAP/AD): thêm BR-40, D-06; phân tích chuyển động phía máy chủ ngoài phạm vi 1.0 |
+| 0.4 | 21/10/2026 | BA | Thêm BR-39 (vai trò tùy chỉnh), RULE-07 (giữ video khi chuyển camera), ràng buộc nguồn cảnh báo chuyển động |
 | 0.3 | 21/10/2026 | BA | Sửa theo checklist 29148: tách yêu cầu gộp (thêm BR-34 đến BR-38), bỏ chi tiết kỹ thuật khỏi BR, thêm cột Nguồn, RTO/RPO, mục Phụ thuộc, kế hoạch dự phòng, hồ sơ người dùng; chốt OQ-01 |
 | 0.2 | 21/10/2026 | BA | Tái cấu trúc theo ISO/IEC/IEEE 29148:2018; bổ sung thuộc tính yêu cầu và ma trận truy vết |
 | 0.1 | 21/10/2026 | BA | Tạo bản nháp đầu tiên |
@@ -46,6 +49,7 @@ Phiên bản 1.0 bao gồm **toàn bộ** yêu cầu nghiệp vụ ở mục 4.1
 
 - Ứng dụng di động native (iOS/Android)
 - Phân tích hình ảnh bằng AI (nhận diện khuôn mặt, biển số, đếm người)
+- Máy chủ tự phân tích chuyển động (cảnh báo chuyển động chỉ dựa trên sự kiện của camera)
 - Camera analog không qua đầu ghi có hỗ trợ IP
 - Nâng cấp firmware camera hàng loạt
 - Tích hợp kiểm soát ra vào, báo cháy
@@ -212,7 +216,7 @@ flowchart LR
     C --> G[Cấu hình camera / áp mẫu hàng loạt]
 ```
 
-Hệ thống hỗ trợ 6 quy trình nghiệp vụ (BP). Yêu cầu nghiệp vụ (BR) của từng quy trình nằm ngay bên dưới quy trình đó. Có 38 yêu cầu: BR-34 đến BR-38 được tách ra từ các yêu cầu gộp ở v0.2. Mã cũ được giữ nguyên, không tái sử dụng.
+Hệ thống hỗ trợ 6 quy trình nghiệp vụ (BP). Yêu cầu nghiệp vụ (BR) của từng quy trình nằm ngay bên dưới quy trình đó. Có 40 yêu cầu: BR-34 đến BR-38 được tách ra từ các yêu cầu gộp ở v0.2; BR-39 được thêm ở v0.4, BR-40 ở v0.5. Mã cũ được giữ nguyên, không tái sử dụng.
 
 Ý nghĩa các cột trong bảng yêu cầu:
 
@@ -277,6 +281,8 @@ Hệ thống hỗ trợ 6 quy trình nghiệp vụ (BP). Yêu cầu nghiệp v�
 | BR-36 | Hệ thống phải hỗ trợ xác thực hai lớp (2FA) và cho phép Admin bắt buộc 2FA theo vai trò. | Giảm rủi ro lộ mật khẩu | Must | IT | BO-05 | T |
 | BR-29 | Hệ thống phải phân quyền theo vai trò (mục 4.6) và theo phạm vi camera/nhóm/địa điểm, tách riêng quyền xem trực tiếp, xem lại, xuất video và cấu hình. | Nguyên tắc quyền tối thiểu | Must | IT, PC | BO-05 | T |
 | BR-30 | Hệ thống phải ghi nhật ký đăng nhập, xem lại, xuất video và thay đổi cấu hình, gồm người thực hiện, thời điểm, đối tượng. | Truy vết trách nhiệm (P5) | Must | PC | BO-05 | T |
+| BR-39 | Hệ thống phải cho phép Admin tạo, sửa, xóa vai trò tùy chỉnh từ tập quyền của hệ thống, ngoài 5 vai trò mặc định. | Tổ chức có những vị trí công việc không khớp vai trò mặc định | Should | IT | BO-05 | T |
+| BR-40 | Hệ thống phải cho phép người dùng đăng nhập bằng tài khoản LDAP/Active Directory của tổ chức và gán vai trò theo nhóm trong thư mục. | Quản lý tài khoản tập trung, vô hiệu hóa kịp thời khi nghỉ việc (RULE-05) | Should | IT | BO-05 | T |
 
 #### BP-06 Xử lý cảnh báo
 
@@ -298,11 +304,13 @@ Hệ thống hỗ trợ 6 quy trình nghiệp vụ (BP). Yêu cầu nghiệp v�
 | RULE-04 | Tài khoản bị khóa sau 5 lần đăng nhập sai liên tiếp; Admin hoặc người dùng tự mở khóa qua xác thực lại. |
 | RULE-05 | Người dùng nghỉ việc phải bị vô hiệu hóa tài khoản trong vòng 24 giờ (quy trình của bộ phận nhân sự/IT). |
 | RULE-06 | Nhật ký thao tác không được sửa hoặc xóa bởi bất kỳ vai trò nào. |
+| RULE-07 | Khi camera chuyển sang khu vực hoặc địa điểm khác, video đã ghi được giữ nguyên; quyền xem video cũ tính theo vị trí hiện tại của camera. |
 
 ### 4.3 Ràng buộc vận hành (Business operational constraints)
 
 - Trình duyệt không phát trực tiếp được RTSP, nên hệ thống cần máy chủ chuyển đổi luồng (ví dụ sang WebRTC/HLS).
 - Mức độ cấu hình được phụ thuộc vào những gì từng hãng camera mở qua ONVIF/API.
+- Ở phiên bản 1.0, cảnh báo chuyển động dựa trên sự kiện do camera tự phát hiện và gửi về; camera không có chức năng phát hiện chuyển động thì không có loại cảnh báo này.
 - Băng thông upload tại địa điểm giới hạn số luồng xem từ xa đồng thời (khoảng 1–4 Mbps mỗi luồng).
 - Việc lắp camera ghi hình người phải kèm thông báo giám sát tại khu vực, theo REF-02.
 
@@ -339,9 +347,9 @@ Các ngưỡng dưới đây là đề xuất, cần IT xác nhận theo hạ t�
 | Vai trò | Thuộc đơn vị | Quyền chính |
 | --- | --- | --- |
 | Quản trị hệ thống (Admin) | IT | Toàn quyền: người dùng, phân quyền, camera, cấu hình hệ thống |
-| Quản lý địa điểm (Site Manager) | Quản lý chi nhánh | Quản lý camera và người dùng trong địa điểm được giao |
+| Quản lý địa điểm (Site Manager) | Quản lý chi nhánh | Quản lý camera và người dùng trong địa điểm được giao, kể cả tạo người dùng mới |
 | Kỹ thuật viên (Technician) | IT / nhà tích hợp | Thêm, cấu hình camera; xem trực tiếp |
-| Nhân viên giám sát (Operator) | An ninh / Vận hành | Xem trực tiếp, xem lại, điều khiển PTZ, xử lý cảnh báo |
+| Nhân viên giám sát (Operator) | An ninh / Vận hành | Xem trực tiếp, xem lại, điều khiển PTZ, xử lý và chuyển giao cảnh báo |
 | Người xem (Viewer) | Các phòng ban | Chỉ xem trực tiếp camera được cấp quyền |
 
 Cấu trúc phân cấp dữ liệu: Tổ chức → Địa điểm → Khu vực → Nhóm camera → Camera.
@@ -405,6 +413,7 @@ CamHub là ứng dụng web tập trung. Người dùng đăng nhập từ trìn
 ### 6.3 Khái niệm hỗ trợ sơ bộ (Preliminary support concept)
 
 - Hỗ trợ cấp 1: bộ phận IT nội bộ; cấp 2: đội phát triển.
+- Khôi phục hệ thống từ bản sao lưu chỉ do đội vận hành IT thực hiện theo quy trình vận hành; Admin của tổ chức không có chức năng này.
 - Duy trì danh sách camera đã kiểm thử tương thích, cập nhật hằng quý.
 - Giám sát sức khỏe hệ thống: dung lượng lưu trữ, số camera mất kết nối, tải máy chủ.
 
@@ -442,6 +451,7 @@ CamHub là ứng dụng web tập trung. Người dùng đăng nhập từ trìn
 | D-03 | Dịch vụ email, Telegram Bot API, Zalo OA | IT | Không gửi được cảnh báo qua kênh tương ứng (BR-32) |
 | D-04 | Danh sách và mẫu camera hiện có tại các địa điểm | IT, nhà tích hợp | Không lập được danh sách kiểm thử tương thích (R-01) |
 | D-05 | Chính sách lưu trữ và xử lý dữ liệu hình ảnh | Pháp chế | Không chốt được thời gian lưu mặc định (BR-19) |
+| D-06 | Quyền truy cập máy chủ LDAP/AD và tài khoản dịch vụ chỉ đọc | IT | Không đăng nhập bằng tài khoản tổ chức được (BR-40) |
 
 **Rủi ro**
 
@@ -461,11 +471,11 @@ CamHub là ứng dụng web tập trung. Người dùng đăng nhập từ trìn
 | OQ-02 | Tự phát triển hay mua VMS thương mại? | Sponsor, IT | Trước khi phê duyệt BRS | Mở |
 | OQ-03 | Có yêu cầu ghi hình không gián đoạn khi bảo trì (máy chủ dự phòng)? | IT | Trước khi thiết kế kiến trúc | Mở |
 | OQ-04 | Thời gian lưu trữ mặc định theo chính sách nội bộ là bao lâu? | Pháp chế | Trước khi phê duyệt BRS | Mở |
-| OQ-05 | Có cần tích hợp đăng nhập LDAP/Active Directory? | IT | Trước khi thiết kế kiến trúc | Mở |
+| OQ-05 | Có cần tích hợp đăng nhập LDAP/Active Directory? | IT | — | Đã chốt 21/10/2026: có (BR-40) |
 
 **Tiêu chí nghiệm thu**
 
-- [ ] Toàn bộ yêu cầu nghiệp vụ (BR-01 đến BR-38) được triển khai và vượt qua UAT theo phương pháp kiểm chứng đã ghi.
+- [ ] Toàn bộ yêu cầu nghiệp vụ (BR-01 đến BR-40) được triển khai và vượt qua UAT theo phương pháp kiểm chứng đã ghi.
 - [ ] Kết nối thành công camera của ít nhất 5 hãng trong danh sách kiểm thử.
 - [ ] Đạt NFR-01, NFR-02 với 100 camera thử nghiệm.
 - [ ] Không còn lỗi bảo mật mức nghiêm trọng/cao sau kiểm thử xâm nhập.
@@ -502,7 +512,7 @@ CamHub là ứng dụng web tập trung. Người dùng đăng nhập từ trìn
 | BO-02 | P1 | BR-01, 03, 07 | SC-01 |
 | BO-03 | P4 | BR-12, 14, 15, 16, 17, 18, 19, 20, 32, 33, 38 | SC-02, SC-03 |
 | BO-04 | P3 | BR-21, 22, 23, 24, 25, 26, 27 | SC-01, SC-04 |
-| BO-05 | P5 | BR-26, 28, 29, 30, 36 | SC-03 |
+| BO-05 | P5 | BR-26, 28, 29, 30, 36, 39, 40 | SC-03 |
 
 ### 8.3 Phê duyệt (Sign-off)
 

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Người dùng và vai trò</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="users" data-title="Người dùng & vai trò" data-subtitle="Quản trị truy cập">
+  <!-- UC-03 Quản lý người dùng, UC-04 Vai trò tùy chỉnh, UC-05 Gán vai trò và phạm vi, UC-06 LDAP/AD
+       US-30 AC2, US-31, US-32, US-43, US-44 -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <div class="tabs" data-tabs>
+          <button class="tab active" data-tab="tab-users">Người dùng</button>
+          <button class="tab" data-tab="tab-roles">Vai trò</button>
+          <button class="tab" data-tab="tab-ldap">LDAP / Active Directory</button>
+        </div>
+
+        <!-- Người dùng -->
+        <section class="tab-panel active" id="tab-users">
+          <div class="stack">
+            <div class="row">
+              <label class="search" style="display:flex"><i data-icon="search"></i><input placeholder="Tìm người dùng…"></label>
+              <select class="input" style="width:auto"><option>Mọi nguồn</option><option>Cục bộ</option><option>Thư mục (AD)</option></select>
+              <span class="spacer"></span>
+              <button class="btn btn-primary" data-open="userModal"><i data-icon="userPlus" class="sm"></i>Thêm người dùng</button>
+            </div>
+            <div class="card"><div class="table-wrap"><table class="table">
+              <thead><tr><th>Người dùng</th><th>Nguồn</th><th>Vai trò và phạm vi</th><th>2FA</th><th>Trạng thái</th><th>Đăng nhập gần nhất</th><th></th></tr></thead>
+              <tbody>
+                <tr><td><b>Trần Tuấn</b><div class="small muted">tuan.tran@congty.vn</div></td><td><span class="badge badge-muted no-dot">Cục bộ</span></td><td>Admin · Toàn tổ chức</td><td><span class="badge badge-ok">Bật</span></td><td><span class="badge badge-ok">Hoạt động</span></td><td>23:38 hôm nay</td><td><button class="btn btn-sm btn-ghost" data-open="assignModal">Quyền</button></td></tr>
+                <tr><td><b>Nguyễn Hương</b><div class="small muted">huong.nguyen@congty.vn</div></td><td><span class="badge badge-info no-dot">AD</span></td><td>Site Manager · Chi nhánh Hà Nội<div class="small muted">từ nhóm AD: CamHub-SiteMgr-HN</div></td><td><span class="badge badge-ok">Bật</span></td><td><span class="badge badge-ok">Hoạt động</span></td><td>18:02 hôm nay</td><td><button class="btn btn-sm btn-ghost" data-open="assignModal">Quyền</button></td></tr>
+                <tr><td><b>Lê Lan</b><div class="small muted">lan.le@congty.vn</div></td><td><span class="badge badge-info no-dot">AD</span></td><td>Operator · Kho Bắc Ninh<br>Operator · Nhóm "Lối ra vào"</td><td><span class="badge badge-muted">Tắt</span></td><td><span class="badge badge-ok">Hoạt động</span></td><td>23:40 hôm nay</td><td><button class="btn btn-sm btn-ghost" data-open="assignModal">Quyền</button></td></tr>
+                <tr><td><b>Phạm Minh</b><div class="small muted">minh.pham@congty.vn</div></td><td><span class="badge badge-muted no-dot">Cục bộ</span></td><td>Technician · Kho Bắc Ninh, Cửa hàng Q1 HCM</td><td><span class="badge badge-ok">Bật</span></td><td><span class="badge badge-ok">Hoạt động</span></td><td>14:40 hôm nay</td><td><button class="btn btn-sm btn-ghost" data-open="assignModal">Quyền</button></td></tr>
+                <tr><td><b>Võ Bảo</b><div class="small muted">bao.vo@congty.vn</div></td><td><span class="badge badge-muted no-dot">Cục bộ</span></td><td>Bảo vệ ca đêm (tùy chỉnh) · Cửa hàng Q1 HCM</td><td><span class="badge badge-muted">Tắt</span></td><td><span class="badge badge-danger">Bị khóa</span><div class="small muted">5 lần sai mật khẩu</div></td><td>Hôm qua</td><td><button class="btn btn-sm">Mở khóa</button></td></tr>
+                <tr><td><b>Đỗ Quang</b><div class="small muted">quang.do@congty.vn</div></td><td><span class="badge badge-info no-dot">AD</span></td><td class="muted">—</td><td>—</td><td><span class="badge badge-muted">Vô hiệu hóa</span><div class="small muted">bị vô hiệu hóa trong AD</div></td><td>02/10/2026</td><td></td></tr>
+              </tbody>
+            </table></div></div>
+          </div>
+        </section>
+
+        <!-- Vai trò (US-43) -->
+        <section class="tab-panel" id="tab-roles">
+          <div class="split-3" style="grid-template-columns:300px 1fr">
+            <div class="card">
+              <div class="card-head"><h3>Vai trò</h3><span class="spacer"></span><button class="btn btn-sm btn-primary" data-open="roleModal"><i data-icon="plus" class="sm"></i>Tạo</button></div>
+              <div class="list">
+                <div class="list-item"><i data-icon="lock" class="sm"></i><span class="grow">Admin</span><span class="small muted">1 người</span></div>
+                <div class="list-item"><i data-icon="lock" class="sm"></i><span class="grow">Site Manager</span><span class="small muted">3</span></div>
+                <div class="list-item"><i data-icon="lock" class="sm"></i><span class="grow">Technician</span><span class="small muted">2</span></div>
+                <div class="list-item"><i data-icon="lock" class="sm"></i><span class="grow">Operator</span><span class="small muted">8</span></div>
+                <div class="list-item"><i data-icon="lock" class="sm"></i><span class="grow">Viewer</span><span class="small muted">12</span></div>
+                <div class="list-item" style="background:var(--primary-weak)"><i data-icon="edit" class="sm"></i><span class="grow"><b>Bảo vệ ca đêm</b><div class="small muted">Tùy chỉnh</div></span><span class="small muted">4</span></div>
+              </div>
+              <div class="card-body small muted"><i data-icon="lock" class="sm"></i> Vai trò mặc định không sửa, đổi tên hoặc xóa được.</div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h2>Bảo vệ ca đêm</h2><span class="badge badge-info no-dot">Tùy chỉnh</span><span class="spacer"></span><button class="btn btn-sm btn-danger" id="delRole"><i data-icon="trash" class="sm"></i>Xóa</button></div>
+              <div class="card-body stack">
+                <div class="form-grid">
+                  <div class="field"><label>Tên vai trò</label><input class="input" value="Bảo vệ ca đêm"></div>
+                  <div class="field"><label>Thứ hạng điều khiển PTZ</label><input class="input" type="number" value="20"><span class="hint">Người có thứ hạng cao hơn được ưu tiên điều khiển PTZ.</span></div>
+                  <div class="field full"><label class="check"><input type="checkbox"> Bắt buộc xác thực hai lớp (2FA)</label></div>
+                </div>
+                <div class="table-wrap"><table class="table perm-matrix">
+                  <thead><tr><th>Quyền</th><th class="c">Cấp</th><th>Mô tả</th></tr></thead>
+                  <tbody>
+                    <tr><td>VIEW_LIVE</td><td class="c"><input type="checkbox" checked></td><td>Xem trực tiếp</td></tr>
+                    <tr><td>VIEW_PLAYBACK</td><td class="c"><input type="checkbox" checked></td><td>Xem lại video</td></tr>
+                    <tr><td>EXPORT_VIDEO</td><td class="c"><input type="checkbox"></td><td>Xuất clip</td></tr>
+                    <tr><td>CONTROL_PTZ</td><td class="c"><input type="checkbox" checked></td><td>Điều khiển PTZ</td></tr>
+                    <tr><td>TALK_AUDIO</td><td class="c"><input type="checkbox" checked></td><td>Đàm thoại qua camera</td></tr>
+                    <tr><td>HOLD_EVIDENCE</td><td class="c"><input type="checkbox"></td><td>Giữ lại video phục vụ điều tra</td></tr>
+                    <tr><td>CONFIGURE_CAMERA</td><td class="c"><input type="checkbox"></td><td>Thêm, cấu hình camera</td></tr>
+                    <tr><td>MANAGE_USERS</td><td class="c"><input type="checkbox"></td><td>Quản lý người dùng, gán quyền</td></tr>
+                    <tr><td>MANAGE_ROLES</td><td class="c"><input type="checkbox" disabled></td><td class="muted">Bạn không cấp được quyền mà bạn không có ở phạm vi này</td></tr>
+                    <tr><td>MANAGE_SYSTEM</td><td class="c"><input type="checkbox"></td><td>Cài đặt hệ thống, nhật ký</td></tr>
+                  </tbody>
+                </table></div>
+                <div class="row"><span class="small muted">Thay đổi có hiệu lực trong ≤ 60 giây với 4 người đang dùng vai trò này.</span><span class="spacer"></span><button class="btn btn-primary" onclick="toast('Đã lưu vai trò. Thay đổi đã được ghi nhật ký.')">Lưu</button></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LDAP (US-44) -->
+        <section class="tab-panel" id="tab-ldap">
+          <div class="split-3" style="grid-template-columns:1fr 1fr">
+            <div class="card">
+              <div class="card-head"><h2>Kết nối thư mục</h2><span class="spacer"></span><span class="badge badge-ok">Đang hoạt động</span></div>
+              <div class="card-body stack">
+                <div class="form-grid">
+                  <div class="field"><label>Loại</label><select class="input"><option>Active Directory</option><option>LDAP</option></select></div>
+                  <div class="field"><label>Máy chủ (LDAPS)</label><input class="input mono" value="ldaps://dc01.congty.local:636"></div>
+                  <div class="field full"><label>Base DN</label><input class="input mono" value="OU=Staff,DC=congty,DC=local"></div>
+                  <div class="field"><label>Tài khoản dịch vụ (chỉ đọc)</label><input class="input mono" value="svc-camhub@congty.local"></div>
+                  <div class="field"><label>Mật khẩu</label><input class="input" type="password" value="••••••••"></div>
+                  <div class="field full"><label>Bộ lọc người dùng</label><input class="input mono" value="(&(objectClass=user)(memberOf=CN=CamHub-*,OU=Groups,DC=congty,DC=local))"></div>
+                </div>
+                <div class="row"><button class="btn" id="ldapTest"><i data-icon="refresh" class="sm"></i>Kiểm tra kết nối</button><span class="small muted" id="ldapRes">Đồng bộ gần nhất: 23:00 · 27 người dùng</span><span class="spacer"></span><button class="btn btn-primary">Lưu</button></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h2>Ánh xạ nhóm</h2><span class="spacer"></span><button class="btn btn-sm"><i data-icon="plus" class="sm"></i>Thêm ánh xạ</button></div>
+              <div class="table-wrap"><table class="table">
+                <thead><tr><th>Nhóm AD</th><th>Vai trò</th><th>Phạm vi</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">CamHub-SiteMgr-HN</td><td>Site Manager</td><td>Chi nhánh Hà Nội</td></tr>
+                  <tr><td class="mono">CamHub-Operator-KBN</td><td>Operator</td><td>Kho Bắc Ninh</td></tr>
+                  <tr><td class="mono">CamHub-Viewer</td><td>Viewer</td><td>Toàn tổ chức</td></tr>
+                </tbody>
+              </table></div>
+              <div class="card-body small muted">Quyền sinh từ ánh xạ được cập nhật mỗi giờ và không sửa tay được trên từng người dùng.</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Thêm người dùng (UC-03; Site Manager chỉ trong địa điểm của mình) -->
+  <div class="modal-backdrop" id="userModal">
+    <div class="modal">
+      <div class="modal-head"><h2>Thêm người dùng</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field"><label>Họ tên</label><input class="input"></div>
+          <div class="field"><label>Email</label><input class="input" type="email"></div>
+          <div class="field"><label>Vai trò</label><select class="input"><option>Operator</option><option>Viewer</option><option>Technician</option><option>Bảo vệ ca đêm</option></select></div>
+          <div class="field"><label>Phạm vi</label><select class="input"><option>Địa điểm: Kho Bắc Ninh</option><option>Nhóm: Lối ra vào</option><option>Toàn tổ chức</option></select></div>
+        </div>
+        <div class="alert-box info"><i data-icon="info"></i><span>Người dùng nhận email kích hoạt để tự đặt mật khẩu (tối thiểu 10 ký tự). Nhân viên có tài khoản AD nên được thêm qua ánh xạ nhóm thay vì tạo tài khoản cục bộ.</span></div>
+        <div class="alert-box warn"><i data-icon="shield"></i><span>Nếu bạn là Site Manager: chỉ gán được phạm vi trong địa điểm của bạn và vai trò không vượt quyền của bạn.</span></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close onclick="toast('Đã tạo người dùng và gửi email kích hoạt')">Tạo người dùng</button></div>
+    </div>
+  </div>
+
+  <!-- Gán quyền (UC-05) -->
+  <div class="modal-backdrop" id="assignModal">
+    <div class="modal">
+      <div class="modal-head"><h2>Quyền của Lê Lan</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="table-wrap"><table class="table">
+          <thead><tr><th>Vai trò</th><th>Phạm vi</th><th>Nguồn</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>Operator</td><td>Địa điểm: Kho Bắc Ninh</td><td><span class="badge badge-info no-dot">Nhóm AD</span></td><td class="small muted">Sửa ở ánh xạ nhóm</td></tr>
+            <tr><td>Operator</td><td>Nhóm: Lối ra vào</td><td><span class="badge badge-muted no-dot">Gán tay</span></td><td><button class="btn btn-sm btn-danger">Gỡ</button></td></tr>
+          </tbody>
+        </table></div>
+        <div class="row">
+          <select class="input" style="width:auto"><option>Viewer</option><option>Operator</option><option>Bảo vệ ca đêm</option></select>
+          <select class="input" style="width:auto"><option>Địa điểm…</option><option>Nhóm…</option><option>Camera…</option></select>
+          <button class="btn"><i data-icon="plus" class="sm"></i>Thêm quyền</button>
+        </div>
+      </div>
+      <div class="modal-foot"><button class="btn btn-primary" data-close>Xong</button></div>
+    </div>
+  </div>
+
+  <!-- Tạo vai trò -->
+  <div class="modal-backdrop" id="roleModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Tạo vai trò tùy chỉnh</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="field"><label>Tên vai trò</label><input class="input" placeholder="Ví dụ: Kiểm toán nội bộ"></div>
+        <div class="field"><label>Bắt đầu từ</label><select class="input"><option>Trống</option><option>Sao chép từ Operator</option><option>Sao chép từ Viewer</option></select></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close>Tạo</button></div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("delRole").onclick = () => toast("Không xóa được: vai trò đang được gán cho <b>4 người dùng</b>. Hãy gỡ vai trò khỏi họ trước.");
+      document.getElementById("ldapTest").onclick = () => {
+        const r = document.getElementById("ldapRes"); r.textContent = "Đang kiểm tra…";
+        setTimeout(() => (r.innerHTML = '<span class="badge badge-ok">Kết nối và bind thành công · tìm thấy 27 người dùng</span>'), 900);
+      };
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Xem trực tiếp</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    .live-layout { display: grid; grid-template-columns: 260px 1fr 280px; gap: 12px; align-items: start; }
+    .live-side { max-height: calc(100vh - 110px); overflow-y: auto; }
+    .live-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    .preset-list .list-item { padding: 8px 12px; cursor: pointer; }
+    @media (max-width: 1200px) { .live-layout { grid-template-columns: 240px 1fr; } .live-panel { grid-column: 1 / -1; } }
+    @media (max-width: 860px) { .live-layout { grid-template-columns: 1fr; } .live-side { max-height: 240px; } }
+  </style>
+</head>
+<body data-page="live" data-title="Xem trực tiếp" data-subtitle="Bố cục: Ca đêm – Kho Bắc Ninh">
+  <!-- UC-20 đến UC-25 · US-08 đến US-15, US-34 (bố cục) -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <div class="live-layout">
+          <!-- Cây camera -->
+          <section class="card live-side">
+            <div class="card-head"><h3>Camera</h3><span class="spacer"></span><span class="small muted">Kéo vào ô</span></div>
+            <div style="padding:10px 10px 0"><input class="input" placeholder="Lọc theo tên…" id="treeFilter"></div>
+            <div class="tree" id="tree"></div>
+          </section>
+
+          <!-- Lưới video -->
+          <section class="card">
+            <div class="live-toolbar">
+              <div class="btn-group" id="gridBtns" role="group" aria-label="Bố cục lưới">
+                <button data-grid="1">1</button><button data-grid="4">4</button><button data-grid="9" class="active">9</button><button data-grid="16">16</button>
+              </div>
+              <select class="input" style="width:auto" aria-label="Bố cục đã lưu">
+                <option>Ca đêm – Kho Bắc Ninh</option><option>Quầy giao dịch Hà Nội</option><option>Cửa hàng Q1 – toàn bộ</option>
+              </select>
+              <button class="btn btn-sm" data-open="saveLayout"><i data-icon="star" class="sm"></i>Lưu bố cục</button>
+              <span class="spacer" style="flex:1"></span>
+              <button class="btn btn-sm btn-ghost" id="demoLow" title="Mô phỏng băng thông yếu (BR-10)">Mô phỏng mạng yếu</button>
+              <button class="btn btn-sm btn-ghost" id="fullBtn"><i data-icon="maximize" class="sm"></i>Toàn màn hình</button>
+            </div>
+            <div class="card-body" style="padding:8px">
+              <div class="video-grid g9" id="grid"></div>
+              <p class="small muted" style="margin-top:8px">Nhấp để chọn ô · nhấp đúp để phóng to ô (chuyển sang luồng chính) · lưới 9 và 16 dùng luồng phụ.</p>
+            </div>
+          </section>
+
+          <!-- Bảng điều khiển camera đang chọn -->
+          <section class="card live-panel">
+            <div class="card-head"><div><h3 id="selName">Bãi xe – PTZ</h3><span class="small muted" id="selMeta">Dahua SD49425XB · Kho Bắc Ninh</span></div></div>
+            <div class="card-body stack">
+              <div class="field">
+                <label>Chất lượng luồng</label>
+                <div class="btn-group" id="streamBtns"><button class="active">Tự động</button><button>Cao</button><button>Thấp</button></div>
+              </div>
+              <div class="row">
+                <button class="btn btn-sm" id="snapBtn"><i data-icon="image" class="sm"></i>Chụp ảnh</button>
+                <button class="btn btn-sm"><i data-icon="zoomIn" class="sm"></i>Phóng to số</button>
+                <a class="btn btn-sm" href="playback.html"><i data-icon="history" class="sm"></i>Xem lại</a>
+              </div>
+
+              <div id="ptzBox" class="stack">
+                <div class="row"><h3>Điều khiển PTZ</h3><span class="spacer"></span><span class="badge badge-ok" id="ptzLock">Bạn đang điều khiển</span></div>
+                <div class="ptz">
+                  <span></span><button aria-label="Lên"><i data-icon="up"></i></button><span></span>
+                  <button aria-label="Trái"><i data-icon="left"></i></button><button class="center" aria-label="Về giữa"><i data-icon="home"></i></button><button aria-label="Phải"><i data-icon="right"></i></button>
+                  <span></span><button aria-label="Xuống"><i data-icon="down"></i></button><span></span>
+                </div>
+                <div class="row" style="justify-content:center">
+                  <button class="btn btn-sm"><i data-icon="zoomOut" class="sm"></i>Thu</button>
+                  <button class="btn btn-sm"><i data-icon="zoomIn" class="sm"></i>Phóng</button>
+                </div>
+                <div class="range-row small"><span>Tốc độ</span><input type="range" min="1" max="8" value="4"><span>4</span></div>
+                <button class="btn btn-sm btn-ghost" id="demoPtzLock">Mô phỏng người khác đang điều khiển</button>
+                <div class="row"><h3>Preset</h3><span class="spacer"></span><button class="btn btn-sm" data-open="presetModal"><i data-icon="plus" class="sm"></i>Lưu vị trí</button></div>
+                <div class="list preset-list card">
+                  <div class="list-item"><i data-icon="star" class="sm"></i><span class="grow">Bãi xe</span><span class="badge badge-muted no-dot">Camera</span></div>
+                  <div class="list-item"><i data-icon="star" class="sm"></i><span class="grow">Cổng xe tải</span><span class="badge badge-info no-dot">CamHub</span></div>
+                  <div class="list-item"><i data-icon="star" class="sm"></i><span class="grow">Hàng rào phía Đông</span><span class="badge badge-info no-dot">CamHub</span></div>
+                </div>
+              </div>
+              <div id="noPtz" class="alert-box info hidden"><i data-icon="info"></i><span>Camera này không hỗ trợ PTZ.</span></div>
+
+              <div class="row">
+                <h3>Đàm thoại</h3><span class="spacer"></span>
+                <button class="btn btn-sm" id="talkBtn" title="Giữ để nói"><i data-icon="mic" class="sm"></i>Nhấn giữ để nói</button>
+              </div>
+              <p class="small muted">Âm thanh mặc định tắt. Mỗi lần đàm thoại được ghi nhật ký.</p>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Lưu bố cục -->
+  <div class="modal-backdrop" id="saveLayout">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Lưu bố cục xem</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="field"><label>Tên bố cục</label><input class="input" value="Ca đêm – Kho Bắc Ninh"></div>
+        <p class="small muted">Lưu lưới 9 ô và 9 camera đang chọn. Mỗi người dùng lưu được tối đa 10 bố cục.</p>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close onclick="toast('Đã lưu bố cục <b>Ca đêm – Kho Bắc Ninh</b>')">Lưu</button></div>
+    </div>
+  </div>
+
+  <!-- Lưu preset -->
+  <div class="modal-backdrop" id="presetModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Lưu vị trí preset</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body"><div class="field"><label>Tên preset</label><input class="input" placeholder="Ví dụ: Cổng phụ"></div></div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close>Lưu</button></div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const grid = document.getElementById("grid");
+      let size = 9, low = false, selected = 2;
+      let slots = [6, 2, 1, 3, 4, 5, 7, 8, null, null, null, null, null, null, null, null];
+      const tree = document.getElementById("tree");
+      const renderTree = (q = "") => { tree.innerHTML = cameraTreeHTML((c) => c.name.toLowerCase().includes(q.toLowerCase())); };
+      renderTree();
+      document.getElementById("treeFilter").addEventListener("input", (e) => renderTree(e.target.value));
+
+      function render() {
+        grid.className = "video-grid g" + size;
+        const stream = size <= 4 ? "MAIN" : "SUB";
+        grid.innerHTML = slots.slice(0, size).map((id, i) => {
+          const cam = CAMERAS.find((c) => c.id === id);
+          return `<div data-slot="${i}">${tileHTML(cam, { stream, low: low && cam && cam.status === "on" })}</div>`;
+        }).join("");
+        grid.querySelectorAll(".tile").forEach((t) => {
+          if (Number(t.dataset.cam) === selected) t.classList.add("selected");
+        });
+        document.querySelectorAll("#gridBtns button").forEach((b) => b.classList.toggle("active", Number(b.dataset.grid) === size));
+      }
+      function select(id) {
+        selected = id;
+        const c = CAMERAS.find((x) => x.id === id);
+        document.getElementById("selName").textContent = c.name;
+        document.getElementById("selMeta").textContent = `${c.brand} ${c.model} · ${c.site}`;
+        document.getElementById("ptzBox").classList.toggle("hidden", !c.ptz);
+        document.getElementById("noPtz").classList.toggle("hidden", c.ptz);
+        render();
+      }
+      grid.addEventListener("click", (e) => { const t = e.target.closest(".tile[data-cam]"); if (t) select(Number(t.dataset.cam)); });
+      grid.addEventListener("dblclick", (e) => {
+        const t = e.target.closest(".tile[data-cam]"); if (!t) return;
+        if (size === 1) { size = 9; } else { slots = [Number(t.dataset.cam), ...slots.filter((s) => s !== Number(t.dataset.cam))]; size = 1; }
+        render();
+      });
+      tree.addEventListener("dragstart", (e) => { const c = e.target.closest(".cam"); if (c) e.dataTransfer.setData("text/plain", c.dataset.cam); });
+      grid.addEventListener("dragover", (e) => e.preventDefault());
+      grid.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const slot = e.target.closest("[data-slot]"); const id = Number(e.dataTransfer.getData("text/plain"));
+        if (slot && id) { slots[Number(slot.dataset.slot)] = id; select(id); }
+      });
+      tree.addEventListener("click", (e) => { const c = e.target.closest(".cam"); if (c) { const i = slots.indexOf(null); if (i > -1 && i < size) slots[i] = Number(c.dataset.cam); select(Number(c.dataset.cam)); } });
+      document.querySelectorAll("#gridBtns button").forEach((b) => b.addEventListener("click", () => { size = Number(b.dataset.grid); render(); }));
+      document.querySelectorAll("#streamBtns button").forEach((b, _, all) => b.addEventListener("click", () => all.forEach((x) => x.classList.toggle("active", x === b))));
+      document.getElementById("demoLow").onclick = () => { low = !low; render(); if (low) toast("Băng thông thấp hơn bitrate trong 5 giây. Đã chuyển sang <b>luồng chất lượng thấp</b>."); };
+      document.getElementById("snapBtn").onclick = () => toast("Đã tải ảnh <span class='mono'>Bai-xe-PTZ_2026-10-21_23-41-05.png</span>");
+      document.getElementById("demoPtzLock").onclick = () => {
+        const l = document.getElementById("ptzLock");
+        const busy = l.classList.contains("badge-ok");
+        l.className = "badge " + (busy ? "badge-warn" : "badge-ok");
+        l.textContent = busy ? "Đang được điều khiển bởi Hương (Site Manager)" : "Bạn đang điều khiển";
+      };
+      document.getElementById("fullBtn").onclick = () => { if (grid.requestFullscreen) grid.requestFullscreen(); };
+      const talk = document.getElementById("talkBtn");
+      talk.addEventListener("mousedown", () => { talk.classList.add("btn-danger"); talk.lastChild.textContent = "Đang nói…"; });
+      ["mouseup", "mouseleave"].forEach((ev) => talk.addEventListener(ev, () => { talk.classList.remove("btn-danger"); talk.lastChild.textContent = "Nhấn giữ để nói"; }));
+      select(2);
+    });
+  </script>
+</body>
+</html>

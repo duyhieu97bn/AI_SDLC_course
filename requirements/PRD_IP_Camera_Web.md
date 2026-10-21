@@ -1,16 +1,19 @@
 # PRD – CamHub: Nền tảng Web quản lý Camera IP (phiên bản 1.0)
 
-> Ngày: 21/10/2026 · Người soạn: Product Owner / Business Analyst · Phiên bản PRD: 0.1 (Bản nháp)
-> Tài liệu đầu vào: [BRD_IP_Camera_Web.md](BRD_IP_Camera_Web.md) (BRS v0.3)
+> Ngày: 21/10/2026 · Người soạn: Product Owner / Business Analyst · Phiên bản PRD: 0.4 (Bản nháp)
+> Tài liệu đầu vào: [BRD_IP_Camera_Web.md](BRD_IP_Camera_Web.md) (BRS v0.6)
 
 | Phiên bản | Ngày | Người sửa | Thay đổi |
 | --- | --- | --- | --- |
+| 0.4 | 21/10/2026 | PO/BA | Theo use case UCQ-01 đến UCQ-03: US-32 AC5 (Site Manager tạo người dùng), US-37 AC3 (chuyển giao cảnh báo), US-40 AC3 (chỉ đội vận hành IT khôi phục) |
+| 0.3 | 21/10/2026 | PO/BA | Thêm US-44 (đăng nhập LDAP/AD); phân tích chuyển động phía máy chủ ngoài phạm vi 1.0 |
+| 0.2 | 21/10/2026 | PO/BA | Thêm US-43 (vai trò tùy chỉnh); US-05 AC4 (giữ video khi chuyển camera); US-36 AC4 (nguồn cảnh báo chuyển động) |
 | 0.1 | 21/10/2026 | PO/BA | Tạo bản nháp đầu tiên từ BRS v0.3 |
 
 **Quyết định đã chốt làm cơ sở cho PRD này:**
 
 - **Mô hình:** triển khai nội bộ trước, chuyển sang SaaS ở phiên bản sau (OQ-01).
-- **Phạm vi:** phiên bản 1.0 gồm toàn bộ yêu cầu nghiệp vụ BR-01 đến BR-38.
+- **Phạm vi:** phiên bản 1.0 gồm toàn bộ yêu cầu nghiệp vụ BR-01 đến BR-40, có đăng nhập LDAP/AD (OQ-05).
 - **Giả định chưa chốt:** sản phẩm được tự phát triển. OQ-02 (tự phát triển hay mua VMS) vẫn mở; nếu quyết định mua, PRD này dùng làm bộ tiêu chí đánh giá nhà cung cấp.
 
 ---
@@ -36,6 +39,7 @@ CamHub là ứng dụng web cho phép người dùng làm mọi việc ngay trê
 
 - Ứng dụng di động native
 - Phân tích hình ảnh bằng AI
+- Máy chủ tự phân tích chuyển động
 - Camera analog không qua đầu ghi
 - Nâng cấp firmware hàng loạt
 - Tích hợp kiểm soát ra vào, báo cháy
@@ -78,7 +82,7 @@ Chỉ số phụ, dùng để theo dõi sức khỏe sản phẩm:
 
 ## 4. Phạm vi phát hành 1.0
 
-Phiên bản 1.0 phát hành **toàn bộ 38 yêu cầu nghiệp vụ**, chia thành 7 epic. Mức MoSCoW từ BRS dùng để **sắp thứ tự phát triển** qua các mốc ở mục 10, không dùng để loại yêu cầu.
+Phiên bản 1.0 phát hành **toàn bộ 40 yêu cầu nghiệp vụ**, chia thành 7 epic. Mức MoSCoW từ BRS dùng để **sắp thứ tự phát triển** qua các mốc ở mục 10, không dùng để loại yêu cầu.
 
 | Epic | Tên | Yêu cầu nghiệp vụ | Số user story |
 | --- | --- | --- | --- |
@@ -86,7 +90,7 @@ Phiên bản 1.0 phát hành **toàn bộ 38 yêu cầu nghiệp vụ**, chia th
 | EP-02 | Xem trực tiếp | BR-08 đến BR-13, BR-34, BR-35 | 8 |
 | EP-03 | Ghi hình và xem lại | BR-14 đến BR-20 | 7 |
 | EP-04 | Cấu hình camera | BR-21 đến BR-27 | 7 |
-| EP-05 | Người dùng, phân quyền, nhật ký | BR-28 đến BR-30, BR-36 | 4 |
+| EP-05 | Người dùng, phân quyền, nhật ký | BR-28 đến BR-30, BR-36, BR-39, BR-40 | 6 |
 | EP-06 | Cảnh báo | BR-31 đến BR-33, BR-37, BR-38 | 5 |
 | EP-07 | Nền tảng và sẵn sàng SaaS | NFR-01 đến NFR-12, ràng buộc mục 7 BRS | 4 |
 
@@ -153,6 +157,7 @@ Là Site Manager, tôi muốn sắp camera theo địa điểm, khu vực, nhóm
 - AC1: Cây phân cấp Địa điểm → Khu vực → Nhóm → Camera; kéo thả camera giữa các nhóm.
 - AC2: Một camera có thể thuộc nhiều nhóm nhưng chỉ thuộc một khu vực.
 - AC3: Ô tìm kiếm theo tên; bộ lọc theo trạng thái và hãng; kết quả hiển thị trong ≤ 1 giây với 500 camera.
+- AC4: Chuyển camera sang khu vực hoặc địa điểm khác thì toàn bộ video, cảnh báo, đánh dấu giữ lại đã có vẫn còn; người xem được video cũ là người có quyền trên vị trí mới của camera (RULE-07); thao tác chuyển được ghi nhật ký.
 
 **US-06 Kết nối địa điểm xa không mở cổng** · BR-06 · Should
 Là Admin, tôi muốn kết nối camera ở chi nhánh không có IP tĩnh, để không phải cấu hình router.
@@ -311,6 +316,7 @@ Là Admin, tôi muốn gán vai trò và phạm vi camera cho từng người, �
 - AC2: Phạm vi gán theo Địa điểm, Nhóm hoặc từng camera.
 - AC3: Quyền tách riêng: Xem trực tiếp, Xem lại, Xuất video, Điều khiển PTZ, Cấu hình, Quản lý người dùng.
 - AC4: Thay đổi quyền có hiệu lực trong ≤ 60 giây, kể cả với phiên đang mở.
+- AC5: Site Manager tạo được người dùng cục bộ mới, nhưng chỉ gán được phạm vi trong địa điểm của mình và chỉ gán vai trò không vượt quyền của chính mình.
 
 **US-33 Nhật ký thao tác** · BR-30 · Must
 Là Admin/Pháp chế, tôi muốn xem ai đã làm gì, để truy vết khi có sự cố.
@@ -318,6 +324,21 @@ Là Admin/Pháp chế, tôi muốn xem ai đã làm gì, để truy vết khi c�
 - AC2: Mỗi bản ghi gồm người thực hiện, thời điểm, địa chỉ IP, đối tượng, kết quả.
 - AC3: Lọc theo người, thời gian, loại thao tác, camera; xuất CSV.
 - AC4: Không vai trò nào sửa hoặc xóa được nhật ký (RULE-06); lưu tối thiểu 12 tháng (NFR-09).
+
+**US-43 Vai trò tùy chỉnh** · BR-39 · Should
+Là Admin, tôi muốn tạo vai trò riêng từ tập quyền, để phù hợp với vị trí công việc của tổ chức.
+- AC1: Tạo vai trò mới từ đầu hoặc sao chép từ một vai trò có sẵn; chọn quyền từ danh sách quyền ở US-32 AC3.
+- AC2: 5 vai trò mặc định không sửa quyền, đổi tên hoặc xóa được.
+- AC3: Không xóa được vai trò đang được gán cho người dùng; hệ thống hiển thị số người đang dùng vai trò đó.
+- AC4: Người tạo/sửa vai trò không cấp được quyền mà chính mình không có; mỗi thay đổi vai trò được ghi nhật ký.
+
+**US-44 Đăng nhập bằng LDAP/Active Directory** · BR-40 · Should
+Là Admin, tôi muốn người dùng đăng nhập bằng tài khoản của tổ chức, để quản lý tài khoản tập trung và vô hiệu hóa ngay khi nhân viên nghỉ việc.
+- AC1: Admin cấu hình kết nối (địa chỉ máy chủ, base DN, tài khoản dịch vụ chỉ đọc) và bấm "Kiểm tra kết nối" để nhận kết quả thành công/lỗi cụ thể; kết nối dùng LDAPS.
+- AC2: Admin ánh xạ nhóm trong thư mục sang vai trò và phạm vi; người dùng đăng nhập lần đầu được tạo tài khoản và gán quyền theo nhóm.
+- AC3: Đồng bộ tự động mỗi giờ; tài khoản bị vô hiệu hóa hoặc rời nhóm trong thư mục mất quyền tương ứng ở lần đồng bộ hoặc đăng nhập kế tiếp.
+- AC4: Tài khoản cục bộ và tài khoản thư mục dùng được song song; 2FA vẫn áp dụng theo vai trò (US-31).
+- AC5: Khi không kết nối được máy chủ thư mục, người dùng thư mục không đăng nhập được và thấy thông báo rõ nguyên nhân; Admin cục bộ vẫn đăng nhập được.
 
 ### EP-06 Cảnh báo
 
@@ -337,11 +358,13 @@ Là Operator, tôi muốn nhận cảnh báo chuyển động qua web, email, Te
 - AC1: Cấu hình theo camera hoặc nhóm: khung giờ áp dụng, kênh nhận, người nhận.
 - AC2: Thông báo gồm tên camera, thời điểm, ảnh chụp sự kiện và liên kết mở cảnh báo.
 - AC3: Cùng một camera không gửi quá 1 thông báo mỗi 2 phút (chống spam); giá trị này chỉnh được.
+- AC4: Cảnh báo chuyển động lấy từ sự kiện do camera gửi về; camera không hỗ trợ phát hiện chuyển động thì tùy chọn này bị ẩn và hiển thị lý do.
 
 **US-37 Xử lý cảnh báo** · BR-33 · Should
 Là Operator, tôi muốn xác nhận và ghi chú cảnh báo, để cả ca biết cảnh báo nào đã có người xử lý.
 - AC1: Trạng thái cảnh báo: Mới → Đang xử lý → Đã đóng; mỗi chuyển trạng thái ghi người và thời điểm.
 - AC2: Khi đóng cảnh báo bắt buộc chọn kết quả (Thật / Báo giả / Khác) và cho phép ghi chú.
+- AC3: Người đang xử lý chuyển giao được cảnh báo cho người khác có quyền trên camera/địa điểm đó, kèm lý do; người nhận được thông báo và lịch sử chuyển giao được lưu.
 
 **US-38 Mở xem lại từ cảnh báo** · BR-38 · Should
 Là Operator, tôi muốn mở ngay video tại thời điểm cảnh báo, để xác minh trong vài giây.
@@ -357,6 +380,7 @@ Là Admin, tôi muốn xem sức khỏe hệ thống, để phát hiện sớm v
 Là Admin, tôi muốn hệ thống sao lưu tự động, để khôi phục được khi có sự cố.
 - AC1: Sao lưu cấu hình, người dùng, nhật ký mỗi giờ (RPO ≤ 1 giờ); giữ tối thiểu 30 bản.
 - AC2: Quy trình khôi phục được kiểm thử, hoàn tất trong ≤ 4 giờ (RTO).
+- AC3: Chỉ đội vận hành IT thực hiện khôi phục, qua công cụ và quy trình vận hành; giao diện Admin chỉ hiển thị trạng thái sao lưu, không có chức năng khôi phục.
 
 **US-41 Đa ngôn ngữ và responsive** · NFR-07 · Must
 Là người dùng, tôi muốn dùng giao diện tiếng Việt hoặc tiếng Anh trên mọi màn hình, để làm việc thuận tiện.
@@ -431,7 +455,7 @@ Các yêu cầu dưới đây kế thừa NFR-01 đến NFR-12 trong BRS và b�
 | Máy chủ email (SMTP) | Gửi cảnh báo, mở khóa tài khoản | D-03 | Dùng hạ tầng email của tổ chức |
 | Telegram Bot API | Gửi cảnh báo | D-03 | Người dùng liên kết tài khoản Telegram một lần |
 | Zalo Official Account | Gửi cảnh báo | D-03 | Cần tổ chức có Zalo OA đã xác thực (OQ-P02) |
-| LDAP/Active Directory | Đăng nhập một lần | OQ-05 | Ngoài phạm vi 1.0 nếu OQ-05 = Không |
+| LDAP/Active Directory | Đăng nhập bằng tài khoản tổ chức, gán vai trò theo nhóm | D-06 | Trong phạm vi 1.0 (US-44); cần tài khoản dịch vụ chỉ đọc |
 
 ---
 
@@ -442,7 +466,7 @@ Phiên bản 1.0 gồm toàn bộ phạm vi và được chia thành 3 mốc n�
 | Mốc | Nội dung | Story chính | Điều kiện chuyển mốc |
 | --- | --- | --- | --- |
 | M1 – Alpha nội bộ (khoảng 8 tuần) | Toàn bộ story **Must** | US-01, 02, 04, 05, 08, 09, 10, 12, 13, 16, 17, 18, 20, 21, 23, 26, 29, 30, 31, 32, 33, 34, 35, 39, 40, 41 | Đạt NFR-01, NFR-02 với 20 camera; demo HT-01 và HT-03 |
-| M2 – Beta pilot (khoảng 6 tuần) | Story **Should** và chạy pilot tại 1 địa điểm | US-03, 06, 11, 14, 19, 22, 24, 25, 27, 28, 36, 37, 38, 42 | Pilot 20–50 camera thuộc ≥ 3 hãng chạy ổn định 2 tuần; không còn lỗi nghiêm trọng |
+| M2 – Beta pilot (khoảng 6 tuần) | Story **Should** và chạy pilot tại 1 địa điểm | US-03, 06, 11, 14, 19, 22, 24, 25, 27, 28, 36, 37, 38, 42, 43, 44 | Pilot 20–50 camera thuộc ≥ 3 hãng chạy ổn định 2 tuần; không còn lỗi nghiêm trọng |
 | M3 – GA phiên bản 1.0 (khoảng 4 tuần) | Story **Could**, hoàn thiện, kiểm thử xâm nhập, UAT | US-07, 15; sửa lỗi pilot | Đạt toàn bộ tiêu chí nghiệm thu BRS mục 7; ký phê duyệt |
 
 ---
@@ -468,7 +492,7 @@ Sự kiện đo lường không chứa hình ảnh hay dữ liệu cá nhân ngo
 | Mã | Rủi ro | Giảm thiểu |
 | --- | --- | --- |
 | PR-01 | Chuyển mã H.265 tốn tài nguyên máy chủ khi nhiều người xem | Khuyến nghị cấu hình luồng phụ H.264; giới hạn số phiên chuyển mã đồng thời; đo tải ở M1 |
-| PR-02 | Phạm vi 1.0 lớn (42 story) gây chậm tiến độ | Phát triển theo thứ tự MoSCoW qua các mốc M1–M3; review phạm vi tại cuối M1 |
+| PR-02 | Phạm vi 1.0 lớn (44 story) gây chậm tiến độ | Phát triển theo thứ tự MoSCoW qua các mốc M1–M3; review phạm vi tại cuối M1 |
 | PR-03 | Độ trễ WebRTC qua Internet cao ở chi nhánh | Đo tại pilot; dự phòng HLS |
 
 **Giả định**
@@ -484,7 +508,7 @@ Sự kiện đo lường không chứa hình ảnh hay dữ liệu cá nhân ngo
 | OQ-P02 | Tổ chức đã có Zalo Official Account đã xác thực chưa? | IT |
 | OQ-P03 | Có cần đóng dấu chìm (watermark) tên người xuất lên clip không? | Pháp chế |
 | OQ-P04 | Tối đa 16 luồng đồng thời mỗi người dùng có đủ cho phòng giám sát không? | An ninh / Vận hành |
-| OQ-02, 03, 04, 05 | Xem BRS mục 7 | — |
+| OQ-02, 03, 04 | Xem BRS mục 7 | — |
 
 ---
 
@@ -504,7 +528,9 @@ Sự kiện đo lường không chứa hình ảnh hay dữ liệu cá nhân ngo
 | BR-10 | US-11 | BR-23 | US-25 | BR-36 | US-31 |
 | BR-11 | US-12 | BR-24 | US-26 | BR-37 | US-35 |
 | BR-12 | US-14 | BR-25 | US-27 | BR-38 | US-38 |
-| BR-13 | US-15 | BR-26 | US-28 | NFR | US-39, US-40, US-41 |
+| BR-13 | US-15 | BR-26 | US-28 | BR-39 | US-43 |
+| | | | | BR-40 | US-44 |
+| | | | | NFR | US-39, US-40, US-41 |
 
 ---
 

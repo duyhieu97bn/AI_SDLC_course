@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Chi tiết camera</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    .cam-head { display: grid; grid-template-columns: 320px 1fr; gap: 16px; align-items: start; }
+    .kv { display: grid; grid-template-columns: 160px 1fr; gap: 8px 12px; font-size: 13px; }
+    .kv dt { color: var(--text-2); }
+    .kv dd { margin: 0; }
+    .sched { display: grid; grid-template-columns: 40px repeat(24, 1fr); gap: 2px; font-size: 10px; color: var(--text-3); }
+    .sched .c { height: 18px; border-radius: 2px; background: var(--surface-3); cursor: pointer; }
+    .sched .c.on { background: var(--primary); opacity: 0.75; }
+    .apply-result td:first-child { font-weight: 600; }
+    @media (max-width: 960px) { .cam-head { grid-template-columns: 1fr; } .kv { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page="cameras" data-title="Bãi xe – PTZ" data-subtitle="Camera › Kho Bắc Ninh › Cổng & bãi xe">
+  <!-- UC-30 Chế độ ghi, UC-35 Ghi đè thời gian lưu, UC-40 Cấu hình camera, UC-42 Đổi mật khẩu/khởi động lại
+       US-16, US-21, US-23 đến US-26, US-28, US-29 -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <section class="cam-head">
+          <div class="tile"><div class="scene scene-2"></div><div class="overlay-top"><span class="name">Bãi xe – PTZ</span><span class="rec">REC</span></div><div class="overlay-bottom"><span class="small">Luồng chính</span><span class="chip live-clock"></span></div></div>
+          <div class="card">
+            <div class="card-head">
+              <span class="badge badge-ok">Trực tuyến</span><span class="badge badge-muted no-dot">PTZ</span><span class="badge badge-muted no-dot">ONVIF S, G, T</span>
+              <span class="spacer"></span>
+              <a class="btn btn-sm" href="live.html"><i data-icon="video" class="sm"></i>Xem trực tiếp</a>
+              <button class="btn btn-sm" data-open="rebootModal"><i data-icon="power" class="sm"></i>Khởi động lại</button>
+            </div>
+            <div class="card-body">
+              <dl class="kv">
+                <dt>Hãng / model</dt><dd>Dahua SD49425XB-HNR · firmware 2.840.0000000.15</dd>
+                <dt>Địa chỉ</dt><dd class="mono">10.20.1.12:80 (qua bộ kết nối KBN-01)</dd>
+                <dt>MAC</dt><dd class="mono">3C:EF:8C:44:A1:0B</dd>
+                <dt>Vị trí</dt><dd>Kho Bắc Ninh › Cổng & bãi xe · nhóm: Lối ra vào</dd>
+                <dt>Ghi hình</dt><dd>Theo sự kiện · lưu 30 ngày (mặc định tổ chức)</dd>
+                <dt>Lệch giờ so với máy chủ</dt><dd>0,4 giây</dd>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+        <div class="tabs" data-tabs>
+          <button class="tab active" data-tab="t-stream">Luồng video</button>
+          <button class="tab" data-tab="t-image">Hình ảnh</button>
+          <button class="tab" data-tab="t-net">Mạng & thời gian</button>
+          <button class="tab" data-tab="t-zone">Vùng chuyển động & che</button>
+          <button class="tab" data-tab="t-rec">Ghi hình & lưu trữ</button>
+          <button class="tab" data-tab="t-sec">Bảo mật & lịch sử</button>
+        </div>
+
+        <!-- Luồng video (US-23, US-29) -->
+        <section class="tab-panel active" id="t-stream">
+          <div class="split-3" style="grid-template-columns:1fr 1fr">
+            <div class="card">
+              <div class="card-head"><h3>Luồng chính</h3></div>
+              <div class="card-body form-grid">
+                <div class="field"><label>Độ phân giải</label><select class="input"><option>2560×1440</option><option>1920×1080</option><option>1280×720</option></select></div>
+                <div class="field"><label>Chuẩn nén</label><select class="input"><option>H.265</option><option>H.264</option></select></div>
+                <div class="field"><label>Khung hình/giây</label><select class="input"><option>25</option><option>20</option><option>15</option></select></div>
+                <div class="field"><label>Bitrate (Kbps)</label><input class="input" type="number" value="4096"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3>Luồng phụ</h3></div>
+              <div class="card-body form-grid">
+                <div class="field"><label>Độ phân giải</label><select class="input"><option>704×576</option><option>640×360</option></select></div>
+                <div class="field"><label>Chuẩn nén</label><select class="input"><option>H.264</option></select><span class="hint">Camera chỉ hỗ trợ H.264 cho luồng phụ.</span></div>
+                <div class="field"><label>Khung hình/giây</label><select class="input"><option>15</option><option>10</option></select></div>
+                <div class="field"><label>Bitrate (Kbps)</label><input class="input" type="number" value="512"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:12px"><span class="small muted">Chỉ hiển thị giá trị camera hỗ trợ (đọc qua ONVIF).</span><span class="spacer"></span><button class="btn">Khôi phục</button><button class="btn btn-primary" id="applyStream">Áp dụng</button></div>
+          <div class="card hidden" id="applyRes" style="margin-top:12px">
+            <div class="card-head"><h3>Kết quả áp dụng</h3><span class="spacer"></span><span class="badge badge-warn">Một phần</span></div>
+            <div class="table-wrap"><table class="table apply-result">
+              <tbody>
+                <tr><td>Độ phân giải luồng chính</td><td><span class="badge badge-ok">Đã áp dụng</span></td><td class="muted">2560×1440</td></tr>
+                <tr><td>Bitrate luồng chính</td><td><span class="badge badge-ok">Đã áp dụng</span></td><td class="muted">4096 Kbps</td></tr>
+                <tr><td>Khung hình/giây luồng phụ</td><td><span class="badge badge-danger">Camera từ chối</span></td><td class="wrap">Camera trả về: <span class="mono">ter:ConfigModify – FrameRateLimit exceeds encoder capability at current resolution</span></td></tr>
+              </tbody>
+            </table></div>
+          </div>
+        </section>
+
+        <!-- Hình ảnh (US-24) -->
+        <section class="tab-panel" id="t-image">
+          <div class="split-3">
+            <div class="card"><div class="card-body"><div class="tile" id="imgPreview"><div class="scene scene-2"></div><div class="overlay-top"><span class="name">Xem trước trực tiếp</span></div></div></div></div>
+            <div class="card">
+              <div class="card-body stack">
+                <div class="field"><label>Độ sáng</label><div class="range-row"><input type="range" min="0" max="100" value="50" data-f="brightness"><span>50</span></div></div>
+                <div class="field"><label>Tương phản</label><div class="range-row"><input type="range" min="0" max="100" value="50" data-f="contrast"><span>50</span></div></div>
+                <div class="field"><label>Độ bão hòa</label><div class="range-row"><input type="range" min="0" max="100" value="50" data-f="saturate"><span>50</span></div></div>
+                <div class="field"><label>Hồng ngoại ngày/đêm</label><div class="btn-group" id="irBtns"><button class="active">Tự động</button><button>Ngày</button><button>Đêm</button></div></div>
+                <div class="row"><label class="switch"><input type="checkbox" checked><span></span></label> WDR (cân bằng vùng sáng/tối)</div>
+                <div class="row"><button class="btn">Khôi phục giá trị trước</button><span class="spacer"></span><button class="btn btn-primary" onclick="toast('Đã áp dụng cấu hình hình ảnh')">Áp dụng</button></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mạng & thời gian (US-25) -->
+        <section class="tab-panel" id="t-net">
+          <div class="card" style="max-width:760px">
+            <div class="card-body stack">
+              <div class="form-grid">
+                <div class="field"><label>Chế độ IP</label><select class="input"><option>Tĩnh</option><option>DHCP</option></select></div>
+                <div class="field"><label>Địa chỉ IP</label><input class="input mono" value="10.20.1.12" id="ipInput"></div>
+                <div class="field"><label>Subnet mask</label><input class="input mono" value="255.255.255.0"></div>
+                <div class="field"><label>Gateway</label><input class="input mono" value="10.20.1.1"></div>
+                <div class="field"><label>Máy chủ NTP</label><input class="input mono" value="ntp.congty.vn"></div>
+                <div class="field"><label>Múi giờ</label><select class="input"><option>(UTC+07:00) Hà Nội, Bangkok</option></select></div>
+              </div>
+              <div class="alert-box warn hidden" id="ipWarn"><i data-icon="warning"></i><span>Đổi địa chỉ IP có thể làm camera mất kết nối tạm thời. CamHub sẽ tự cập nhật địa chỉ mới sau khi đổi thành công.</span></div>
+              <div class="row"><span class="spacer"></span><button class="btn btn-primary" onclick="toast('Đã áp dụng cấu hình mạng và thời gian')">Áp dụng</button></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Vùng (US-26) -->
+        <section class="tab-panel" id="t-zone">
+          <div class="split-3">
+            <div class="card">
+              <div class="card-head">
+                <div class="btn-group" id="zoneMode"><button class="active" data-m="motion">Vùng chuyển động</button><button data-m="mask">Vùng che riêng tư</button></div>
+                <span class="spacer"></span><button class="btn btn-sm" id="clearZone">Xóa vùng</button>
+              </div>
+              <div class="card-body">
+                <div class="zone-canvas"><div class="scene scene-2" style="position:absolute;inset:0"></div>
+                  <div class="mask" style="left:62%;top:8%;width:18%;height:26%">Vùng che 1<br>(cửa sổ nhà dân)</div>
+                  <div class="zone-grid" id="zoneGrid"></div>
+                </div>
+                <p class="small muted" style="margin-top:8px">Camera này dùng lưới 22×18 ô. Kéo chuột để tô vùng. Vùng che được áp dụng trên camera, nên che cả xem trực tiếp lẫn video ghi.</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-body stack">
+                <div class="field"><label>Độ nhạy phát hiện chuyển động</label><div class="range-row"><input type="range" min="1" max="100" value="60"><span>60</span></div></div>
+                <div class="field"><label>Vùng che riêng tư</label><div class="small muted">1 / 4 vùng (giới hạn của camera)</div></div>
+                <div class="alert-box info"><i data-icon="info"></i><span>Cảnh báo chuyển động lấy từ sự kiện camera tự phát hiện. Cài đặt lịch cảnh báo ở <a href="alerts.html">Quy tắc cảnh báo</a>.</span></div>
+                <button class="btn btn-primary" onclick="toast('Đã áp dụng vùng chuyển động và vùng che')">Áp dụng</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Ghi hình (US-16, US-21) -->
+        <section class="tab-panel" id="t-rec">
+          <div class="card">
+            <div class="card-body stack">
+              <div class="field"><label>Chế độ ghi</label><div class="btn-group" id="recMode"><button>Liên tục</button><button>Theo lịch</button><button class="active">Theo sự kiện</button><button>Tắt</button></div></div>
+              <div class="form-grid" style="max-width:560px">
+                <div class="field"><label>Ghi trước sự kiện (giây)</label><input class="input" type="number" value="10"></div>
+                <div class="field"><label>Ghi sau sự kiện (giây)</label><input class="input" type="number" value="30"></div>
+              </div>
+              <div class="field"><label>Lịch tuần (áp dụng khi chọn "Theo lịch")</label>
+                <div class="sched" id="sched"></div>
+                <span class="hint">Nhấp ô để bật/tắt. Mỗi ô là 1 giờ trong prototype; sản phẩm dùng bước 30 phút.</span>
+              </div>
+              <div class="form-grid" style="max-width:560px">
+                <div class="field"><label>Thời gian lưu trữ</label><select class="input"><option>Theo mặc định tổ chức (30 ngày)</option><option>Ghi đè: 60 ngày</option><option>Ghi đè: 90 ngày</option></select><span class="hint">Từ 1 đến 365 ngày. Đoạn đang "giữ lại phục vụ điều tra" không bị xóa.</span></div>
+              </div>
+              <div class="row"><span class="spacer"></span><button class="btn btn-primary" onclick="toast('Đã lưu chế độ ghi hình')">Lưu</button></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bảo mật & lịch sử -->
+        <section class="tab-panel" id="t-sec">
+          <div class="split-3" style="grid-template-columns:1fr 1fr">
+            <div class="card">
+              <div class="card-head"><h3>Tài khoản camera</h3></div>
+              <div class="card-body stack">
+                <div class="field"><label>Tài khoản</label><input class="input" value="admin" disabled></div>
+                <div class="field"><label>Mật khẩu</label><input class="input" type="password" value="••••••••" disabled><span class="hint">Lưu mã hóa AES-256; không hiển thị lại.</span></div>
+                <button class="btn" data-open="pwdModal"><i data-icon="key" class="sm"></i>Đổi mật khẩu trên camera</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3>Lịch sử vị trí</h3></div>
+              <div class="table-wrap"><table class="table">
+                <thead><tr><th>Khu vực</th><th>Từ</th><th>Đến</th><th>Người chuyển</th></tr></thead>
+                <tbody>
+                  <tr><td>Kho Bắc Ninh › Cổng & bãi xe</td><td>02/09/2026</td><td>nay</td><td>Minh</td></tr>
+                  <tr><td>Kho Bắc Ninh › Kho B</td><td>15/06/2026</td><td>02/09/2026</td><td>Tuấn</td></tr>
+                </tbody>
+              </table></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="rebootModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Khởi động lại camera?</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body"><p>Camera <b>Bãi xe – PTZ</b> sẽ mất hình khoảng 1–2 phút. Trong thời gian đó camera vẫn ghi vào thẻ nhớ (nếu có). CamHub sẽ theo dõi đến khi camera trực tuyến lại.</p></div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-danger" data-close onclick="toast('Đã gửi lệnh khởi động lại. Đang chờ camera trực tuyến…')">Khởi động lại</button></div>
+    </div>
+  </div>
+  <div class="modal-backdrop" id="pwdModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Đổi mật khẩu camera</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body"><div class="field"><label>Mật khẩu mới</label><input class="input" type="password"></div><div class="field"><label>Nhập lại</label><input class="input" type="password"></div></div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close>Đổi mật khẩu</button></div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("applyStream").onclick = () => { const r = document.getElementById("applyRes"); r.classList.add("hidden"); setTimeout(() => r.classList.remove("hidden"), 700); };
+
+      // Hình ảnh: xem trước theo thanh trượt
+      const scene = document.querySelector("#imgPreview .scene");
+      const vals = { brightness: 50, contrast: 50, saturate: 50 };
+      document.querySelectorAll("#t-image input[type=range]").forEach((r) => r.addEventListener("input", () => {
+        r.nextElementSibling.textContent = r.value; vals[r.dataset.f] = r.value;
+        scene.style.filter = `brightness(${vals.brightness / 50}) contrast(${vals.contrast / 50}) saturate(${vals.saturate / 50})`;
+      }));
+      document.querySelectorAll("#t-zone input[type=range]").forEach((r) => r.addEventListener("input", () => (r.nextElementSibling.textContent = r.value)));
+      document.querySelectorAll(".btn-group").forEach((g) => g.querySelectorAll("button").forEach((b, _, all) => b.addEventListener("click", () => all.forEach((x) => x.classList.toggle("active", x === b)))));
+
+      document.getElementById("ipInput").addEventListener("input", () => document.getElementById("ipWarn").classList.remove("hidden"));
+
+      // Lưới vùng chuyển động
+      const zg = document.getElementById("zoneGrid");
+      zg.innerHTML = Array.from({ length: 22 * 18 }, (_, i) => { const x = i % 22, y = Math.floor(i / 22); return `<div class="${x >= 2 && x <= 11 && y >= 9 && y <= 16 ? "on" : ""}"></div>`; }).join("");
+      let painting = false, paintOn = true;
+      zg.addEventListener("mousedown", (e) => { if (e.target.parentElement === zg) { painting = true; paintOn = !e.target.classList.contains("on"); e.target.classList.toggle("on", paintOn); } });
+      zg.addEventListener("mouseover", (e) => { if (painting && e.target.parentElement === zg) e.target.classList.toggle("on", paintOn); });
+      document.addEventListener("mouseup", () => (painting = false));
+      document.getElementById("clearZone").onclick = () => zg.querySelectorAll(".on").forEach((c) => c.classList.remove("on"));
+
+      // Lịch tuần
+      const days = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+      let h = '<span></span>' + Array.from({ length: 24 }, (_, i) => `<span>${i % 3 === 0 ? i : ""}</span>`).join("");
+      days.forEach((d, di) => { h += `<span>${d}</span>` + Array.from({ length: 24 }, (_, i) => `<div class="c ${(i >= 22 || i < 6) || di >= 5 ? "on" : ""}"></div>`).join(""); });
+      const sched = document.getElementById("sched"); sched.innerHTML = h;
+      sched.addEventListener("click", (e) => { if (e.target.classList.contains("c")) e.target.classList.toggle("on"); });
+    });
+  </script>
+</body>
+</html>

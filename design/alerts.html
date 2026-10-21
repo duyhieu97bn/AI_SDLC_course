@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Cảnh báo</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    .history { border-left: 2px solid var(--border); margin-left: 6px; padding-left: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .history div { position: relative; font-size: 13px; }
+    .history div::before { content: ""; position: absolute; left: -20px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+  </style>
+</head>
+<body data-page="alerts" data-title="Cảnh báo" data-subtitle="3 cảnh báo đang mở">
+  <!-- UC-50 Quy tắc, UC-51 Sinh/gửi, UC-52 Xử lý, UC-53 Kênh nhận · US-34 đến US-38, US-42 -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <div class="tabs" data-tabs>
+          <button class="tab active" data-tab="tab-inbox">Cảnh báo</button>
+          <button class="tab" data-tab="tab-rules">Quy tắc cảnh báo</button>
+          <button class="tab" data-tab="tab-channels">Kênh nhận của tôi</button>
+        </div>
+
+        <!-- Danh sách + chi tiết -->
+        <section class="tab-panel active" id="tab-inbox">
+          <div class="split-3" style="grid-template-columns:1fr 400px">
+            <div class="card">
+              <div class="card-head row">
+                <select class="input" style="width:auto"><option>Đang mở</option><option>Tất cả</option><option>Đã đóng</option></select>
+                <select class="input" style="width:auto"><option>Mọi loại</option><option>Chuyển động</option><option>Mất kết nối</option><option>Lưu trữ</option></select>
+                <select class="input" style="width:auto"><option>Mọi địa điểm</option><option>Kho Bắc Ninh</option><option>Chi nhánh Hà Nội</option><option>Cửa hàng Q1 HCM</option></select>
+                <span class="spacer"></span>
+                <button class="btn btn-sm btn-ghost" id="demoNew">Mô phỏng cảnh báo mới</button>
+              </div>
+              <div class="table-wrap">
+                <table class="table" id="alertTable">
+                  <thead><tr><th>Thời điểm</th><th>Loại</th><th>Camera / đối tượng</th><th>Trạng thái</th><th>Phụ trách</th></tr></thead>
+                  <tbody>
+                    <tr data-id="a1" class="selected"><td>23:40:05</td><td><span class="badge badge-warn no-dot">Chuyển động</span></td><td><b>Cổng sau</b><div class="small muted">Kho Bắc Ninh</div></td><td><span class="badge badge-danger">Mới</span></td><td class="muted">—</td></tr>
+                    <tr data-id="a2"><td>22:15:41</td><td><span class="badge badge-warn no-dot">Chuyển động</span></td><td><b>Kho sau cửa hàng</b><div class="small muted">Cửa hàng Q1 HCM</div></td><td><span class="badge badge-danger">Mới</span><div class="small" style="color:var(--danger)">quá 30 phút</div></td><td class="muted">—</td></tr>
+                    <tr data-id="a3"><td>14:37:00</td><td><span class="badge badge-danger no-dot">Mất kết nối</span></td><td><b>Kho số 7</b><div class="small muted">Kho Bắc Ninh</div></td><td><span class="badge badge-warn">Đang xử lý</span></td><td>Minh</td></tr>
+                    <tr data-id="a4"><td>Hôm qua 03:10</td><td><span class="badge badge-info no-dot">Lưu trữ</span></td><td><b>NAS-01 vượt 85%</b><div class="small muted">Hệ thống</div></td><td><span class="badge badge-muted">Đã đóng</span><div class="small muted">Báo giả</div></td><td>Tuấn</td></tr>
+                    <tr data-id="a5"><td>Hôm qua 01:02</td><td><span class="badge badge-danger no-dot">Mất kết nối</span></td><td><b>Quầy thu ngân</b><div class="small muted">Cửa hàng Q1 HCM</div></td><td><span class="badge badge-ok">Đã phục hồi</span></td><td class="muted">—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <aside class="card">
+              <div class="card-head"><div><h2>Chuyển động ngoài giờ</h2><span class="small muted">Cổng sau · Kho Bắc Ninh · 21/10/2026 23:40:05</span></div></div>
+              <div class="card-body stack">
+                <div class="tile"><div class="scene scene-night"></div><div class="overlay-top"><span class="name">Ảnh sự kiện</span></div><div class="overlay-bottom"><span class="small">Cổng sau</span><span class="chip">23:40:05</span></div></div>
+                <div class="row">
+                  <span class="badge badge-danger" id="stBadge">Mới</span>
+                  <span class="small muted" id="assignee">Chưa có người phụ trách</span>
+                </div>
+                <div class="row">
+                  <a class="btn btn-sm" href="playback.html"><i data-icon="history" class="sm"></i>Xem lại từ 23:39:55</a>
+                  <a class="btn btn-sm" href="live.html"><i data-icon="video" class="sm"></i>Xem trực tiếp</a>
+                </div>
+                <div class="row">
+                  <button class="btn btn-primary btn-sm" id="ackBtn"><i data-icon="check" class="sm"></i>Nhận xử lý</button>
+                  <button class="btn btn-sm" id="handBtn" data-open="handover" disabled><i data-icon="send" class="sm"></i>Chuyển giao</button>
+                  <button class="btn btn-sm" id="closeBtn" data-open="closeModal" disabled>Đóng cảnh báo</button>
+                </div>
+                <div>
+                  <h3 style="margin-bottom:8px">Lịch sử</h3>
+                  <div class="history" id="hist">
+                    <div><b>23:40:05</b> Tạo cảnh báo từ sự kiện camera (quy tắc "Ngoài giờ – Kho Bắc Ninh")</div>
+                    <div><b>23:40:07</b> Đã gửi: Web, Telegram (Lan, Minh), Email (an-ninh@congty.vn)</div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Quy tắc cảnh báo -->
+        <section class="tab-panel" id="tab-rules">
+          <div class="card">
+            <div class="card-head"><h2>Quy tắc cảnh báo</h2><span class="spacer"></span><button class="btn btn-primary btn-sm" data-open="ruleModal"><i data-icon="plus" class="sm"></i>Thêm quy tắc</button></div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th>Tên</th><th>Loại</th><th>Phạm vi</th><th>Lịch / ngưỡng</th><th>Kênh</th><th>Chống spam</th><th>Bật</th></tr></thead>
+                <tbody>
+                  <tr><td><b>Ngoài giờ – Kho Bắc Ninh</b></td><td>Chuyển động (từ camera)</td><td>Địa điểm: Kho Bắc Ninh</td><td>22:00–06:00 hằng ngày</td><td>Web, Telegram, Email</td><td>2 phút</td><td><label class="switch"><input type="checkbox" checked><span></span></label></td></tr>
+                  <tr><td><b>Ngoài giờ – Cửa hàng</b></td><td>Chuyển động (từ camera)</td><td>Nhóm: Kho cửa hàng</td><td>22:30–07:30, T2–CN</td><td>Web, Zalo</td><td>2 phút</td><td><label class="switch"><input type="checkbox" checked><span></span></label></td></tr>
+                  <tr><td><b>Camera mất kết nối</b></td><td>Mất kết nối</td><td>Toàn tổ chức</td><td>Sau 5 phút</td><td>Web, Email</td><td>—</td><td><label class="switch"><input type="checkbox" checked><span></span></label></td></tr>
+                  <tr><td><b>Lưu trữ</b></td><td>Dung lượng</td><td>Mọi volume</td><td>85% và 95%</td><td>Web, Email</td><td>—</td><td><label class="switch"><input type="checkbox" checked><span></span></label></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Kênh nhận -->
+        <section class="tab-panel" id="tab-channels">
+          <div class="card" style="max-width:720px">
+            <div class="card-head"><h2>Kênh nhận cảnh báo của tôi</h2></div>
+            <div class="list">
+              <div class="list-item"><i data-icon="bell"></i><div class="grow"><b>Thông báo trên web</b><div class="small muted">Luôn bật · có âm báo</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+              <div class="list-item"><i data-icon="send"></i><div class="grow"><b>Email</b><div class="small muted">tuan.tran@congty.vn · đã xác minh</div></div><span class="badge badge-ok">Đã liên kết</span></div>
+              <div class="list-item"><i data-icon="send"></i><div class="grow"><b>Telegram</b><div class="small muted">@tuantran · liên kết 12/10/2026</div></div><button class="btn btn-sm btn-danger">Hủy liên kết</button></div>
+              <div class="list-item"><i data-icon="send"></i><div class="grow"><b>Zalo</b><div class="small muted">Quét mã QR với Zalo OA của công ty để liên kết</div></div><button class="btn btn-sm" data-open="zaloModal"><i data-icon="link" class="sm"></i>Liên kết</button></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Chuyển giao (UCQ-02) -->
+  <div class="modal-backdrop" id="handover">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Chuyển giao cảnh báo</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="field"><label>Người nhận</label>
+          <select class="input" id="handTo"><option>Minh (Technician)</option><option>Hương (Site Manager)</option><option>Lan (Operator)</option></select>
+          <span class="hint">Chỉ hiển thị người có quyền trên camera "Cổng sau".</span>
+        </div>
+        <div class="field"><label>Lý do</label><textarea class="input">Hết ca, chuyển cho ca sáng theo dõi tiếp.</textarea></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="handGo">Chuyển giao</button></div>
+    </div>
+  </div>
+
+  <!-- Đóng cảnh báo -->
+  <div class="modal-backdrop" id="closeModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Đóng cảnh báo</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="field"><label>Kết quả (bắt buộc)</label>
+          <div class="row"><label class="check"><input type="radio" name="oc" value="Thật"> Thật</label><label class="check"><input type="radio" name="oc" value="Báo giả"> Báo giả</label><label class="check"><input type="radio" name="oc" value="Khác"> Khác</label></div>
+        </div>
+        <div class="field"><label>Ghi chú</label><textarea class="input" placeholder="Ví dụ: xe giao hàng đến sớm, đã xác nhận với bảo vệ."></textarea></div>
+        <div class="alert-box danger hidden" id="ocErr"><i data-icon="warning"></i><span>Vui lòng chọn kết quả trước khi đóng.</span></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="closeGo">Đóng cảnh báo</button></div>
+    </div>
+  </div>
+
+  <!-- Thêm quy tắc -->
+  <div class="modal-backdrop" id="ruleModal">
+    <div class="modal">
+      <div class="modal-head"><h2>Thêm quy tắc cảnh báo</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field"><label>Tên quy tắc</label><input class="input" placeholder="Ví dụ: Ngoài giờ – Chi nhánh Hà Nội"></div>
+          <div class="field"><label>Loại</label><select class="input"><option>Chuyển động (sự kiện từ camera)</option><option>Camera mất kết nối</option><option>Dung lượng lưu trữ</option></select><span class="hint">Camera không hỗ trợ phát hiện chuyển động sẽ không áp dụng được loại này.</span></div>
+          <div class="field"><label>Phạm vi</label><select class="input"><option>Địa điểm: Chi nhánh Hà Nội</option><option>Nhóm camera…</option><option>Camera cụ thể…</option></select></div>
+          <div class="field"><label>Khung giờ áp dụng</label><div class="row"><input class="input mono" style="width:90px" value="22:00"> – <input class="input mono" style="width:90px" value="06:00"></div></div>
+          <div class="field"><label>Chống spam (giây giữa 2 thông báo cùng camera)</label><input class="input" type="number" value="120"></div>
+          <div class="field"><label>Người nhận</label><input class="input" value="Nhóm: Operator Hà Nội"></div>
+          <div class="field full"><label>Kênh gửi</label><div class="row"><label class="check"><input type="checkbox" checked> Web</label><label class="check"><input type="checkbox" checked> Email</label><label class="check"><input type="checkbox"> Telegram</label><label class="check"><input type="checkbox"> Zalo</label></div></div>
+        </div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close>Lưu quy tắc</button></div>
+    </div>
+  </div>
+
+  <!-- Liên kết Zalo -->
+  <div class="modal-backdrop" id="zaloModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Liên kết Zalo</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body" style="align-items:center;text-align:center">
+        <div style="width:180px;height:180px;border-radius:8px;background:repeating-conic-gradient(var(--text) 0 25%, var(--surface) 0 50%) 0 0/20px 20px"></div>
+        <p class="small muted">Mở Zalo, quét mã để theo dõi Zalo OA của công ty. Mã hết hạn sau 10 phút.</p>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Đóng</button></div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const hist = document.getElementById("hist");
+      const t = () => new Date().toTimeString().slice(0, 8);
+      const st = document.getElementById("stBadge");
+      document.getElementById("ackBtn").onclick = (e) => {
+        st.className = "badge badge-warn"; st.textContent = "Đang xử lý";
+        document.getElementById("assignee").textContent = "Phụ trách: Trần Tuấn";
+        hist.insertAdjacentHTML("beforeend", `<div><b>${t()}</b> Trần Tuấn nhận xử lý</div>`);
+        e.currentTarget.disabled = true;
+        document.getElementById("handBtn").disabled = false;
+        document.getElementById("closeBtn").disabled = false;
+      };
+      document.getElementById("handGo").onclick = (e) => {
+        const to = document.getElementById("handTo").value;
+        document.getElementById("assignee").textContent = "Phụ trách: " + to;
+        hist.insertAdjacentHTML("beforeend", `<div><b>${t()}</b> Chuyển giao từ Trần Tuấn sang ${to}: "Hết ca, chuyển cho ca sáng theo dõi tiếp."</div>`);
+        closeModal(e.target); toast(`Đã chuyển giao cho <b>${to}</b>. Người nhận đã được thông báo.`);
+      };
+      document.getElementById("closeGo").onclick = (e) => {
+        const oc = document.querySelector("input[name=oc]:checked");
+        document.getElementById("ocErr").classList.toggle("hidden", !!oc);
+        if (!oc) return;
+        st.className = "badge badge-muted"; st.textContent = "Đã đóng · " + oc.value;
+        hist.insertAdjacentHTML("beforeend", `<div><b>${t()}</b> Đóng cảnh báo – kết quả: ${oc.value}</div>`);
+        document.getElementById("handBtn").disabled = true; document.getElementById("closeBtn").disabled = true;
+        closeModal(e.target);
+      };
+      document.querySelectorAll("#alertTable tbody tr").forEach((r) => r.addEventListener("click", () => {
+        document.querySelectorAll("#alertTable tbody tr").forEach((x) => x.classList.toggle("selected", x === r));
+      }));
+      document.getElementById("demoNew").onclick = () => toast("<b>Chuyển động ngoài giờ</b><br><span class='small muted'>Kho A – Lối 2 · Kho Bắc Ninh · vừa xong</span><br><a href='alerts.html'>Mở cảnh báo</a>", 6000);
+    });
+  </script>
+</body>
+</html>

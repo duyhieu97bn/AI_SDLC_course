@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Cấu hình mẫu</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="templates" data-title="Cấu hình mẫu" data-subtitle="Tạo mẫu và áp cho nhiều camera cùng lúc">
+  <!-- UC-41 Quản lý và áp cấu hình mẫu · US-27 -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <div class="split-3" style="grid-template-columns:340px 1fr">
+          <section class="card">
+            <div class="card-head"><h3>Mẫu</h3><span class="spacer"></span><button class="btn btn-sm btn-primary"><i data-icon="plus" class="sm"></i>Tạo mẫu</button></div>
+            <div class="list">
+              <div class="list-item" style="background:var(--primary-weak)"><i data-icon="template"></i><div class="grow"><b>Kho – ghi theo sự kiện</b><div class="small muted">1080p H.265 · ghi sự kiện · lịch 22:00–06:00</div></div></div>
+              <div class="list-item"><i data-icon="template"></i><div class="grow"><b>Quầy tiền – ghi liên tục</b><div class="small muted">1440p H.264 · ghi liên tục</div></div></div>
+              <div class="list-item"><i data-icon="template"></i><div class="grow"><b>Ngoài trời – ban đêm</b><div class="small muted">Hồng ngoại tự động · WDR bật</div></div></div>
+            </div>
+          </section>
+
+          <section class="stack">
+            <div class="card">
+              <div class="card-head"><h2>Kho – ghi theo sự kiện</h2><span class="spacer"></span><button class="btn btn-sm"><i data-icon="copy" class="sm"></i>Sao chép</button><button class="btn btn-sm btn-danger"><i data-icon="trash" class="sm"></i>Xóa</button></div>
+              <div class="card-body form-grid">
+                <div class="field"><label>Luồng chính</label><input class="input" value="1920×1080 · H.265 · 20 fps · 2048 Kbps"></div>
+                <div class="field"><label>Luồng phụ</label><input class="input" value="640×360 · H.264 · 10 fps · 384 Kbps"></div>
+                <div class="field"><label>Hình ảnh</label><input class="input" value="Hồng ngoại: Tự động · WDR: Bật"></div>
+                <div class="field"><label>Chế độ ghi</label><input class="input" value="Theo sự kiện · trước 10 giây · sau 30 giây"></div>
+                <div class="field full"><label>Lịch phát hiện chuyển động</label><input class="input" value="22:00–06:00 hằng ngày; cả ngày Thứ 7, Chủ nhật"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><h3>Áp mẫu cho camera</h3><span class="spacer"></span><select class="input" style="width:auto"><option>Chọn theo: Kho Bắc Ninh › Kho A, Kho B</option><option>Chọn theo nhóm</option><option>Chọn tay</option></select></div>
+              <div class="card-body row">
+                <span class="badge badge-info no-dot">Kho A – Lối 1</span><span class="badge badge-info no-dot">Kho A – Lối 2</span><span class="badge badge-info no-dot">Kho B – Cửa nhập</span><span class="badge badge-info no-dot">Kho số 7</span>
+                <span class="spacer"></span>
+                <button class="btn btn-primary" id="applyBtn">Áp mẫu cho 4 camera</button>
+              </div>
+            </div>
+
+            <div class="card hidden" id="result">
+              <div class="card-head"><h3>Kết quả áp dụng</h3><span class="spacer"></span><span class="small muted">21/10/2026 23:45 · Minh</span></div>
+              <div class="table-wrap"><table class="table">
+                <thead><tr><th>Camera</th><th>Kết quả</th><th>Chi tiết</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td><b>Kho A – Lối 1</b></td><td><span class="badge badge-ok">Thành công</span></td><td class="muted">Đã áp dụng 9/9 tham số</td><td></td></tr>
+                  <tr><td><b>Kho A – Lối 2</b></td><td><span class="badge badge-ok">Thành công</span></td><td class="muted">Đã áp dụng 9/9 tham số</td><td></td></tr>
+                  <tr><td><b>Kho B – Cửa nhập</b></td><td><span class="badge badge-warn">Một phần</span></td><td class="wrap">Bỏ qua: WDR (camera không hỗ trợ), H.265 (chỉ hỗ trợ H.264, đã dùng H.264)</td><td></td></tr>
+                  <tr><td><b>Kho số 7</b></td><td><span class="badge badge-danger">Thất bại</span></td><td class="muted">Camera mất kết nối</td><td><button class="btn btn-sm">Áp lại</button></td></tr>
+                </tbody>
+              </table></div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("applyBtn").onclick = (e) => {
+        e.target.disabled = true; e.target.textContent = "Đang áp dụng…";
+        setTimeout(() => { document.getElementById("result").classList.remove("hidden"); e.target.disabled = false; e.target.textContent = "Áp mẫu cho 4 camera"; }, 1200);
+      };
+    });
+  </script>
+</body>
+</html>

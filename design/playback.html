@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Xem lại</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>
+    .pb-layout { display: grid; grid-template-columns: 260px 1fr; gap: 12px; align-items: start; }
+    .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    @media (max-width: 960px) { .pb-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page="playback" data-title="Xem lại" data-subtitle="Quầy giao dịch 1 · Chi nhánh Hà Nội">
+  <!-- UC-31 Xem lại, UC-32 Đồng bộ, UC-33 Xuất clip, UC-34 Giữ lại · US-17 đến US-22 -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <div class="pb-layout">
+          <section class="stack">
+            <div class="card">
+              <div class="card-head"><h3>Camera</h3></div>
+              <div class="card-body stack">
+                <select class="input" id="camSel" aria-label="Chọn camera"></select>
+                <div class="field">
+                  <label>Nguồn video</label>
+                  <div class="btn-group" id="srcBtns"><button class="active">CamHub</button><button>Thiết bị (thẻ nhớ)</button></div>
+                  <span class="hint">Nguồn thiết bị chỉ có với camera hỗ trợ ONVIF Profile G hoặc kênh đầu ghi.</span>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3>Tháng 10/2026</h3><span class="spacer"></span><button class="icon-btn" aria-label="Tháng trước"><i data-icon="left"></i></button><button class="icon-btn" aria-label="Tháng sau"><i data-icon="right"></i></button></div>
+              <div class="card-body"><div class="calendar" id="cal"></div><p class="small muted" style="margin-top:8px">Chấm xanh: ngày có dữ liệu ghi hình.</p></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h3>Xem đồng bộ</h3><span class="spacer"></span><span class="small muted">tối đa 4</span></div>
+              <div class="card-body stack">
+                <label class="check"><input type="checkbox" checked disabled> Quầy giao dịch 1</label>
+                <label class="check"><input type="checkbox" class="syncCam" data-cam="10"> Quầy giao dịch 2</label>
+                <label class="check"><input type="checkbox" class="syncCam" data-cam="8"> Sảnh lễ tân</label>
+                <label class="check"><input type="checkbox" class="syncCam" data-cam="11"> Hành lang tầng 2</label>
+              </div>
+            </div>
+          </section>
+
+          <section class="stack">
+            <div class="card">
+              <div class="card-body stack" style="padding:10px">
+                <div class="video-grid g1" id="player"></div>
+                <div class="controls">
+                  <button class="icon-btn" title="Lùi 1 khung hình" aria-label="Lùi 1 khung hình"><i data-icon="stepBack"></i></button>
+                  <button class="btn btn-primary btn-sm" id="playBtn"><i data-icon="pause" class="sm"></i>Tạm dừng</button>
+                  <button class="icon-btn" title="Tới 1 khung hình" aria-label="Tới 1 khung hình"><i data-icon="stepFwd"></i></button>
+                  <div class="btn-group" id="speedBtns">
+                    <button>0,5x</button><button class="active">1x</button><button>2x</button><button>4x</button><button>8x</button><button>16x</button>
+                  </div>
+                  <span class="spacer" style="flex:1"></span>
+                  <span class="mono" id="curText">21/10/2026 13:58:20</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <h3>Dòng thời gian</h3>
+                <div class="btn-group" id="zoomBtns"><button data-z="1440" class="active">24 giờ</button><button data-z="240">4 giờ</button><button data-z="60">1 giờ</button><button data-z="10">10 phút</button></div>
+                <span class="spacer"></span>
+                <div class="legend"><span>Có ghi hình</span><span class="l-evt">Sự kiện</span><span class="l-dev">Video trên thiết bị</span><span class="l-gap">Không có dữ liệu</span></div>
+              </div>
+              <div class="card-body stack">
+                <div class="timeline" id="tl" title="Nhấp để chọn thời điểm"></div>
+                <div class="row">
+                  <button class="btn btn-sm" id="markIn"><i data-icon="scissors" class="sm"></i>Đặt điểm đầu</button>
+                  <button class="btn btn-sm" id="markOut">Đặt điểm cuối</button>
+                  <span class="small muted" id="selText">Đoạn chọn: 13:58:00 – 14:03:00 (5 phút)</span>
+                  <span class="spacer"></span>
+                  <button class="btn btn-sm" data-open="holdModal"><i data-icon="lock" class="sm"></i>Giữ lại phục vụ điều tra</button>
+                  <button class="btn btn-primary btn-sm" id="exportBtn"><i data-icon="download" class="sm"></i>Xuất clip</button>
+                </div>
+                <div class="small muted">Phím tắt: Space phát/dừng · ← / → lùi/tới 10 giây</div>
+              </div>
+            </div>
+
+            <div class="split-3" style="grid-template-columns:1fr 1fr">
+              <div class="card">
+                <div class="card-head"><h3>Sự kiện trong ngày</h3></div>
+                <div class="list" id="evtList"></div>
+              </div>
+              <div class="card">
+                <div class="card-head"><h3>Clip đã xuất</h3><span class="spacer"></span><span class="small muted">Liên kết hết hạn sau 24 giờ</span></div>
+                <div class="list" id="exportList">
+                  <div class="list-item"><span class="badge badge-ok no-dot">Sẵn sàng</span><div class="grow"><b class="mono">Quay-giao-dich-1_1358-1403.mp4</b><div class="small muted">5 phút · 86 MB · còn 23 giờ</div></div><button class="btn btn-sm"><i data-icon="download" class="sm"></i>Tải</button></div>
+                  <div class="list-item"><span class="badge badge-danger no-dot">Lỗi</span><div class="grow"><b class="mono">Sanh-le-tan_0900-0930.mp4</b><div class="small muted">Thiếu dữ liệu 09:12–09:14</div></div><button class="btn btn-sm">Thử lại</button></div>
+                  <div class="list-item"><span class="badge badge-muted no-dot">Hết hạn</span><div class="grow"><b class="mono">Quay-giao-dich-2_1600-1615.mp4</b><div class="small muted">Xuất lại để tải</div></div></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Xuất clip (UC-33) -->
+  <div class="modal-backdrop" id="exportModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Xuất clip</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field"><label>Bắt đầu</label><input class="input mono" id="exIn" value="13:58:00"></div>
+          <div class="field"><label>Kết thúc</label><input class="input mono" id="exOut" value="14:03:00"></div>
+          <div class="field full"><label>Camera</label><input class="input" value="Quầy giao dịch 1" disabled></div>
+        </div>
+        <div class="alert-box info" id="exInfo"><i data-icon="info"></i><span>Định dạng MP4 (H.264). Clip xuất chạy nền; bạn sẽ nhận thông báo khi sẵn sàng. Thao tác này được ghi nhật ký.</span></div>
+        <div class="alert-box danger hidden" id="exErr"><i data-icon="warning"></i><span>Mỗi lần xuất tối đa 60 phút. Vui lòng rút ngắn khoảng thời gian.</span></div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" id="exGo">Xuất</button></div>
+    </div>
+  </div>
+
+  <!-- Giữ lại phục vụ điều tra (UC-34) -->
+  <div class="modal-backdrop" id="holdModal">
+    <div class="modal sm">
+      <div class="modal-head"><h2>Giữ lại phục vụ điều tra</h2><span class="spacer"></span><button class="icon-btn" data-close aria-label="Đóng"><i data-icon="x"></i></button></div>
+      <div class="modal-body">
+        <p class="small muted">Đoạn video được giữ lại không bị tự động xóa khi hết thời gian lưu trữ, cho đến khi được bỏ đánh dấu.</p>
+        <div class="form-grid">
+          <div class="field"><label>Từ</label><input class="input mono" value="21/10/2026 13:45"></div>
+          <div class="field"><label>Đến</label><input class="input mono" value="21/10/2026 14:15"></div>
+          <div class="field full"><label>Lý do (bắt buộc)</label><textarea class="input">Khiếu nại KH-2026-1015: khách báo mất ví tại quầy 1 khoảng 14:00.</textarea></div>
+        </div>
+      </div>
+      <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn btn-primary" data-close onclick="toast('Đã đánh dấu giữ lại 13:45–14:15')">Xác nhận</button></div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Camera select + player
+      const sel = document.getElementById("camSel");
+      sel.innerHTML = CAMERAS.map((c) => `<option value="${c.id}" ${c.id === 9 ? "selected" : ""}>${c.name} – ${c.site}</option>`).join("");
+      const player = document.getElementById("player");
+      let syncIds = [];
+      const renderPlayer = () => {
+        const ids = [Number(sel.value), ...syncIds];
+        player.className = "video-grid " + (ids.length > 1 ? "g4" : "g1");
+        player.innerHTML = ids.map((id) => tileHTML(CAMERAS.find((c) => c.id === id), { stream: "PLAYBACK" })).join("");
+        player.querySelectorAll(".live-clock").forEach((c) => c.classList.remove("live-clock"));
+        player.querySelectorAll(".chip:last-child").forEach((c) => (c.textContent = fmt(cursor)));
+      };
+      sel.onchange = renderPlayer;
+      document.querySelectorAll(".syncCam").forEach((cb) => cb.addEventListener("change", () => {
+        syncIds = [...document.querySelectorAll(".syncCam:checked")].map((x) => Number(x.dataset.cam)).slice(0, 3);
+        renderPlayer();
+      }));
+
+      // Calendar
+      const cal = document.getElementById("cal");
+      const dows = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+      let cells = dows.map((d) => `<div class="dow">${d}</div>`).join("") + "<div></div><div></div><div></div>"; // 1/10/2026 là thứ Năm
+      for (let d = 1; d <= 31; d++) cells += `<div class="day ${d <= 21 && d >= 2 ? "has" : ""} ${d === 21 ? "today" : ""}">${d}</div>`;
+      cal.innerHTML = cells;
+
+      // Timeline
+      const tl = document.getElementById("tl");
+      const rec = [[0, 312], [318, 1140], [1146, 1440]];           // phút trong ngày có ghi hình
+      const dev = [[300, 330], [1130, 1150]];                       // video trên thẻ nhớ
+      const evts = [[512, 514], [838, 843], [1095, 1097], [1420, 1422]];
+      let view = [0, 1440], cursor = 13 * 60 + 58 + 20 / 60, selIn = 13 * 60 + 58, selOut = 14 * 60 + 3;
+      const fmt = (m) => { const h = Math.floor(m / 60), mi = Math.floor(m % 60), s = Math.round((m * 60) % 60); return `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; };
+      const pct = (m) => ((m - view[0]) / (view[1] - view[0])) * 100;
+      function renderTl() {
+        const span = (a, b, cls) => {
+          const l = Math.max(pct(a), 0), r = Math.min(pct(b), 100);
+          return r > 0 && l < 100 ? `<div class="${cls}" style="left:${l}%;width:${Math.max(r - l, 0.3)}%"></div>` : "";
+        };
+        const ticks = []; for (let i = 0; i <= 6; i++) ticks.push(fmt(view[0] + ((view[1] - view[0]) * i) / 6).slice(0, 5));
+        tl.innerHTML = `<div class="track">${rec.map((r) => span(r[0], r[1], "seg")).join("")}${evts.map((e) => span(e[0], e[1], "evt")).join("")}${dev.map((d) => span(d[0], d[1], "seg device")).join("")}</div>
+          ${span(selIn, selOut, "sel")}
+          <div class="cursor" style="left:${pct(cursor)}%" data-time="${fmt(cursor)}"></div>
+          <div class="ticks">${ticks.map((t) => `<span>${t}</span>`).join("")}</div>`;
+        document.getElementById("curText").textContent = "21/10/2026 " + fmt(cursor);
+        const len = Math.round(selOut - selIn);
+        document.getElementById("selText").textContent = `Đoạn chọn: ${fmt(selIn)} – ${fmt(selOut)} (${len} phút)`;
+        player.querySelectorAll(".chip:last-child").forEach((c) => (c.textContent = fmt(cursor)));
+      }
+      tl.addEventListener("click", (e) => {
+        const r = tl.getBoundingClientRect();
+        cursor = view[0] + ((e.clientX - r.left) / r.width) * (view[1] - view[0]);
+        const inRec = rec.some(([a, b]) => cursor >= a && cursor <= b);
+        if (!inRec) { const next = rec.find(([a]) => a > cursor); if (next) { cursor = next[0]; toast("Không có dữ liệu tại thời điểm đã chọn. Đã chuyển tới đoạn có dữ liệu gần nhất."); } }
+        renderTl();
+      });
+      document.querySelectorAll("#zoomBtns button").forEach((b) => b.addEventListener("click", () => {
+        document.querySelectorAll("#zoomBtns button").forEach((x) => x.classList.toggle("active", x === b));
+        const z = Number(b.dataset.z);
+        const start = Math.min(Math.max(cursor - z / 2, 0), 1440 - z);
+        view = [start, start + z]; renderTl();
+      }));
+      document.getElementById("markIn").onclick = () => { selIn = cursor; if (selOut < selIn) selOut = selIn + 5; renderTl(); };
+      document.getElementById("markOut").onclick = () => { selOut = Math.max(cursor, selIn + 1); renderTl(); };
+      document.getElementById("exportBtn").onclick = () => {
+        document.getElementById("exIn").value = fmt(selIn); document.getElementById("exOut").value = fmt(selOut);
+        const tooLong = selOut - selIn > 60;
+        document.getElementById("exErr").classList.toggle("hidden", !tooLong);
+        document.getElementById("exGo").disabled = tooLong;
+        openModal("exportModal");
+      };
+      document.getElementById("exGo").onclick = (e) => {
+        closeModal(e.target);
+        const list = document.getElementById("exportList");
+        list.insertAdjacentHTML("afterbegin", `<div class="list-item"><span class="badge badge-info no-dot">Đang xử lý</span><div class="grow"><b class="mono">Quay-giao-dich-1_${fmt(selIn).slice(0,5).replace(":","")}-${fmt(selOut).slice(0,5).replace(":","")}.mp4</b><div class="small muted">Đang ghép và mã hóa…</div></div></div>`);
+        toast("Đã đưa vào hàng đợi xuất clip. Bạn sẽ nhận thông báo khi sẵn sàng.");
+      };
+
+      // Speed / play
+      document.querySelectorAll("#speedBtns button").forEach((b, _, all) => b.addEventListener("click", () => all.forEach((x) => x.classList.toggle("active", x === b))));
+      let playing = true;
+      const playBtn = document.getElementById("playBtn");
+      const togglePlay = () => { playing = !playing; playBtn.innerHTML = icon(playing ? "pause" : "play", "icon icon-sm") + (playing ? "Tạm dừng" : "Phát"); };
+      playBtn.onclick = togglePlay;
+      document.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+        if (e.code === "Space") { e.preventDefault(); togglePlay(); }
+        if (e.key === "ArrowRight") { cursor = Math.min(cursor + 10 / 60, 1440); renderTl(); }
+        if (e.key === "ArrowLeft") { cursor = Math.max(cursor - 10 / 60, 0); renderTl(); }
+      });
+      setInterval(() => { if (playing) { cursor = Math.min(cursor + 1 / 60, 1440); renderTl(); } }, 1000);
+
+      // Events list
+      document.getElementById("evtList").innerHTML = evts.map(([a], i) => `
+        <div class="list-item" style="cursor:pointer" data-t="${a}"><span class="badge badge-warn no-dot">${i === 1 ? "Cảnh báo" : "Chuyển động"}</span><div class="grow"><b>${fmt(a)}</b><div class="small muted">${i === 1 ? "Đã đóng · Thật · Lan" : "Sự kiện từ camera"}</div></div><i data-icon="play" class="sm"></i></div>`).join("");
+      renderIcons(document.getElementById("evtList"));
+      document.getElementById("evtList").addEventListener("click", (e) => { const it = e.target.closest("[data-t]"); if (it) { cursor = Number(it.dataset.t) - 10 / 60; renderTl(); } });
+
+      renderPlayer(); renderTl();
+    });
+  </script>
+</body>
+</html>

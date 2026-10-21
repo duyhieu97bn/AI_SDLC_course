@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Nhật ký thao tác</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="audit" data-title="Nhật ký thao tác" data-subtitle="Chỉ xem · không sửa hoặc xóa được · lưu tối thiểu 12 tháng">
+  <!-- UC-08 Tra cứu nhật ký thao tác · US-33, RULE-06, NFR-09 -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <div class="card">
+          <div class="card-body row">
+            <div class="field"><label>Từ</label><input class="input mono" value="21/10/2026 00:00" style="width:160px"></div>
+            <div class="field"><label>Đến</label><input class="input mono" value="21/10/2026 23:59" style="width:160px"></div>
+            <div class="field"><label>Người thực hiện</label><select class="input" style="width:170px"><option>Tất cả</option><option>Trần Tuấn</option><option>Nguyễn Hương</option><option>Lê Lan</option><option>Phạm Minh</option></select></div>
+            <div class="field"><label>Loại thao tác</label><select class="input" id="fAct" style="width:200px"><option value="">Tất cả</option></select></div>
+            <div class="field"><label>Camera</label><select class="input" style="width:170px"><option>Tất cả</option><option>Quầy giao dịch 1</option><option>Bãi xe – PTZ</option></select></div>
+            <span class="spacer"></span>
+            <button class="btn" style="align-self:flex-end" onclick="toast('Đang xuất CSV… Thao tác xuất nhật ký cũng được ghi nhật ký.')"><i data-icon="download" class="sm"></i>Xuất CSV</button>
+          </div>
+        </div>
+        <div class="card"><div class="table-wrap"><table class="table">
+          <thead><tr><th>Thời điểm</th><th>Người thực hiện</th><th>Thao tác</th><th>Đối tượng</th><th>Địa chỉ IP</th><th>Kết quả</th><th>Chi tiết</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table></div></div>
+        <div class="row small muted"><span>Hiển thị 1–12 / 1.284 bản ghi</span><span class="spacer"></span><button class="btn btn-sm">Trước</button><button class="btn btn-sm">Sau</button></div>
+      </main>
+    </div>
+  </div>
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const L = [
+        ["23:42:10", "Trần Tuấn", "CHANGE_ROLE", "Vai trò: Bảo vệ ca đêm", "10.10.0.21", true, "Thêm quyền TALK_AUDIO"],
+        ["23:41:05", "Lê Lan", "TALK_AUDIO", "Camera: Bãi xe – PTZ", "10.10.0.35", true, "Thời lượng 18 giây"],
+        ["23:40:31", "Lê Lan", "VIEW_PLAYBACK", "Camera: Cổng sau", "10.10.0.35", true, "23:39:55 – 23:41:00"],
+        ["23:38:02", "Trần Tuấn", "LOGIN", "—", "10.10.0.21", true, "Cục bộ · 2FA"],
+        ["22:47:19", "Võ Bảo", "LOGIN_FAILED", "—", "113.161.20.4", false, "Lần sai thứ 5 · tài khoản bị khóa"],
+        ["18:05:44", "Nguyễn Hương", "EXPORT_VIDEO", "Camera: Quầy giao dịch 1", "10.30.0.12", true, "13:58:00 – 14:03:00 (5 phút)"],
+        ["18:03:10", "Nguyễn Hương", "HOLD_EVIDENCE", "Camera: Quầy giao dịch 1", "10.30.0.12", true, "13:45 – 14:15 · KH-2026-1015"],
+        ["16:20:00", "Phạm Minh", "MOVE_CAMERA", "Camera: Hành lang tầng 2", "10.10.0.40", true, "Tầng 1 → Tầng 2"],
+        ["14:41:12", "Phạm Minh", "REBOOT_CAMERA", "Camera: Kho số 7", "10.20.0.5", false, "Camera không phản hồi"],
+        ["11:15:37", "Phạm Minh", "CHANGE_CONFIG", "Camera: Bãi xe – PTZ", "10.20.0.5", true, "Luồng chính: bitrate 2048 → 4096 Kbps"],
+        ["09:02:00", "Hệ thống", "CHANGE_PERMISSION", "Người dùng: Đỗ Quang", "—", true, "Đồng bộ AD: tài khoản bị vô hiệu hóa"],
+        ["08:30:21", "Trần Tuấn", "CHANGE_CAMERA_PASSWORD", "4 camera · Kho Bắc Ninh", "10.10.0.21", true, "4/4 thành công"],
+      ];
+      const sel = document.getElementById("fAct");
+      [...new Set(L.map((r) => r[2]))].sort().forEach((a) => sel.insertAdjacentHTML("beforeend", `<option>${a}</option>`));
+      const render = () => {
+        const a = sel.value;
+        document.getElementById("rows").innerHTML = L.filter((r) => !a || r[2] === a).map((r) => `
+          <tr><td class="mono">21/10 ${r[0]}</td><td>${r[1]}</td><td><span class="badge badge-muted no-dot mono">${r[2]}</span></td><td>${r[3]}</td><td class="mono">${r[4]}</td>
+          <td>${r[5] ? '<span class="badge badge-ok">Thành công</span>' : '<span class="badge badge-danger">Thất bại</span>'}</td><td class="wrap small">${r[6]}</td></tr>`).join("");
+      };
+      sel.onchange = render; render();
+    });
+  </script>
+</body>
+</html>

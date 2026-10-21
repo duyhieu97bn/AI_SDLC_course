@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Đăng nhập</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="login">
+  <!-- UC-01 Đăng nhập, UC-02 Xác thực hai lớp · US-30, US-31, US-44 -->
+  <main class="auth-page">
+    <div class="card auth-card">
+      <div class="brand"><span class="brand-mark"><i data-icon="camera"></i></span> CamHub</div>
+
+      <!-- Bước 1: tài khoản -->
+      <form id="stepLogin" class="stack" autocomplete="on">
+        <div>
+          <h1>Đăng nhập</h1>
+          <p class="muted small">Dùng tài khoản CamHub hoặc tài khoản của tổ chức (Active Directory).</p>
+        </div>
+        <div id="loginError" class="alert-box danger hidden"><i data-icon="warning"></i><span>Email hoặc mật khẩu không đúng. Còn 3 lần thử trước khi tài khoản bị khóa.</span></div>
+        <div class="field">
+          <label for="user">Email hoặc tên đăng nhập</label>
+          <input class="input" id="user" value="tuan.tran@congty.vn" autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="pwd">Mật khẩu</label>
+          <input class="input" id="pwd" type="password" value="••••••••••" autocomplete="current-password">
+        </div>
+        <div class="row">
+          <label class="check small"><input type="checkbox"> Ghi nhớ thiết bị này</label>
+          <span class="spacer"></span>
+          <a class="small" href="#">Quên mật khẩu?</a>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Đăng nhập</button>
+        <div class="row small">
+          <button class="btn btn-ghost btn-sm" type="button" id="demoError">Xem trạng thái sai mật khẩu</button>
+          <button class="btn btn-ghost btn-sm" type="button" id="demoLdap">Xem trạng thái lỗi LDAP</button>
+        </div>
+        <div id="ldapError" class="alert-box warn hidden"><i data-icon="wifiOff"></i><span>Không kết nối được máy chủ thư mục của tổ chức. Tài khoản cục bộ vẫn đăng nhập được. Vui lòng liên hệ bộ phận IT.</span></div>
+      </form>
+
+      <!-- Bước 2: 2FA -->
+      <form id="stepOtp" class="stack hidden">
+        <div>
+          <h1>Xác thực hai lớp</h1>
+          <p class="muted small">Vai trò <b>Admin</b> yêu cầu 2FA. Nhập mã 6 số từ ứng dụng xác thực của bạn.</p>
+        </div>
+        <div class="otp" id="otp">
+          <input maxlength="1" inputmode="numeric" aria-label="Số 1"><input maxlength="1" inputmode="numeric" aria-label="Số 2"><input maxlength="1" inputmode="numeric" aria-label="Số 3">
+          <input maxlength="1" inputmode="numeric" aria-label="Số 4"><input maxlength="1" inputmode="numeric" aria-label="Số 5"><input maxlength="1" inputmode="numeric" aria-label="Số 6">
+        </div>
+        <a class="btn btn-primary btn-block" href="dashboard.html">Xác nhận</a>
+        <div class="divider">hoặc</div>
+        <button class="btn btn-block" type="button">Dùng mã dự phòng</button>
+        <button class="btn btn-ghost btn-block" type="button" id="backLogin">Quay lại</button>
+      </form>
+
+      <p class="small muted" style="margin-top:20px">Phiên đăng nhập tự hết hạn sau 12 giờ không hoạt động. Mọi lần đăng nhập đều được ghi nhật ký.</p>
+    </div>
+  </main>
+
+  <script src="assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const login = document.getElementById("stepLogin");
+      const otp = document.getElementById("stepOtp");
+      login.addEventListener("submit", (e) => { e.preventDefault(); login.classList.add("hidden"); otp.classList.remove("hidden"); otp.querySelector("input").focus(); });
+      document.getElementById("backLogin").onclick = () => { otp.classList.add("hidden"); login.classList.remove("hidden"); };
+      document.getElementById("demoError").onclick = () => document.getElementById("loginError").classList.toggle("hidden");
+      document.getElementById("demoLdap").onclick = () => document.getElementById("ldapError").classList.toggle("hidden");
+      const boxes = [...document.querySelectorAll("#otp input")];
+      boxes.forEach((b, i) => b.addEventListener("input", () => { if (b.value && boxes[i + 1]) boxes[i + 1].focus(); }));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamHub – Tổng quan</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body data-page="dashboard" data-title="Tổng quan" data-subtitle="Toàn tổ chức · cập nhật 10 giây trước">
+  <!-- UC-16 Theo dõi trạng thái camera, UC-60 Tổng quan hệ thống · US-04 AC3, US-39 -->
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <header class="topbar" id="topbar"></header>
+      <main class="content">
+        <section class="kpis">
+          <div class="card kpi"><span class="label">Camera trực tuyến</span><span class="value">14 / 16</span><span class="sub">87,5% · mục tiêu BO-01 ≥ 95%</span><div class="progress warn"><span style="width:87.5%"></span></div></div>
+          <div class="card kpi"><span class="label">Cảnh báo đang mở</span><span class="value" style="color:var(--danger)">3</span><span class="sub">1 quá 30 phút chưa nhận xử lý</span></div>
+          <div class="card kpi"><span class="label">Dung lượng lưu trữ</span><span class="value">72%</span><span class="sub">46,8 / 65 TB · còn khoảng 11 ngày</span><div class="progress"><span style="width:72%"></span></div></div>
+          <div class="card kpi"><span class="label">Bộ kết nối địa điểm</span><span class="value">2 / 2</span><span class="sub">Liên lạc gần nhất: 5 giây trước</span></div>
+        </section>
+
+        <section class="split-3">
+          <div class="card">
+            <div class="card-head"><h2>Trạng thái theo địa điểm</h2><span class="spacer"></span><a class="btn btn-sm" href="cameras.html">Xem tất cả camera</a></div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th>Địa điểm</th><th>Trực tuyến</th><th>Đang ghi</th><th>Kết nối</th><th>Cảnh báo mở</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td><b>Kho Bắc Ninh</b><div class="small muted">3 khu vực · qua bộ kết nối</div></td><td><span class="badge badge-warn">5 / 7</span></td><td>5</td><td><span class="badge badge-ok">Bộ kết nối trực tuyến</span></td><td>2</td><td><a class="btn btn-sm btn-ghost" href="live.html">Xem</a></td></tr>
+                  <tr><td><b>Chi nhánh Hà Nội</b><div class="small muted">2 khu vực · LAN trực tiếp</div></td><td><span class="badge badge-ok">4 / 4</span></td><td>3</td><td><span class="badge badge-ok">LAN</span></td><td>0</td><td><a class="btn btn-sm btn-ghost" href="live.html">Xem</a></td></tr>
+                  <tr><td><b>Cửa hàng Q1 HCM</b><div class="small muted">3 khu vực · qua bộ kết nối</div></td><td><span class="badge badge-ok">5 / 5</span></td><td>5</td><td><span class="badge badge-ok">Bộ kết nối trực tuyến</span></td><td>1</td><td><a class="btn btn-sm btn-ghost" href="live.html">Xem</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h2>Cảnh báo gần đây</h2><span class="spacer"></span><a class="btn btn-sm" href="alerts.html">Mở trung tâm cảnh báo</a></div>
+            <div class="list">
+              <a class="list-item" href="alerts.html"><span class="badge badge-danger no-dot">Mới</span><div class="grow"><b>Chuyển động ngoài giờ</b><div class="small muted">Cổng sau · Kho Bắc Ninh · 23:40</div></div></a>
+              <a class="list-item" href="alerts.html"><span class="badge badge-warn no-dot">Đang xử lý</span><div class="grow"><b>Camera mất kết nối</b><div class="small muted">Kho số 7 · Kho Bắc Ninh · 14:32 · Minh</div></div></a>
+              <a class="list-item" href="alerts.html"><span class="badge badge-danger no-dot">Mới</span><div class="grow"><b>Chuyển động ngoài giờ</b><div class="small muted">Kho sau cửa hàng · Q1 HCM · 22:15</div></div></a>
+              <a class="list-item" href="alerts.html"><span class="badge badge-muted no-dot">Đã đóng</span><div class="grow"><b>Lưu trữ vượt 85%</b><div class="small muted">Volume NAS-01 · hôm qua · Báo giả</div></div></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="split-3">
+          <div class="card">
+            <div class="card-head"><h2>Camera mất kết nối</h2><span class="badge badge-danger">2</span></div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th>Camera</th><th>Địa điểm</th><th>Mất kết nối từ</th><th>Thời gian</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td><b>Kho số 7</b><div class="small muted">Dahua IPC-HFW2441S · 10.20.1.37</div></td><td>Kho Bắc Ninh</td><td>14:32 hôm nay</td><td>9 giờ 08 phút</td><td><a class="btn btn-sm" href="camera-detail.html"><i data-icon="power" class="sm"></i>Khởi động lại</a></td></tr>
+                  <tr><td><b>Kho B – Cửa nhập</b><div class="small muted">KBVision KX-C2121S5 · 10.20.1.31</div></td><td>Kho Bắc Ninh</td><td>22:58 hôm nay</td><td>42 phút</td><td><a class="btn btn-sm" href="camera-detail.html"><i data-icon="power" class="sm"></i>Khởi động lại</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>Lưu trữ</h2></div>
+            <div class="card-body stack">
+              <div><div class="row"><b>NAS-01 (video)</b><span class="spacer"></span><span class="small">72% · 46,8 / 65 TB</span></div><div class="progress"><span style="width:72%"></span></div><p class="small muted">Ngưỡng cảnh báo 85%, nguy hiểm 95%</p></div>
+              <div><div class="row"><b>MinIO (clip, ảnh)</b><span class="spacer"></span><span class="small">18% · 0,9 / 5 TB</span></div><div class="progress"><span style="width:18%"></span></div></div>
+              <div><div class="row"><b>Sao lưu gần nhất</b><span class="spacer"></span><span class="badge badge-ok">Thành công</span></div><p class="small muted">23:00 hôm nay · 30 bản đang giữ</p></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="assets/app.js"></script>
+</body>
+</html>
