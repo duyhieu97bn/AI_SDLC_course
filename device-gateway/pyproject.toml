@@ -1,0 +1,61 @@
+[project]
+name = "camhub-device-gateway"
+version = "0.1.0"
+description = "CamHub Device Gateway: giao tiếp camera/đầu ghi qua ONVIF (SADD 3.3.2)"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic-settings>=2.6",
+    "prometheus-client>=0.21",
+    "httpx[socks]>=0.28",
+    "defusedxml>=0.7.1",
+    "aio-pika>=9.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "anyio>=4.6",
+    "pyyaml>=6.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "types-defusedxml>=0.7",
+    "pip-audit>=2.7",
+]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "N", "SIM"]
+ignore = ["S101"]  # assert được dùng trong test
+
+[tool.ruff.lint.per-file-ignores]
+# Mật khẩu giả trong test và bộ giả lập
+"tests/**" = ["S105", "S106", "S311"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "onvif_sim"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "compat: bộ kiểm thử tương thích thiết bị (TS-05.4), chạy với bộ giả lập và camera thật trong cameras.yaml",
+]
+filterwarnings = [
+    "ignore:directory .* does not exist:UserWarning",
+]

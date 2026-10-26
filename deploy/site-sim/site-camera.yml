@@ -1,0 +1,39 @@
+# Camera giả lập ở địa điểm từ xa (profile "site", TS-06.4): một MediaMTX trong mạng site-lan, tự phát
+# hai luồng thử (cam1 720p, cam2 360p) bằng FFmpeg chạy ngay trong container. Tài khoản đọc admin/admin123.
+# Máy chủ CamHub KHÔNG tới thẳng được mạng này; MediaMTX trung tâm kéo luồng qua cổng chuyển tiếp ngược của
+# đường hầm (rtsp://admin:admin123@tunnel:<cổng>/cam1).
+logLevel: warn
+rtsp: yes
+rtspTransports: [tcp]
+rtspAddress: :8554
+rtmp: no
+hls: no
+webrtc: no
+srt: no
+api: no
+authMethod: internal
+authInternalUsers:
+  # FFmpeg trong cùng container phát vào qua localhost
+  - user: any
+    pass:
+    ips: [127.0.0.1/32, "::1/128"]
+    permissions:
+      - action: publish
+  - user: admin
+    pass: admin123
+    ips: []
+    permissions:
+      - action: read
+paths:
+  cam1:
+    runOnInit: >-
+      ffmpeg -hide_banner -loglevel error -re -f lavfi -i testsrc2=size=1280x720:rate=15
+      -c:v libx264 -preset ultrafast -tune zerolatency -bf 0 -g 30 -b:v 1M -pix_fmt yuv420p
+      -f rtsp -rtsp_transport tcp rtsp://127.0.0.1:8554/cam1
+    runOnInitRestart: yes
+  cam2:
+    runOnInit: >-
+      ffmpeg -hide_banner -loglevel error -re -f lavfi -i testsrc=size=640x360:rate=15
+      -c:v libx264 -preset ultrafast -tune zerolatency -bf 0 -g 30 -b:v 400k -pix_fmt yuv420p
+      -f rtsp -rtsp_transport tcp rtsp://127.0.0.1:8554/cam2
+    runOnInitRestart: yes

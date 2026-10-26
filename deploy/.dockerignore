@@ -1,0 +1,6 @@
+# Build context deploy/ chỉ dùng cho image postgres (postgres/Dockerfile).
+# Tuyệt đối không đưa secrets/ hay nginx/certs vào image.
+*
+!postgres/Dockerfile
+!backup/pgbackrest.conf
+!backup/camhub-backup.sh

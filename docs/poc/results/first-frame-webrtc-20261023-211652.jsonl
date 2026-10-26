@@ -1,0 +1,15 @@
+{"streams":1,"round":1,"mode":"webrtc","ok":1,"failed":0,"avg":728,"p95":728,"max":728,"errors":[]}
+{"streams":1,"round":2,"mode":"webrtc","ok":1,"failed":0,"avg":689,"p95":689,"max":689,"errors":[]}
+{"streams":1,"round":3,"mode":"webrtc","ok":1,"failed":0,"avg":504,"p95":504,"max":504,"errors":[]}
+{"streams":4,"round":1,"mode":"webrtc","ok":4,"failed":0,"avg":980,"p95":1072,"max":1072,"errors":[]}
+{"streams":4,"round":2,"mode":"webrtc","ok":4,"failed":0,"avg":1443,"p95":2383,"max":2383,"errors":[]}
+{"streams":4,"round":3,"mode":"webrtc","ok":4,"failed":0,"avg":1059,"p95":1175,"max":1175,"errors":[]}
+{"streams":9,"round":1,"mode":"webrtc","ok":9,"failed":0,"avg":2211,"p95":2431,"max":2431,"errors":[]}
+{"streams":9,"round":2,"mode":"webrtc","ok":9,"failed":0,"avg":1869,"p95":2605,"max":2605,"errors":[]}
+{"streams":9,"round":3,"mode":"webrtc","ok":9,"failed":0,"avg":1272,"p95":2599,"max":2599,"errors":[]}
+{"streams":16,"round":1,"mode":"webrtc","ok":16,"failed":0,"avg":1198,"p95":2836,"max":2836,"errors":[]}
+{"streams":16,"round":2,"mode":"webrtc","ok":16,"failed":0,"avg":2610,"p95":3031,"max":3031,"errors":[]}
+{"streams":16,"round":3,"mode":"webrtc","ok":16,"failed":0,"avg":1774,"p95":2072,"max":2072,"errors":[]}
+{"streams":20,"round":1,"mode":"webrtc","ok":20,"failed":0,"avg":1848,"p95":2216,"max":2240,"errors":[]}
+{"streams":20,"round":2,"mode":"webrtc","ok":20,"failed":0,"avg":1778,"p95":2057,"max":2102,"errors":[]}
+{"streams":20,"round":3,"mode":"webrtc","ok":20,"failed":0,"avg":1586,"p95":1954,"max":2010,"errors":[]}

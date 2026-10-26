@@ -1,0 +1,89 @@
+# Thư mục LDAP/AD giả lập cho US-44 (CHỈ DÙNG DEV). init.sh thay @BIND_PASSWORD_HASH@ (secrets/ldap_bind_password)
+# và @USER_PASSWORD_HASH@ (mật khẩu chung của người dùng thử: AdPass-2026!) bằng hash {SSHA} trước khi nạp.
+
+dn: dc=camhub,dc=local
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+dc: camhub
+o: CamHub Dev Directory
+
+dn: ou=service,dc=camhub,dc=local
+objectClass: organizationalUnit
+ou: service
+
+dn: ou=people,dc=camhub,dc=local
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=camhub,dc=local
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=policies,dc=camhub,dc=local
+objectClass: organizationalUnit
+ou: policies
+
+# Chính sách mật khẩu mặc định (ppolicy): pwdLockout bật để pwdAccountLockedTime có hiệu lực;
+# pwdMaxFailure 0 nên không tự khóa khi nhập sai, chỉ khóa tay (vô hiệu hóa tài khoản).
+dn: cn=default,ou=policies,dc=camhub,dc=local
+objectClass: device
+objectClass: pwdPolicy
+cn: default
+pwdAttribute: userPassword
+pwdLockout: TRUE
+pwdMaxFailure: 0
+pwdCheckQuality: 0
+pwdAllowUserChange: TRUE
+
+# Tài khoản dịch vụ CamHub dùng để bind và đồng bộ
+dn: cn=svc-camhub,ou=service,dc=camhub,dc=local
+objectClass: person
+objectClass: simpleSecurityObject
+cn: svc-camhub
+sn: CamHub Service
+description: Tài khoản dịch vụ đồng bộ người dùng CamHub (US-44)
+userPassword: @BIND_PASSWORD_HASH@
+
+dn: uid=huong.ad,ou=people,dc=camhub,dc=local
+objectClass: inetOrgPerson
+uid: huong.ad
+cn: Nguyễn Thu Hương
+displayName: Nguyễn Thu Hương
+givenName: Hương
+sn: Nguyễn
+mail: huong.ad@camhub.local
+userPassword: @USER_PASSWORD_HASH@
+
+dn: uid=quang.ad,ou=people,dc=camhub,dc=local
+objectClass: inetOrgPerson
+uid: quang.ad
+cn: Trần Quang
+displayName: Trần Quang
+givenName: Quang
+sn: Trần
+mail: quang.ad@camhub.local
+userPassword: @USER_PASSWORD_HASH@
+
+dn: uid=tuan.ad,ou=people,dc=camhub,dc=local
+objectClass: inetOrgPerson
+uid: tuan.ad
+cn: Lê Tuấn
+displayName: Lê Tuấn
+givenName: Tuấn
+sn: Lê
+mail: tuan.ad@camhub.local
+userPassword: @USER_PASSWORD_HASH@
+
+dn: cn=CamHub-SiteMgr-HN,ou=groups,dc=camhub,dc=local
+objectClass: groupOfNames
+cn: CamHub-SiteMgr-HN
+description: Quản lý địa điểm Hà Nội
+member: uid=huong.ad,ou=people,dc=camhub,dc=local
+
+dn: cn=CamHub-Operators,ou=groups,dc=camhub,dc=local
+objectClass: groupOfNames
+cn: CamHub-Operators
+description: Nhân viên vận hành
+member: uid=quang.ad,ou=people,dc=camhub,dc=local
+member: uid=tuan.ad,ou=people,dc=camhub,dc=local

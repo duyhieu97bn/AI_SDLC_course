@@ -1,0 +1,30 @@
+# Prometheus (TS-07.1): thu metric Core, MediaMTX, RabbitMQ, PostgreSQL, dịch vụ Python.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+scrape_configs:
+  - job_name: core
+    metrics_path: /actuator/prometheus
+    static_configs: [{ targets: ["core:8080"] }]
+
+  - job_name: mediamtx
+    static_configs: [{ targets: ["mediamtx:9998"] }]
+
+  - job_name: rabbitmq
+    static_configs: [{ targets: ["rabbitmq:15692"] }]
+
+  - job_name: postgres
+    static_configs: [{ targets: ["postgres-exporter:9187"] }]
+
+  - job_name: device-gateway
+    static_configs: [{ targets: ["device-gateway:8000"] }]
+
+  - job_name: media-worker
+    static_configs: [{ targets: ["media-worker:8000"] }]
+
+  - job_name: prometheus
+    static_configs: [{ targets: ["localhost:9090"] }]

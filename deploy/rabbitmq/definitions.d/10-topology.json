@@ -1,0 +1,26 @@
+{
+  "vhosts": [{ "name": "camhub" }],
+  "exchanges": [
+    { "name": "jobs", "vhost": "camhub", "type": "topic", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
+    { "name": "job.results", "vhost": "camhub", "type": "topic", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
+    { "name": "device.events", "vhost": "camhub", "type": "topic", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
+    { "name": "core.events", "vhost": "camhub", "type": "topic", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
+    { "name": "dlx", "vhost": "camhub", "type": "topic", "durable": true, "auto_delete": false, "internal": false, "arguments": {} }
+  ],
+  "queues": [
+    { "name": "dead-letter", "vhost": "camhub", "durable": true, "auto_delete": false, "arguments": { "x-queue-type": "quorum" } }
+  ],
+  "bindings": [
+    { "source": "dlx", "vhost": "camhub", "destination": "dead-letter", "destination_type": "queue", "routing_key": "#", "arguments": {} }
+  ],
+  "policies": [
+    {
+      "vhost": "camhub",
+      "name": "camhub-defaults",
+      "pattern": "^(?!dead-letter$).*",
+      "apply-to": "queues",
+      "priority": 0,
+      "definition": { "dead-letter-exchange": "dlx", "delivery-limit": 10 }
+    }
+  ]
+}

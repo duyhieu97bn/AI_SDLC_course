@@ -1,0 +1,127 @@
+spring:
+  application:
+    name: camhub-core
+  # Bí mật đọc từ Docker secret: mỗi file trong /run/secrets mang tên một thuộc tính,
+  # ví dụ /run/secrets/spring.datasource.password
+  config:
+    import: optional:configtree:/run/secrets/
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${CAMHUB_DB_URL:jdbc:postgresql://localhost:5432/camhub}
+    # Tài khoản ứng dụng: không phải owner, không BYPASSRLS, nên luôn chịu RLS
+    username: ${CAMHUB_DB_APP_USER:camhub_app}
+    password: ${CAMHUB_DB_APP_PASSWORD:camhub_app}
+    hikari:
+      maximum-pool-size: 20
+  flyway:
+    # Migration chạy bằng tài khoản owner của schema. Khai báo url tường minh vì DataSource
+    # chính đã được bọc bởi TenantAwareDataSource, Flyway không tự suy ra được.
+    url: ${spring.datasource.url}
+    user: ${CAMHUB_DB_OWNER_USER:camhub}
+    password: ${CAMHUB_DB_OWNER_PASSWORD:camhub}
+    placeholders:
+      app_role: ${spring.datasource.username}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  data:
+    redis:
+      host: ${CAMHUB_REDIS_HOST:localhost}
+      port: 6379
+      timeout: 500ms
+  mail:
+    host: ${CAMHUB_SMTP_HOST:}
+    port: ${CAMHUB_SMTP_PORT:25}
+    username: ${CAMHUB_SMTP_USER:}
+    password: ${CAMHUB_SMTP_PASSWORD:}
+  rabbitmq:
+    host: ${CAMHUB_RABBITMQ_HOST:localhost}
+    port: ${CAMHUB_RABBITMQ_PORT:5672}
+    username: ${CAMHUB_RABBITMQ_USER:camhub}
+    password: ${CAMHUB_RABBITMQ_PASSWORD:camhub}
+    virtual-host: ${CAMHUB_RABBITMQ_VHOST:camhub}
+    publisher-confirm-type: simple
+
+server:
+  port: 8080
+  shutdown: graceful
+  forward-headers-strategy: framework
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      gateway:
+        sliding-window-size: 20
+        minimum-number-of-calls: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        # Lỗi do thiết bị (sai mật khẩu, không tới được camera) không phải lỗi Gateway
+        ignore-exceptions:
+          - vn.camhub.device.api.DeviceControlPort$DeviceException
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: camhub-core
+
+camhub:
+  tenancy:
+    header-resolver-enabled: false
+  crypto:
+    master-key-file: ${CAMHUB_MASTER_KEY_FILE:}
+    master-key: ${CAMHUB_MASTER_KEY:}
+    master-key-id: ${CAMHUB_MASTER_KEY_ID:mk1}
+  media:
+    mediamtx:
+      api-url: ${CAMHUB_MEDIAMTX_API_URL:http://localhost:9997}
+    token:
+      secret: ${CAMHUB_MEDIA_TOKEN_SECRET:}
+      ttl: 60s
+      internal-user: ${CAMHUB_MEDIA_INTERNAL_USER:camhub-internal}
+      internal-secret: ${CAMHUB_MEDIA_INTERNAL_SECRET:}
+  device:
+    gateway:
+      url: ${CAMHUB_DEVICE_GATEWAY_URL:http://localhost:8000}
+      internal-token: ${CAMHUB_DEVICE_GATEWAY_TOKEN:}
+      timeout: 40s
+    sync-interval: 60s
+  outbox:
+    poll-interval: 1s
+  security:
+    jwt:
+      secret: ${CAMHUB_JWT_SECRET:}
+      access-token-ttl: 15m
+    session:
+      idle-timeout: 12h
+    login:
+      max-failed-attempts: 5
+  storage:
+    # MinIO: clip đã xuất (US-20). Mật khẩu từ Docker secret camhub.storage.secret-key
+    endpoint: ${CAMHUB_STORAGE_ENDPOINT:http://localhost:9000}
+    access-key: ${CAMHUB_STORAGE_ACCESS_KEY:camhub}
+    secret-key: ${CAMHUB_STORAGE_SECRET_KEY:}
+  backup:
+    status-dir: ${CAMHUB_BACKUP_STATUS_DIR:/backup-status}
+  notification:
+    # Email thông báo (US-34.2) bật khi đặt spring.mail.host (CAMHUB_SMTP_HOST)
+    mail-from: ${CAMHUB_MAIL_FROM:CamHub <no-reply@camhub.local>}
+    base-url: ${CAMHUB_PUBLIC_URL:https://localhost}
+  bootstrap:
+    organization-code: ${CAMHUB_BOOTSTRAP_ORG_CODE:default}
+    organization-name: ${CAMHUB_BOOTSTRAP_ORG_NAME:Tổ chức mặc định}
+    admin-email: ${CAMHUB_BOOTSTRAP_ADMIN_EMAIL:admin@camhub.local}
+    admin-password: ${CAMHUB_BOOTSTRAP_ADMIN_PASSWORD:}
+

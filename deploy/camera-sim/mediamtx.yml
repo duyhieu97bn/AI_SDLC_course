@@ -1,0 +1,26 @@
+# "Camera giả lập" cho môi trường dev (profile sim): một MediaMTX độc lập đóng vai máy chủ RTSP của camera.
+# rtsp-sim publish vào đây (sim-1..sim-N); MediaMTX chính và Device Gateway kéo luồng bằng tài khoản camera
+# admin/admin123 – giống camera thật có máy chủ RTSP và tài khoản riêng.
+logLevel: warn
+rtsp: yes
+rtspTransports: [tcp]
+rtspAddress: :8554
+rtmp: no
+hls: no
+webrtc: no
+srt: no
+api: no
+authMethod: internal
+authInternalUsers:
+  - user: any
+    pass:
+    ips: []
+    permissions:
+      - action: publish
+  - user: admin
+    pass: admin123
+    ips: []
+    permissions:
+      - action: read
+paths:
+  all_others:

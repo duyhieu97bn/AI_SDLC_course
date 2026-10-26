@@ -1,0 +1,29 @@
+# Danh sách camera thật cho bộ kiểm thử tương thích (TS-05.4).
+#
+# Cách dùng: sao chép thành tests/compat/cameras.yaml (đã gitignore, không commit) hoặc trỏ biến môi trường
+# CAMHUB_COMPAT_CAMERAS tới file khác. Tài khoản KHÔNG ghi trong file: chỉ ghi tên biến môi trường chứa nó.
+# Camera không có biến môi trường tài khoản hoặc không kết nối được sẽ được đánh dấu BỎ QUA.
+#
+# allow_write: true cho phép thử ghi (tạo/xóa preset tạm, ghi lại đúng giá trị hình ảnh vừa đọc).
+# Mặc định false: chỉ đọc và PTZ di chuyển nhẹ 0,3 giây rồi dừng.
+cameras:
+  - name: Hikvision DS-2CD2143G2-I
+    host: 192.168.1.64
+    port: 80
+    username_env: COMPAT_HIK_USER
+    password_env: COMPAT_HIK_PASSWORD
+    allow_write: false
+
+  - name: Dahua IPC-HFW2431S
+    host: 192.168.1.108
+    port: 80
+    username_env: COMPAT_DAHUA_USER
+    password_env: COMPAT_DAHUA_PASSWORD
+    allow_write: false
+
+  - name: Hikvision PTZ DS-2DE4425IW
+    host: 192.168.1.70
+    port: 80
+    username_env: COMPAT_HIKPTZ_USER
+    password_env: COMPAT_HIKPTZ_PASSWORD
+    allow_write: true

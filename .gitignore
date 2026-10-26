@@ -1,0 +1,38 @@
+# Build output
+core/build/
+core/.gradle/
+core/bin/
+core/.settings/
+core/.project
+core/.classpath
+web/node_modules/.tmp/
+web/node_modules/
+web/dist/
+web/coverage/
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.venv/
+*.egg-info/
+
+# Môi trường và bí mật – không bao giờ commit
+deploy/.env
+deploy/secrets/
+deploy/nginx/certs/
+*.pem
+*.key
+
+# Dữ liệu chạy thử
+deploy/data/
+**/*.mp4
+
+# IDE
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+
+# Danh sách camera thật cho bộ kiểm thử tương thích (chứa địa chỉ nội bộ)
+device-gateway/tests/compat/cameras.yaml

@@ -1,0 +1,598 @@
+# CamHub – môi trường dev/staging bằng Docker Compose (TS-02, SADD 3.2 và 3.12.2).
+# Dựng toàn bộ: ./scripts/dev.sh up   (lần đầu tự sinh bí mật và chứng chỉ TLS tự ký)
+# Thêm bộ giả lập RTSP: ./scripts/dev.sh sim 20
+#
+# Mạng:
+#   edge     – chỉ Nginx và MediaMTX (cổng WebRTC UDP/TCP) mở ra ngoài
+#   backend  – mọi dịch vụ nội bộ; /internal của Core chỉ gọi được trong mạng này
+name: camhub
+
+x-restart: &restart
+  restart: unless-stopped
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options: { max-size: "20m", max-file: "5" }
+
+services:
+  # ---------------------------------------------------------------- Edge
+  nginx:
+    <<: [*restart, *logging]
+    build: ../web
+    image: camhub/web:dev
+    ports:
+      - "${CAMHUB_HTTPS_PORT:-8443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    # wan: mạng giả lập Internet cho profile "site" – Site Connector chỉ thấy Nginx:443 (ADR-10)
+    networks: [edge, backend, wan]
+    depends_on:
+      core: { condition: service_healthy }
+      mediamtx: { condition: service_started }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "--no-check-certificate", "https://127.0.0.1/healthz"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+
+  # ---------------------------------------------------------------- Ứng dụng
+  core:
+    <<: [*restart, *logging]
+    build: ../core
+    image: camhub/core:dev
+    environment:
+      SPRING_PROFILES_ACTIVE: ${CAMHUB_CORE_PROFILES:-dev,poc,demo}
+      CAMHUB_DB_URL: jdbc:postgresql://postgres:5432/camhub
+      CAMHUB_RABBITMQ_HOST: rabbitmq
+      CAMHUB_REDIS_HOST: redis
+      CAMHUB_MASTER_KEY_FILE: /run/secrets/camhub_master_key
+      CAMHUB_BOOTSTRAP_ADMIN_EMAIL: ${CAMHUB_ADMIN_EMAIL:-admin@camhub.local}
+      CAMHUB_DEVICE_GATEWAY_URL: http://device-gateway:8000
+      CAMHUB_MEDIAMTX_API_URL: http://mediamtx:9997
+      # Trạng thái sao lưu do dịch vụ backup ghi (status.json), Core chỉ đọc cho GET /system/backups (US-40.3)
+      CAMHUB_BACKUP_STATUS_DIR: /backup-status
+      # Clip đã xuất (US-20) trong MinIO; liên kết tải đi qua Core
+      CAMHUB_STORAGE_ENDPOINT: http://minio:9000
+      # Email thông báo (US-34): dev dùng Mailpit (xem thư ở http://127.0.0.1:8025); production đặt SMTP thật
+      CAMHUB_SMTP_HOST: ${CAMHUB_SMTP_HOST:-mailpit}
+      CAMHUB_SMTP_PORT: ${CAMHUB_SMTP_PORT:-1025}
+      CAMHUB_PUBLIC_URL: ${CAMHUB_PUBLIC_URL:-https://localhost}
+      # Đo dung lượng ổ ghi hình (US-35): production 5 phút, dev 1 phút để kiểm thử nhanh
+      CAMHUB_RECORDING_STORAGE_CHECK_INTERVAL: ${CAMHUB_STORAGE_CHECK_MS:-60000}
+      # Telegram/Zalo (US-36): dev dùng tools/chat-mock; production để trống (API thật)
+      CAMHUB_NOTIFICATION_TELEGRAM_BASE_URL: ${CAMHUB_TELEGRAM_API:-http://chat-mock:8026}
+      CAMHUB_NOTIFICATION_ZALO_BASE_URL: ${CAMHUB_ZALO_API:-http://chat-mock:8026}
+    secrets:
+      - camhub_master_key
+      - { source: jwt_secret, target: camhub.security.jwt.secret }
+      - { source: bootstrap_admin_password, target: camhub.bootstrap.admin-password }
+      - { source: gateway_internal_token, target: camhub.device.gateway.internal-token }
+      - { source: db_app_password, target: spring.datasource.password }
+      - { source: db_owner_password, target: spring.flyway.password }
+      - { source: rabbitmq_password, target: spring.rabbitmq.password }
+      - { source: media_token_secret, target: camhub.media.token.secret }
+      - { source: media_internal_secret, target: camhub.media.token.internal-secret }
+      - { source: minio_root_password, target: camhub.storage.secret-key }
+    # Đọc kích thước và xóa tệp ghi quá hạn (US-21); cùng uid 10001 với MediaMTX
+    volumes:
+      - recordings:/recordings
+      - backupstatus:/backup-status:ro
+      # Tệp xác thực chisel (users.json) cho Tunnel Server (ADR-10); Core ghi, tunnel chỉ đọc
+      - tunnelauth:/tunnel-auth
+    networks: [backend]
+    depends_on:
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      recordings-init: { condition: service_completed_successfully }
+      tunnelauth-init: { condition: service_completed_successfully }
+
+  device-gateway:
+    <<: [*restart, *logging]
+    build: ../device-gateway
+    image: camhub/device-gateway:dev
+    secrets:
+      - { source: gateway_internal_token, target: camhub_gw_internal_token }
+      - { source: gateway_rabbitmq_url, target: camhub_gw_rabbitmq_url }
+    networks: [backend]
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+
+  # Tunnel Server (ADR-10, TS-06.2): chisel server --reverse sau Nginx (location /tunnel/, WSS 443).
+  # Site Connector mở cổng ngược trên container này: SOCKS5 21000–21999 (ONVIF qua Device Gateway) và
+  # chuyển tiếp TCP 22000–23999 (RTSP cho MediaMTX). Chỉ mạng backend tới được, KHÔNG publish ra máy chủ.
+  tunnel:
+    <<: [*restart, *logging]
+    build: ./tunnel
+    image: camhub/tunnel:dev
+    volumes:
+      - tunnelauth:/tunnel-auth:ro
+    expose:
+      - "8080"
+      - "21000-21999"
+      - "22000-23999"
+    networks: [backend]
+    depends_on:
+      tunnelauth-init: { condition: service_completed_successfully }
+
+  # Volume tunnelauth thuộc uid 10001 để Core (không chạy root) ghi được users.json – chạy một lần
+  tunnelauth-init:
+    image: camhub/tunnel:dev
+    build: ./tunnel
+    user: "0"
+    entrypoint: ["/bin/sh", "-c", "chown 10001:10001 /tunnel-auth && chmod 755 /tunnel-auth"]
+    volumes:
+      - tunnelauth:/tunnel-auth
+    network_mode: none
+
+  media-worker:
+    <<: [*restart, *logging]
+    build: ../media-worker
+    image: camhub/media-worker:dev
+    volumes:
+      - recordings:/recordings:ro
+    networks: [backend]
+    # Xuất clip (US-20.2): nhận việc từ RabbitMQ, tải đoạn ghi từ MediaMTX playback, đẩy MP4 lên MinIO
+    # Ảnh sự kiện (US-36.3): một khung hình từ RTSP MediaMTX (luồng trực tiếp) → JPEG → bucket camhub-snapshots
+    secrets:
+      - media_internal_secret
+      - minio_root_password
+      - { source: gateway_rabbitmq_url, target: rabbitmq_url }
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+      minio: { condition: service_healthy }
+      mediamtx: { condition: service_started }
+
+  # Đặt chủ sở hữu thư mục ghi hình là uid 10001 (MediaMTX ghi, Core đọc/xóa) – chạy một lần
+  recordings-init:
+    image: bluenviron/mediamtx:1.12.3-ffmpeg
+    entrypoint: ["/bin/sh", "-c", "chown -R 10001:10001 /recordings && chmod 775 /recordings"]
+    volumes:
+      - recordings:/recordings
+    networks: [backend]
+
+  mediamtx:
+    <<: [*restart, *logging]
+    image: bluenviron/mediamtx:1.12.3-ffmpeg
+    user: "10001:10001"
+    # Đưa mật khẩu tài khoản nội bộ vào biến môi trường cho lệnh FFmpeg chuyển mã (runOnDemand)
+    entrypoint: ["/bin/sh", "-c", "export MTX_INTERNAL_SECRET=$$(cat /run/secrets/media_internal_secret) && exec /mediamtx /mediamtx.yml"]
+    environment:
+      # Địa chỉ trình duyệt dùng để tới cổng WebRTC; đặt IP LAN của máy chủ khi xem từ máy khác
+      MTX_WEBRTCADDITIONALHOSTS: ${CAMHUB_WEBRTC_HOSTS:-127.0.0.1}
+    secrets: [media_internal_secret]
+    volumes:
+      - ./mediamtx/mediamtx.yml:/mediamtx.yml:ro
+      - ./mediamtx/hooks:/hooks:ro
+      - recordings:/recordings
+    depends_on:
+      recordings-init: { condition: service_completed_successfully }
+    ports:
+      - "8189:8189/udp"
+      - "8189:8189/tcp"
+    networks: [edge, backend]
+
+  # ---------------------------------------------------------------- Dữ liệu
+  # PostgreSQL 16 kèm pgBackRest (US-40.1): mọi đoạn WAL được đẩy liên tục vào kho "pgbackrest";
+  # archive_timeout buộc đóng đoạn WAL tối đa mỗi 5 phút khi ít ghi, nên RPO thực tế chỉ vài phút.
+  postgres:
+    <<: [*restart, *logging]
+    build: { context: ., dockerfile: postgres/Dockerfile }
+    image: camhub/postgres:dev
+    command:
+      - postgres
+      - -c
+      - wal_level=replica
+      - -c
+      - archive_mode=on
+      - -c
+      - archive_command=pgbackrest --stanza=camhub archive-push %p
+      - -c
+      - archive_timeout=${CAMHUB_PG_ARCHIVE_TIMEOUT:-300}
+    environment:
+      POSTGRES_DB: camhub
+      POSTGRES_USER: camhub
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_owner_password
+    secrets: [db_owner_password, db_app_password]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+      - pgbackrest:/var/lib/pgbackrest
+      # Unix socket dùng chung với dịch vụ backup (pgBackRest chỉ kết nối cục bộ qua socket)
+      - pgsocket:/var/run/postgresql
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U camhub -d camhub"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  # Sao lưu (US-40.1): cùng image với postgres, chạy crond.
+  #   PostgreSQL: bản đầy đủ hằng ngày + differential hằng giờ (pgBackRest, giữ 30 bản đầy đủ)
+  #   MinIO: mc mirror hằng giờ sang volume miniobackup (dev; production trỏ tới S3/NAS off-site)
+  # Ghi trạng thái vào volume backupstatus (status.json) cho Core. Lịch chỉnh trong .env (cú pháp cron, giờ theo TZ).
+  # Khôi phục chỉ do Đội vận hành IT làm theo docs/runbook/restore.md, không có trên giao diện web.
+  backup:
+    <<: [*restart, *logging]
+    image: camhub/postgres:dev
+    entrypoint: ["/usr/local/bin/camhub-backup", "daemon"]
+    environment:
+      TZ: ${CAMHUB_TZ:-Asia/Ho_Chi_Minh}
+      BACKUP_FULL_CRON: ${CAMHUB_BACKUP_FULL_CRON:-0 1 * * *}
+      BACKUP_DIFF_CRON: ${CAMHUB_BACKUP_DIFF_CRON:-0 * * * *}
+      BACKUP_HOURLY_TYPE: ${CAMHUB_BACKUP_HOURLY_TYPE:-diff}
+      MINIO_MIRROR_CRON: ${CAMHUB_MINIO_MIRROR_CRON:-30 * * * *}
+      MINIO_MIRROR_REMOVE: ${CAMHUB_MINIO_MIRROR_REMOVE:-0}
+      BACKUP_STALE_HOURS: ${CAMHUB_BACKUP_STALE_HOURS:-2}
+      MINIO_ENDPOINT: minio:9000
+      MINIO_USER: camhub
+    secrets: [minio_root_password]
+    volumes:
+      - pgdata:/var/lib/postgresql/data:ro
+      - pgsocket:/var/run/postgresql
+      - pgbackrest:/var/lib/pgbackrest
+      - backupstatus:/backup-status
+      - miniobackup:/miniobackup
+    networks: [backend]
+    depends_on:
+      postgres: { condition: service_healthy }
+      minio: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "test", "-s", "/backup-status/status.json"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+  redis:
+    <<: [*restart, *logging]
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "512mb", "--maxmemory-policy", "volatile-lru"]
+    volumes:
+      - redisdata:/data
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  rabbitmq:
+    <<: [*restart, *logging]
+    image: rabbitmq:3.13-management-alpine
+    hostname: rabbitmq
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/conf.d/10-camhub.conf:ro
+      - ./rabbitmq/definitions.d/10-topology.json:/etc/rabbitmq/definitions.d/10-topology.json:ro
+      # Tài khoản và quyền (chứa hash mật khẩu) do dev.sh init sinh ra, không nằm trong Git
+      - ./secrets/rabbitmq-users.json:/etc/rabbitmq/definitions.d/00-users.json:ro
+      - rabbitdata:/var/lib/rabbitmq
+    ports:
+      - "127.0.0.1:15672:15672"
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+  minio:
+    <<: [*restart, *logging]
+    # Docker Hub đã ngừng phát hành image MinIO cộng đồng; bản Bitnami legacy này đóng băng ở 2025-07-23.
+    # Xem docs/poc/mediamtx-report.md mục rủi ro: chọn lại kho S3 trước GA.
+    image: bitnamilegacy/minio:2025.7.23
+    environment:
+      MINIO_ROOT_USER: camhub
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
+      MINIO_DEFAULT_BUCKETS: camhub-exports,camhub-snapshots
+    secrets: [minio_root_password]
+    volumes:
+      - miniodata:/bitnami/minio/data
+    ports:
+      - "127.0.0.1:9001:9001"
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+  # Hộp thư SMTP cho dev/kiểm thử: nhận mọi email thông báo, không gửi ra ngoài
+  mailpit:
+    <<: [*restart, *logging]
+    image: axllent/mailpit:v1.21.0
+    ports:
+      - "127.0.0.1:8025:8025"
+    networks: [backend]
+
+  # Giả lập Telegram Bot API + Zalo OA API cho dev/e2e (tools/chat-mock): Core trỏ base URL về http://chat-mock:8026
+  chat-mock:
+    <<: [*restart, *logging]
+    profiles: [sim]
+    build: ../tools/chat-mock
+    image: camhub/chat-mock:dev
+    ports:
+      - "127.0.0.1:8026:8026"
+    networks: [backend]
+
+  # ---------------------------------------------------------------- Giám sát (TS-07)
+  prometheus:
+    <<: [*restart, *logging]
+    image: prom/prometheus:v3.2.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=15d
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+      - promdata:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks: [backend]
+
+  postgres-exporter:
+    <<: [*restart, *logging]
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    entrypoint: ["/bin/sh", "-c", "export DATA_SOURCE_PASS=$$(cat /run/secrets/db_owner_password) && exec /bin/postgres_exporter"]
+    environment:
+      DATA_SOURCE_URI: postgres:5432/camhub?sslmode=disable
+      DATA_SOURCE_USER: camhub
+    secrets: [db_owner_password]
+    networks: [backend]
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  loki:
+    <<: [*restart, *logging]
+    image: grafana/loki:3.4.2
+    command: ["-config.file=/etc/loki/loki.yml"]
+    volumes:
+      - ./loki/loki.yml:/etc/loki/loki.yml:ro
+      - lokidata:/loki
+    networks: [backend]
+
+  promtail:
+    <<: [*restart, *logging]
+    image: grafana/promtail:3.4.2
+    command: ["-config.file=/etc/promtail/promtail.yml"]
+    volumes:
+      - ./loki/promtail.yml:/etc/promtail/promtail.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [backend]
+    depends_on: [loki]
+
+  grafana:
+    <<: [*restart, *logging]
+    image: grafana/grafana:11.5.2
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    secrets: [grafana_admin_password]
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafanadata:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks: [backend]
+    depends_on: [prometheus, loki]
+
+  # ---------------------------------------------------------------- Giả lập thiết bị (profile "sim")
+  # Camera giả lập: camera-sim là máy chủ RTSP "của camera", rtsp-sim phát hình vào đó, onvif-sim trả lời ONVIF.
+  camera-sim:
+    <<: [*restart, *logging]
+    profiles: [sim]
+    image: bluenviron/mediamtx:1.12.3-ffmpeg
+    entrypoint: ["/mediamtx", "/camera-sim.yml"]
+    volumes:
+      - ./camera-sim/mediamtx.yml:/camera-sim.yml:ro
+    networks: [backend]
+
+  rtsp-sim:
+    <<: [*restart, *logging]
+    profiles: [sim]
+    image: bluenviron/mediamtx:1.12.3-ffmpeg
+    entrypoint: ["/bin/sh", "/sim/run.sh"]
+    environment:
+      SIM_STREAMS: ${SIM_STREAMS:-24}
+      SIM_CODEC: ${SIM_CODEC:-h264}
+      SIM_TARGET: rtsp://camera-sim:8554
+      SIM_USER: sim
+    secrets: [media_internal_secret]
+    volumes:
+      - ../tools/rtsp-sim:/sim:ro
+      - simsamples:/samples
+    networks: [backend]
+    depends_on: [camera-sim]
+
+  onvif-sim-1:
+    <<: [*restart, *logging]
+    profiles: [sim]
+    build: ../tools/onvif-sim
+    image: camhub/onvif-sim:dev
+    environment:
+      SIM_NAME: Camera ONVIF giả lập 1
+      SIM_MANUFACTURER: Hikvision
+      SIM_MODEL: DS-2CD2143G2-I (SIM)
+      SIM_MAC: "02:00:00:00:00:21"
+      SIM_ADVERTISE_HOST: onvif-sim-1
+      SIM_RTSP_MAIN: rtsp://camera-sim:8554/sim-21
+      SIM_RTSP_SUB: rtsp://camera-sim:8554/sim-21
+      SIM_PTZ: "true"
+    networks: [backend]
+
+  onvif-sim-2:
+    <<: [*restart, *logging]
+    profiles: [sim]
+    image: camhub/onvif-sim:dev
+    environment:
+      SIM_NAME: Camera ONVIF giả lập 2
+      SIM_MANUFACTURER: Dahua
+      SIM_MODEL: IPC-HFW2431S (SIM)
+      SIM_MAC: "02:00:00:00:00:22"
+      SIM_ADVERTISE_HOST: onvif-sim-2
+      SIM_RTSP_MAIN: rtsp://camera-sim:8554/sim-22
+      SIM_RTSP_SUB: rtsp://camera-sim:8554/sim-22
+      SIM_PTZ: "false"
+      # Thẻ nhớ giả lập (Profile G, US-22.1): bản ghi rec_1 phủ 24 giờ gần nhất, trống 02:00–02:30 UTC mỗi ngày
+      SIM_EDGE_RECORDING: "true"
+      # Đồng hồ chạy nhanh 7 giây để kiểm tra cảnh báo lệch giờ (US-25 AC2); chuyển sang NTP thì hết lệch.
+      # Đặt lại độ lệch: POST http://onvif-sim-2:8080/sim/clock {"offsetSeconds": 7}
+      SIM_CLOCK_OFFSET_SECONDS: "7"
+      SIM_NTP_SYNC: "true"
+    networks: [backend]
+    depends_on: [onvif-sim-1]
+
+  # Đầu ghi NVR giả lập (US-03.1): 16 kênh, kênh 1–3 có tín hiệu (luồng sim-23, sim-24, sim-20 trên camera-sim),
+  # kênh 4–16 mất tín hiệu (VideoSource Framerate 0, Resolution 0×0). Profile G: bản ghi rec_ch01..rec_ch03.
+  onvif-nvr-1:
+    <<: [*restart, *logging]
+    profiles: [sim]
+    image: camhub/onvif-sim:dev
+    environment:
+      SIM_NAME: Đầu ghi NVR giả lập 1
+      SIM_MANUFACTURER: Hikvision
+      SIM_MODEL: DS-7616NI-K2 (SIM)
+      SIM_SERIAL: NVR0000001
+      SIM_MAC: "02:00:00:00:00:31"
+      SIM_ADVERTISE_HOST: onvif-nvr-1
+      SIM_PTZ: "false"
+      SIM_ZONES: "false"
+      SIM_CHANNELS: "16"
+      SIM_SIGNAL_CHANNELS: "1,2,3"
+      SIM_CHANNEL_RTSP_MAIN: rtsp://camera-sim:8554/sim-23,rtsp://camera-sim:8554/sim-24,rtsp://camera-sim:8554/sim-20
+    networks: [backend]
+    depends_on: [onvif-sim-1]
+
+  # Thư mục LDAP/AD giả lập (US-44): OpenLDAP dc=camhub,dc=local, LDAP 389 (StartTLS) và LDAPS 636 tự ký,
+  # chỉ trong mạng backend. Dữ liệu nằm trong container: tạo lại container là nạp lại seed. Xem ldap/README.md.
+  ldap:
+    <<: [*restart, *logging]
+    profiles: [sim]
+    image: bitnamilegacy/openldap:2.6.10
+    entrypoint: ["/bin/bash", "/camhub-ldap/entrypoint.sh"]
+    command: ["/opt/bitnami/scripts/openldap/run.sh"]
+    environment:
+      LDAP_ROOT: dc=camhub,dc=local
+      LDAP_ADMIN_USERNAME: admin
+      LDAP_ADMIN_PASSWORD_FILE: /run/secrets/ldap_admin_password
+      LDAP_SKIP_DEFAULT_TREE: "yes"
+      LDAP_ALLOW_ANON_BINDING: "no"
+      LDAP_CONFIGURE_PPOLICY: "yes"
+      LDAP_PORT_NUMBER: "389"
+      LDAP_LDAPS_PORT_NUMBER: "636"
+      LDAP_ENABLE_TLS: "yes"
+      LDAP_TLS_CERT_FILE: /opt/bitnami/openldap/share/certs/ldap.crt
+      LDAP_TLS_KEY_FILE: /opt/bitnami/openldap/share/certs/ldap.key
+      LDAP_TLS_CA_FILE: /opt/bitnami/openldap/share/certs/ca.crt
+    # Cho tiến trình không phải root (uid 1001) mở cổng 389/636
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: "0"
+    secrets: [ldap_admin_password, ldap_bind_password]
+    volumes:
+      - ./ldap:/camhub-ldap:ro
+      - ./ldap/init.sh:/docker-entrypoint-initdb.d/10-camhub.sh:ro
+    networks: [backend]
+    healthcheck:
+      test: ["CMD", "ldapwhoami", "-H", "ldap://localhost:389", "-D", "cn=svc-camhub,ou=service,dc=camhub,dc=local", "-y", "/run/secrets/ldap_bind_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ---------------------------------------------------------------- Địa điểm từ xa giả lập (profile "site", TS-06.4)
+  # Mạng site-lan (internal) chứa camera của địa điểm; máy chủ CamHub không tới thẳng được. site-connector nằm ở
+  # site-lan và wan (chỉ có Nginx), mở đường hầm WSS 443 qua Nginx tới dịch vụ tunnel.
+  # Chạy: Admin tạo bộ kết nối trên giao diện, lấy mã kích hoạt rồi
+  #   CAMHUB_SITE_CODE=<mã> docker compose --profile site up -d site-connector
+  site-camera:
+    <<: [*restart, *logging]
+    profiles: [site]
+    image: bluenviron/mediamtx:1.12.3-ffmpeg
+    entrypoint: ["/mediamtx", "/site-camera.yml"]
+    volumes:
+      - ./site-sim/site-camera.yml:/site-camera.yml:ro
+    networks: [site-lan]
+
+  site-onvif:
+    <<: [*restart, *logging]
+    profiles: [site]
+    build: ../tools/onvif-sim
+    image: camhub/onvif-sim:dev
+    environment:
+      SIM_NAME: Camera địa điểm từ xa
+      SIM_MANUFACTURER: Axis
+      SIM_MODEL: P3245-LV (SIM)
+      SIM_MAC: "02:00:00:00:00:61"
+      SIM_ADVERTISE_HOST: site-onvif
+      SIM_RTSP_MAIN: rtsp://site-camera:8554/cam1
+      SIM_RTSP_SUB: rtsp://site-camera:8554/cam2
+      SIM_PTZ: "false"
+    networks: [site-lan]
+
+  site-connector:
+    <<: [*restart, *logging]
+    profiles: [site]
+    build: ../site-connector
+    image: camhub/site-connector:dev
+    environment:
+      CAMHUB_SERVER: https://nginx
+      CAMHUB_ACTIVATION_CODE: ${CAMHUB_SITE_CODE:-}
+      # Chứng chỉ dev tự ký; production dùng chứng chỉ hợp lệ hoặc CAMHUB_CA_FILE
+      CAMHUB_TLS_INSECURE: "true"
+      # Mạng internal không có tuyến mặc định nên onvif-sim không tham gia được nhóm multicast;
+      # dò thêm bằng Probe unicast trên dải LAN của địa điểm (camera thật vẫn trả lời multicast)
+      CAMHUB_DISCOVERY_TARGETS: 192.168.250.0/24
+    volumes:
+      - siteconnector:/var/lib/camhub-connector
+    networks: [site-lan, wan]
+    depends_on: [site-camera, site-onvif]
+
+networks:
+  edge: {}
+  backend: {}
+  # Profile "site": wan giả lập Internet (chỉ Nginx), site-lan là LAN của địa điểm; cả hai không có đường ra ngoài
+  wan: { internal: true }
+  site-lan:
+    internal: true
+    ipam:
+      config:
+        - subnet: 192.168.250.0/24
+
+volumes:
+  pgdata: {}
+  pgsocket: {}
+  # Kho pgBackRest (bản sao lưu + WAL). Dev: volume cục bộ; production: thêm repo2 off-site
+  pgbackrest: {}
+  backupstatus: {}
+  # Bản sao MinIO. Dev: volume cục bộ thay cho kho off-site
+  miniobackup: {}
+  redisdata: {}
+  rabbitdata: {}
+  miniodata: {}
+  recordings: {}
+  promdata: {}
+  lokidata: {}
+  grafanadata: {}
+  simsamples: {}
+  # Tệp xác thực của Tunnel Server (Core ghi users.json)
+  tunnelauth: {}
+  # Thông tin đăng nhập của Site Connector giả lập (profile site)
+  siteconnector: {}
+
+secrets:
+  camhub_master_key: { file: ./secrets/camhub_master_key }
+  db_owner_password: { file: ./secrets/db_owner_password }
+  db_app_password: { file: ./secrets/db_app_password }
+  rabbitmq_password: { file: ./secrets/rabbitmq_password }
+  media_token_secret: { file: ./secrets/media_token_secret }
+  media_internal_secret: { file: ./secrets/media_internal_secret }
+  minio_root_password: { file: ./secrets/minio_root_password }
+  grafana_admin_password: { file: ./secrets/grafana_admin_password }
+  jwt_secret: { file: ./secrets/jwt_secret }
+  bootstrap_admin_password: { file: ./secrets/bootstrap_admin_password }
+  gateway_internal_token: { file: ./secrets/gateway_internal_token }
+  gateway_rabbitmq_url: { file: ./secrets/gateway_rabbitmq_url }
+  ldap_admin_password: { file: ./secrets/ldap_admin_password }
+  ldap_bind_password: { file: ./secrets/ldap_bind_password }

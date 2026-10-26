@@ -1,0 +1,131 @@
+# CI cho 4 thành phần (TS-01.7): build, test, lint, kiểm tra kiến trúc, quét lỗ hổng thư viện.
+# Chạy cho mọi pull request và mỗi lần push lên main. Job chỉ chạy khi thư mục liên quan thay đổi.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core: ${{ steps.filter.outputs.core }}
+      python: ${{ steps.filter.outputs.python }}
+      web: ${{ steps.filter.outputs.web }}
+      deploy: ${{ steps.filter.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            core: ['core/**', '.github/workflows/ci.yml']
+            python: ['device-gateway/**', 'media-worker/**', 'site-connector/**', '.github/workflows/ci.yml']
+            web: ['web/**', '.github/workflows/ci.yml']
+            deploy: ['deploy/**', 'tools/**', 'tests/smoke/**', '.github/workflows/ci.yml']
+
+  core:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build, unit test, ArchitectureTest (phụ thuộc vòng, gọi qua api)
+        run: ./gradlew --no-daemon build -x integrationTest
+      - name: Test tích hợp (Testcontainers – RLS, outbox)
+        run: ./gradlew --no-daemon integrationTest
+      - name: OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: camhub-core
+          path: core
+          format: HTML
+          args: --failOnCVSS 7 --enableRetired
+        env:
+          # Khóa API NVD giúp tải cơ sở dữ liệu lỗ hổng nhanh hơn; cấu hình trong Settings > Secrets
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-reports
+          path: |
+            core/build/reports/
+            reports/
+
+  python:
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [device-gateway, media-worker, site-connector]
+    defaults:
+      run:
+        working-directory: ${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - name: ruff
+        run: ruff check . && ruff format --check .
+      - name: mypy
+        run: mypy
+      - name: pytest
+        run: pytest -q
+      - name: pip-audit
+        run: pip-audit --skip-editable
+
+  web:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: npm audit
+        run: npm audit --omit=dev --audit-level=high
+
+  deploy:
+    needs: changes
+    if: needs.changes.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Kiểm tra cú pháp shell
+        run: shellcheck -S warning deploy/scripts/*.sh deploy/mediamtx/hooks/*.sh deploy/postgres/init/*.sh tests/smoke/*.sh tools/transcode-poc/*.sh
+      - name: Kiểm tra docker-compose hợp lệ
+        working-directory: deploy
+        run: ./scripts/dev.sh init && docker compose config --quiet

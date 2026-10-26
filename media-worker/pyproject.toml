@@ -1,0 +1,45 @@
+[project]
+name = "camhub-media-worker"
+version = "0.1.0"
+description = "CamHub Media Worker: xuất clip, chuyển mã, chụp ảnh sự kiện bằng FFmpeg (SADD 3.3)"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic-settings>=2.6",
+    "prometheus-client>=0.21",
+    "aio-pika>=9.4",
+    "httpx>=0.28",
+    "minio>=7.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "pip-audit>=2.7",
+]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["media_worker"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "N", "SIM"]
+ignore = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["media_worker"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

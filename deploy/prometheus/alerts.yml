@@ -1,0 +1,35 @@
+# Rule cảnh báo vận hành (TS-07.3, UC-60). Gửi qua Alertmanager được bổ sung ở S8 khi có kênh thông báo.
+groups:
+  - name: camhub-availability
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels: { severity: critical }
+        annotations:
+          summary: "Dịch vụ {{ $labels.job }} không phản hồi"
+          description: "Prometheus không thu được metric từ {{ $labels.instance }} trong hơn 1 phút (container dừng hoặc treo)."
+
+      - alert: OutboxBacklog
+        expr: camhub_outbox_pending > 500
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Sự kiện tồn đọng trong outbox"
+          description: "{{ $value }} sự kiện chưa gửi sang RabbitMQ trong hơn 5 phút; kiểm tra kết nối broker."
+
+      - alert: MediaAuthDenySpike
+        expr: sum(rate(camhub_media_authorize_total{result="deny"}[5m])) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Nhiều phiên xem video bị từ chối"
+          description: "Hơn 1 phiên/giây bị từ chối trong 5 phút: token hết hạn hàng loạt hoặc có truy cập trái phép."
+
+      - alert: RecordingDiskAlmostFull
+        expr: (node_filesystem_avail_bytes{mountpoint="/recordings"} / node_filesystem_size_bytes{mountpoint="/recordings"}) < 0.10
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: "Ổ ghi hình còn dưới 10%"
+          description: "Áp dụng khi có node-exporter trên máy media (staging/production)."

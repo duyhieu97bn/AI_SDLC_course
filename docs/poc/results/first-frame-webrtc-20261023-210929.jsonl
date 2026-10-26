@@ -1,0 +1,2 @@
+{"streams":1,"round":1,"mode":"webrtc","ok":1,"failed":0,"avg":561,"p95":561,"max":561,"errors":[]}
+{"streams":20,"round":1,"mode":"webrtc","ok":1,"failed":19,"avg":828,"p95":828,"max":828,"errors":["sim-2: Không nhận được khung hình sau 8000 ms","sim-3: Không nhận được khung hình sau 8000 ms","sim-4: Không nhận được khung hình sau 8000 ms"]}

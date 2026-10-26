@@ -1,0 +1,66 @@
+{
+  "uid": "camhub-overview",
+  "title": "CamHub – Tổng quan vận hành",
+  "tags": ["camhub"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "Dịch vụ đang chạy",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "A", "expr": "sum(up)", "legendFormat": "up" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 7 }] } } }
+    },
+    {
+      "id": 2, "type": "state-timeline", "title": "Trạng thái từng dịch vụ",
+      "gridPos": { "x": 6, "y": 0, "w": 18, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "A", "expr": "up", "legendFormat": "{{job}}" }]
+    },
+    {
+      "id": 3, "type": "timeseries", "title": "Phiên media được cho phép / từ chối (mỗi giây)",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "A", "expr": "sum by (action, result) (rate(camhub_media_authorize_total[5m]))", "legendFormat": "{{action}} {{result}}" }]
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "Luồng MediaMTX: path sẵn sàng và người đọc",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "expr": "count(paths{state=\"ready\"})", "legendFormat": "path sẵn sàng" },
+        { "refId": "B", "expr": "sum(paths_readers)", "legendFormat": "người đọc" }
+      ]
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "Outbox: tồn đọng và lỗi gửi",
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "refId": "A", "expr": "camhub_outbox_pending", "legendFormat": "tồn đọng" },
+        { "refId": "B", "expr": "rate(camhub_outbox_failed_total[5m])", "legendFormat": "lỗi/giây" }
+      ]
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "Core: thời gian phản hồi HTTP p95 (giây)",
+      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "A", "expr": "histogram_quantile(0.95, sum by (le, uri) (rate(http_server_requests_seconds_bucket[5m])))", "legendFormat": "{{uri}}" }]
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "Đoạn ghi hoàn tất (mỗi phút)",
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "refId": "A", "expr": "rate(camhub_recording_segments_total[5m]) * 60", "legendFormat": "đoạn/phút" }]
+    },
+    {
+      "id": 8, "type": "logs", "title": "Log lỗi (mọi dịch vụ)",
+      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [{ "refId": "A", "expr": "{service=~\".+\", level=~\"ERROR|WARN\"}" }]
+    }
+  ]
+}

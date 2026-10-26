@@ -1,0 +1,65 @@
+# MediaMTX 1.12.3 – cấu hình CamHub (TS-02.3, TS-03.4; SADD ADR-03, 3.9.2).
+# Chỉ ghi các khóa khác mặc định. Danh sách khóa đầy đủ: /mediamtx.yml trong image.
+
+logLevel: info
+logDestinations: [stdout]
+
+# Mỗi phiên đọc, phát lại, publish đều hỏi Core: POST /internal/media/authorize
+authMethod: http
+authHTTPAddress: http://core:8080/internal/media/authorize
+authHTTPExclude:
+  - action: api
+  - action: metrics
+  - action: pprof
+
+# API điều khiển cho Core (tạo/xóa path camera ở S2) và metrics cho Prometheus – chỉ trong mạng backend
+api: yes
+apiAddress: :9997
+metrics: yes
+metricsAddress: :9998
+
+playback: yes
+playbackAddress: :9996
+
+# Chỉ RTSP qua TCP: ổn định qua đường hầm Site Connector và tường lửa
+rtsp: yes
+rtspTransports: [tcp]
+rtspAddress: :8554
+rtmp: no
+srt: no
+
+hls: yes
+hlsAddress: :8888
+hlsVariant: lowLatency
+hlsAllowOrigin: ''
+
+webrtc: yes
+webrtcAddress: :8889
+webrtcAllowOrigin: ''
+webrtcLocalUDPAddress: :8189
+# ICE-TCP dự phòng khi mạng chặn UDP (cùng cổng 8189/tcp)
+webrtcLocalTCPAddress: :8189
+# webrtcAdditionalHosts đặt qua biến môi trường MTX_WEBRTCADDITIONALHOSTS (docker-compose)
+
+pathDefaults:
+  # Ghi đoạn fMP4 60 giây (SADD 3.5); Core quản lý thời hạn lưu (S4) nên MediaMTX không tự xóa
+  record: no
+  recordPath: /recordings/%path/%Y-%m-%d_%H-%M-%S-%f
+  recordFormat: fmp4
+  recordPartDuration: 1s
+  recordSegmentDuration: 60s
+  recordDeleteAfter: 0s
+  runOnRecordSegmentComplete: sh /hooks/segment-complete.sh
+
+paths:
+  # Luồng chuyển mã H.265 -> H.264 theo yêu cầu (PNFR-03): <camera>_h264 chỉ chạy khi có người xem
+  "~^(.+)_h264$":
+    runOnDemand: >-
+      ffmpeg -hide_banner -loglevel error
+      -rtsp_transport tcp -i rtsp://camhub-internal:${MTX_INTERNAL_SECRET}@localhost:$RTSP_PORT/$G1
+      -c:v libx264 -preset veryfast -tune zerolatency -g 50 -c:a copy
+      -f rtsp rtsp://camhub-internal:${MTX_INTERNAL_SECRET}@localhost:$RTSP_PORT/$MTX_PATH
+    runOnDemandRestart: yes
+    runOnDemandCloseAfter: 15s
+
+  all_others:

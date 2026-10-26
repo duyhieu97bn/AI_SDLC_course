@@ -1,0 +1,52 @@
+/* Design token CamHub – port từ design/assets/styles.css (TS-01.6).
+   Nền tối mặc định (PRD 7.2); <html data-theme="light"> chuyển sang nền sáng.
+   Theme PrimeVue (src/styles/theme.ts) dùng lại các biến này, nên chỉ sửa màu ở một chỗ. */
+
+:root,
+:root[data-theme="dark"] {
+  --bg: #0f141b;
+  --surface: #161d27;
+  --surface-2: #1d2633;
+  --surface-3: #263142;
+  --border: #2a3646;
+  --text: #e6ebf2;
+  --text-2: #9aa7b8;
+  --text-3: #6b7889;
+  --primary: #4d8dff;
+  --primary-hover: #6aa0ff;
+  --primary-weak: rgba(77, 141, 255, 0.16);
+  --success: #2fbf71;
+  --success-weak: rgba(47, 191, 113, 0.16);
+  --warning: #f0a030;
+  --warning-weak: rgba(240, 160, 48, 0.16);
+  --danger: #f05252;
+  --danger-weak: rgba(240, 82, 82, 0.16);
+  --muted-weak: rgba(154, 167, 184, 0.14);
+  --video-bg: #05080c;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #f0f3f7;
+  --surface-3: #e5eaf0;
+  --border: #dbe1e8;
+  --text: #17202b;
+  --text-2: #556272;
+  --text-3: #8592a2;
+  --primary: #2563eb;
+  --primary-hover: #1d4fd8;
+  --primary-weak: rgba(37, 99, 235, 0.10);
+  --success: #15803d;
+  --success-weak: rgba(21, 128, 61, 0.10);
+  --warning: #b45309;
+  --warning-weak: rgba(180, 83, 9, 0.10);
+  --danger: #dc2626;
+  --danger-weak: rgba(220, 38, 38, 0.10);
+  --muted-weak: rgba(85, 98, 114, 0.10);
+  --video-bg: #0b0f14;
+  --shadow: 0 8px 24px rgba(16, 24, 40, 0.12);
+  color-scheme: light;
+}
