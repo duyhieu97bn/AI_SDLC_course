@@ -443,6 +443,25 @@ services:
       SIM_CLOCK_OFFSET_SECONDS: "7"
       SIM_NTP_SYNC: "true"
     networks: [backend]
+
+  # Camera có loa (US-15): profile "Talk" trỏ tới máy chủ RTSP backchannel của bộ giả lập ở cổng 8554.
+  # Âm thanh nhận được xem ở GET http://onvif-sim-talk:8080/sim/talk (số gói, byte, payload type).
+  onvif-sim-talk:
+    <<: [*restart, *logging]
+    profiles: [sim]
+    image: camhub/onvif-sim:dev
+    environment:
+      SIM_NAME: Camera có loa giả lập
+      SIM_MANUFACTURER: Hikvision
+      SIM_MODEL: DS-2CD2347G2-LSU (SIM)
+      SIM_MAC: "02:00:00:00:00:23"
+      SIM_ADVERTISE_HOST: onvif-sim-talk
+      SIM_RTSP_MAIN: rtsp://camera-sim:8554/sim-21
+      SIM_RTSP_SUB: rtsp://camera-sim:8554/sim-21
+      SIM_PTZ: "false"
+      SIM_TALK_PORT: "8554"
+      SIM_DISCOVERY_PORT: "0"
+    networks: [backend]
     depends_on: [onvif-sim-1]
 
   # Đầu ghi NVR giả lập (US-03.1): 16 kênh, kênh 1–3 có tín hiệu (luồng sim-23, sim-24, sim-20 trên camera-sim),

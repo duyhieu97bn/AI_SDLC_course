@@ -545,3 +545,26 @@ class MonitorTargetStatus(MonitorTarget):
     last_change_at: str | None = None
     last_check_at: str | None = None
     last_error: str | None = None
+
+
+# ---- Đàm thoại (US-15) ---------------------------------------------------------------------------------
+
+
+class TalkSessionCreated(CamelModel):
+    """Phiên đã mở kênh RTSP tới loa camera; trình duyệt nối WebSocket ``/talk/ws/{sessionId}`` trong hạn."""
+
+    session_id: str
+    codec: Literal["PCMU", "PCMA"]
+    expires_in_seconds: int
+    # Định dạng trình duyệt gửi lên WebSocket
+    sample_rate: int = 8000
+
+
+class TalkStatus(CamelModel):
+    session_id: str
+    state: Literal["READY", "ACTIVE", "ENDED", "FAILED"]
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
+    duration_seconds: float = 0.0
+    audio_seconds: float = 0.0
+    error: str | None = None

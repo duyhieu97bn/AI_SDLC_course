@@ -43,7 +43,7 @@
   "login": {
     "title": "Đăng nhập",
     "subtitle": "Dùng tài khoản CamHub của bạn.",
-    "email": "Email",
+    "email": "Email hoặc tên đăng nhập",
     "password": "Mật khẩu",
     "submit": "Đăng nhập",
     "note": "Phiên đăng nhập tự hết hạn sau 12 giờ không hoạt động. Mọi lần đăng nhập đều được ghi nhật ký.",
@@ -256,7 +256,10 @@
     "INVALID_NETWORK": "Địa chỉ IP, prefix hoặc gateway không hợp lệ",
     "INVALID_TIME": "Cấu hình thời gian không hợp lệ",
     "INVALID_FILE": "Tệp không hợp lệ",
-    "INVALID_ROW": "Dòng không hợp lệ"
+    "INVALID_ROW": "Dòng không hợp lệ",
+    "TALK_BUSY": "Đang có người khác đàm thoại qua camera này",
+    "TALK_NOT_SUPPORTED": "Camera không có loa hoặc không hỗ trợ âm thanh hai chiều",
+    "DEVICE_ERROR": "Camera báo lỗi"
   },
   "poc": {
     "title": "PoC luồng video",
@@ -734,5 +737,15 @@
     "added": "Đã thêm",
     "skipped": "Bỏ qua",
     "done": "Đã nhập {ok} camera, bỏ qua {skipped} dòng"
+  },
+  "talk": {
+    "title": "Đàm thoại",
+    "hold": "Nhấn giữ để nói",
+    "connecting": "Đang kết nối loa…",
+    "talking": "Đang nói… {s} giây",
+    "last": "Vừa nói {s} giây",
+    "micDenied": "Trình duyệt chưa cho phép dùng micro",
+    "socketFailed": "Không kết nối được kênh âm thanh",
+    "lost": "Mất kết nối kênh âm thanh tới camera"
   }
 }

@@ -480,7 +480,7 @@ onMounted(reload)
   <ImportCamerasDialog
     v-if="addDialog === 'import'"
     @close="addDialog = null"
-    @done="onAdded"
+    @done="reload"
   />
   <AddRecorderDialog
     v-if="addDialog === 'recorder'"

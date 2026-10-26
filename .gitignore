@@ -5,6 +5,8 @@ core/bin/
 core/.settings/
 core/.project
 core/.classpath
+tests/load/build/
+tests/load/.gradle/
 web/node_modules/.tmp/
 web/node_modules/
 web/dist/

@@ -79,8 +79,9 @@ public class AuditController {
         if (s == null) {
             return "";
         }
-        // Chặn CSV injection: ô bắt đầu bằng = + - @ bị Excel hiểu là công thức
-        String v = s.matches("^[=+\\-@].*") ? "'" + s : s;
+        // Chặn CSV injection (OWASP): ô bắt đầu bằng = + - @ tab CR bị Excel hiểu là công thức. Xét ký tự đầu, không
+        // dùng regex ".*" vì không khớp qua xuống dòng ("=cmd\n..." lọt qua)
+        String v = !s.isEmpty() && "=+-@\t\r".indexOf(s.charAt(0)) >= 0 ? "'" + s : s;
         return "\"" + v.replace("\"", "\"\"") + "\"";
     }
 

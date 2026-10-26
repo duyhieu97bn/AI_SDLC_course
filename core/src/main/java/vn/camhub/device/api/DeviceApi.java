@@ -55,6 +55,16 @@ public interface DeviceApi {
 
     byte[] snapshot(UUID cameraId);
 
+    /**
+     * Mở kênh âm thanh tới loa camera (US-15). Lỗi: 409 TALK_NOT_SUPPORTED (camera không có loa hoặc thêm bằng
+     * RTSP), 409 TALK_BUSY (đang có người nói), 502 DEVICE_ERROR (camera không mở được kênh).
+     */
+    DeviceControlPort.TalkSession openTalk(UUID cameraId);
+
+    Optional<DeviceControlPort.TalkStatus> talkStatus(String sessionId);
+
+    Optional<DeviceControlPort.TalkStatus> closeTalk(String sessionId);
+
     /** Bật/tắt ghi trên MediaMTX cho luồng chính (US-16); bật ghi thì MediaMTX kéo luồng liên tục. */
     void setRecording(UUID cameraId, boolean on);
 

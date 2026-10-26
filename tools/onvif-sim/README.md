@@ -46,6 +46,7 @@ Mọi thao tác, trừ GetSystemDateAndTime, đều yêu cầu WS-Security Usern
 | `SIM_SIGNAL_CHANNELS` | mọi kênh | Kênh có tín hiệu, ví dụ `1,2,3` (`none` là không kênh nào). Kênh mất tín hiệu trả `VideoSource` với `Framerate` 0 và `Resolution` 0x0 |
 | `SIM_CHANNEL_RTSP_MAIN` / `SIM_CHANNEL_RTSP_SUB` | `rtsp://<host>:554/Streaming/Channels/<N>01` / `<N>02` | Danh sách URI (phân cách dấu phẩy) theo thứ tự `SIM_SIGNAL_CHANNELS`; thiếu luồng phụ thì dùng luồng chính |
 | `SIM_CHANNEL_NAMES` | `Cổng,Sảnh,Bãi xe,…` | Nhãn kênh theo thứ tự; tên kênh là `Kênh 01 – <nhãn>` |
+| `SIM_TALK_PORT` | `0` | > 0 thì camera có loa (US-15): thêm profile `profile_talk` (chỉ `AudioOutputConfiguration`, không video), GetStreamUri của profile này trả `rtsp://<host>:<cổng>/backchannel`. Máy chủ RTSP backchannel tại cổng đó yêu cầu Digest và `Require: www.onvif.org/ver20/backchannel`, nhận RTP G.711 μ-law xen kẽ trên TCP; số gói/byte xem ở `GET /sim/talk` |
 
 ## Chạy
 

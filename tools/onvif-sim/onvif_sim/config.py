@@ -101,6 +101,8 @@ class SimConfig:
     edge_recording: bool = False
     # Độ dài dữ liệu ghi giả lập tính lùi từ bây giờ (giờ)
     edge_hours: float = 24.0
+    # Cổng TCP máy chủ RTSP backchannel âm thanh (US-15); 0 là camera không có loa
+    talk_port: int = 0
     endpoint_uuid: str = field(default_factory=lambda: str(uuid.uuid4()))
 
     def __post_init__(self) -> None:
@@ -113,6 +115,10 @@ class SimConfig:
     @property
     def base_url(self) -> str:
         return f"http://{self.advertise_host}:{self.advertise_port}"
+
+    @property
+    def talk_uri(self) -> str:
+        return f"rtsp://{self.advertise_host}:{self.talk_port}/backchannel"
 
     @property
     def is_recorder(self) -> bool:
@@ -173,4 +179,5 @@ class SimConfig:
             channel_labels=_str_list(env.get("SIM_CHANNEL_NAMES")) or list(DEFAULT_CHANNEL_LABELS),
             edge_recording=_bool(env.get("SIM_EDGE_RECORDING"), False),
             edge_hours=float(env.get("SIM_EDGE_HOURS", "24") or 24),
+            talk_port=int(env.get("SIM_TALK_PORT", "0") or 0),
         )

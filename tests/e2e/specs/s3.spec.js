@@ -12,10 +12,19 @@ async function playing(tile) {
   return tile.locator('video').evaluate((v) => v.videoWidth)
 }
 
+/** Bố cục dùng gần nhất tự mở khi đăng nhập (US-10): bỏ hết ô để test bắt đầu từ lưới trống. */
+async function clearGrid(page) {
+  while ((await tiles(page).count()) > 0) {
+    await tiles(page).first().click()
+    await page.getByTestId('remove-tile').click()
+  }
+}
+
 test('US-08/09 Lưới 4: kéo camera vào, phát trong ≤ 3 giây; lưới 9 dùng luồng phụ; nhấp đúp chuyển luồng chính', async ({ page }) => {
   await login(page, 'lan@camhub.local', DEMO_PASSWORD)
   await expect(page).toHaveURL(/\/live$/)
   await page.getByTestId('grid-4').click()
+  await clearGrid(page)
   const cams = page.getByTestId('tree-camera')
   await expect(cams.first()).toBeVisible()
 
@@ -39,6 +48,7 @@ test('US-08/09 Lưới 4: kéo camera vào, phát trong ≤ 3 giây; lưới 9 d
 test('US-10 Lưu bố cục và tự mở lại khi đăng nhập lại', async ({ page, browser }) => {
   await login(page, 'lan@camhub.local', DEMO_PASSWORD)
   await page.getByTestId('grid-4').click()
+  await clearGrid(page)
   const cams = page.getByTestId('tree-camera')
   for (let i = 0; i < 2; i++) await cams.nth(i).click()
   await page.getByTestId('layout-save').click()

@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
@@ -309,6 +311,37 @@ public class GatewayClient implements DeviceControlPort {
             body.put("govLength", c.govLength());
         }
         post("/v1/devices/encoder/set", body);
+    }
+
+    @Override
+    @CircuitBreaker(name = "gateway")
+    public TalkSession openTalk(DeviceAddress a) {
+        return call(() -> http.post().uri("/v1/talk/sessions").body(Map.of("device", address(a))).retrieve()
+                .body(TalkSession.class));
+    }
+
+    @Override
+    @CircuitBreaker(name = "gateway")
+    public Optional<TalkStatus> talkStatus(String sessionId) {
+        return talkCall(() -> http.get().uri("/v1/talk/sessions/{id}", sessionId).retrieve().body(TalkStatus.class));
+    }
+
+    @Override
+    @CircuitBreaker(name = "gateway")
+    public Optional<TalkStatus> closeTalk(String sessionId) {
+        return talkCall(() -> http.delete().uri("/v1/talk/sessions/{id}", sessionId).retrieve()
+                .body(TalkStatus.class));
+    }
+
+    /** 404: Gateway không còn giữ phiên (xử lý trước {@code call} để không tính là lỗi Gateway). */
+    private static Optional<TalkStatus> talkCall(java.util.function.Supplier<TalkStatus> work) {
+        return call(() -> {
+            try {
+                return Optional.ofNullable(work.get());
+            } catch (HttpClientErrorException.NotFound e) {
+                return Optional.<TalkStatus>empty();
+            }
+        });
     }
 
     private void post(String path, Map<String, Object> body) {

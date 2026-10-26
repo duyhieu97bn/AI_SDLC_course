@@ -20,6 +20,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from onvif_sim import __version__
+from onvif_sim.backchannel import BackchannelServer
 from onvif_sim.cells import decode_active_cells
 from onvif_sim.config import SimConfig
 from onvif_sim.discovery import DiscoveryResponder
@@ -582,8 +583,23 @@ class OnvifSimulator:
             raise SoapFault("Sender", "ter:NoProfile", "Profile không tồn tại")
         return profile
 
+    TALK_PROFILE = "profile_talk"
+
+    def _talk_profile_xml(self) -> str:
+        """Profile chỉ có đầu ra âm thanh (loa) cho backchannel, không có video (US-15)."""
+        return (
+            f'<trt:Profiles token="{self.TALK_PROFILE}" fixed="true"><tt:Name>Talk</tt:Name>'
+            '<tt:AudioOutputConfiguration token="aoc0"><tt:Name>Speaker</tt:Name><tt:UseCount>1</tt:UseCount>'
+            "<tt:OutputToken>ao0</tt:OutputToken><tt:SendPrimacy>www.onvif.org/ver20/HalfDuplex/Client</tt:SendPrimacy>"
+            "<tt:OutputLevel>80</tt:OutputLevel></tt:AudioOutputConfiguration>"
+            '<tt:AudioDecoderConfiguration token="adc0"><tt:Name>G711</tt:Name><tt:UseCount>1</tt:UseCount>'
+            "</tt:AudioDecoderConfiguration></trt:Profiles>"
+        )
+
     def get_profiles(self, _: Element) -> str:
         body = "".join(self._profile_xml(p) for p in self.state.profiles)
+        if self.config.talk_port:
+            body += self._talk_profile_xml()
         return f"<trt:GetProfilesResponse>{body}</trt:GetProfilesResponse>"
 
     def get_video_sources(self, _: Element) -> str:
@@ -598,12 +614,15 @@ class OnvifSimulator:
         return f"<trt:GetVideoSourcesResponse>{''.join(items)}</trt:GetVideoSourcesResponse>"
 
     def get_stream_uri(self, req: Element) -> str:
-        profile = self._require_profile(req)
+        if self.config.talk_port and txt(req, "{*}ProfileToken") == self.TALK_PROFILE:
+            uri = self.config.talk_uri
+        else:
+            uri = self._require_profile(req).rtsp
         protocol = txt(req, "{*}StreamSetup/{*}Transport/{*}Protocol", "RTSP")
         if protocol not in ("RTSP", "UDP", "TCP"):
             raise invalid_arg("Giao thức không hỗ trợ")
         return (
-            f"<trt:GetStreamUriResponse><trt:MediaUri><tt:Uri>{esc(profile.rtsp)}</tt:Uri>"
+            f"<trt:GetStreamUriResponse><trt:MediaUri><tt:Uri>{esc(uri)}</tt:Uri>"
             "<tt:InvalidAfterConnect>false</tt:InvalidAfterConnect><tt:InvalidAfterReboot>false</tt:InvalidAfterReboot>"
             "<tt:Timeout>PT0S</tt:Timeout></trt:MediaUri></trt:GetStreamUriResponse>"
         )
@@ -1168,8 +1187,12 @@ def create_app(config: SimConfig | None = None) -> FastAPI:
     cfg = config or SimConfig.from_env()
     sim = OnvifSimulator(cfg)
 
+    talk = BackchannelServer(sim.state.passwords, cfg.talk_port) if cfg.talk_port else None
+
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        if talk is not None:
+            await talk.start()
         responder = None
         if cfg.discovery_port:
             responder = DiscoveryResponder(cfg, cfg.discovery_bind)
@@ -1184,6 +1207,8 @@ def create_app(config: SimConfig | None = None) -> FastAPI:
         finally:
             if responder is not None:
                 responder.stop()
+            if talk is not None:
+                await talk.stop()
 
     app = FastAPI(title="CamHub ONVIF Simulator", version=__version__, lifespan=lifespan)
     app.state.sim = sim
@@ -1225,6 +1250,13 @@ def create_app(config: SimConfig | None = None) -> FastAPI:
         """Đặt lệch đồng hồ camera (giây, dương là chạy nhanh) để kiểm tra cảnh báo lệch giờ (US-25)."""
         sim.state.clock_offset = float(body.offsetSeconds)
         return {"offsetSeconds": body.offsetSeconds, "deviceTime": iso(sim.state.now())}
+
+    @app.get("/sim/talk", response_model=None)
+    async def talk_stats() -> dict[str, object] | JSONResponse:
+        """Số gói/byte âm thanh nhận được qua backchannel (US-15)."""
+        if talk is None:
+            return JSONResponse({"detail": "Camera không có loa (SIM_TALK_PORT=0)"}, status_code=404)
+        return talk.stats.as_dict()
 
     @app.get("/sim/state")
     async def sim_state() -> dict[str, object]:

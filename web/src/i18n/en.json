@@ -43,7 +43,7 @@
   "login": {
     "title": "Sign in",
     "subtitle": "Use your CamHub account.",
-    "email": "Email",
+    "email": "Email or username",
     "password": "Password",
     "submit": "Sign in",
     "note": "Sessions expire after 12 hours of inactivity. Every sign-in is logged.",
@@ -256,7 +256,10 @@
     "INVALID_NETWORK": "Invalid IP address, prefix or gateway",
     "INVALID_TIME": "Invalid time settings",
     "INVALID_FILE": "Invalid file",
-    "INVALID_ROW": "Invalid row"
+    "INVALID_ROW": "Invalid row",
+    "TALK_BUSY": "Someone else is talking through this camera",
+    "TALK_NOT_SUPPORTED": "The camera has no speaker or does not support two-way audio",
+    "DEVICE_ERROR": "The camera reported an error"
   },
   "poc": {
     "title": "Video stream PoC",
@@ -734,5 +737,15 @@
     "added": "Added",
     "skipped": "Skipped",
     "done": "Imported {ok} cameras, skipped {skipped} rows"
+  },
+  "talk": {
+    "title": "Two-way audio",
+    "hold": "Hold to talk",
+    "connecting": "Connecting speaker…",
+    "talking": "Talking… {s} s",
+    "last": "Talked for {s} s",
+    "micDenied": "Microphone access is blocked by the browser",
+    "socketFailed": "Could not open the audio channel",
+    "lost": "Audio channel to the camera was lost"
   }
 }

@@ -15,9 +15,10 @@ from app.events.manager import EventsConfig, SubscriptionManager
 from app.events.publisher import EventSink, RabbitPublisher
 from app.onvif.client import DeviceTarget, OnvifClient, SessionCache
 from app.onvif.errors import DeviceError
-from app.routes import GatewayState, router
+from app.routes import GatewayState, router, ws_router
 from app.security import InternalTokenMiddleware
 from app.settings import Settings, settings
+from app.talk.sessions import TalkManager
 from app.transport.tunnel_router import TunnelRouter
 
 logging_config.configure("camhub-device-gateway", settings.log_level)
@@ -70,14 +71,22 @@ def create_app(config: Settings | None = None, sink: EventSink | None = None) ->
             concurrency=cfg.monitor_concurrency,
             failure_threshold=cfg.monitor_failure_threshold,
         )
+        talk = TalkManager(
+            ready_timeout=cfg.talk_ready_timeout_seconds,
+            max_seconds=cfg.talk_max_seconds,
+            retain_seconds=cfg.talk_retain_seconds,
+            rtsp_timeout=cfg.device_timeout_seconds,
+        )
+        talk.start()
         state = GatewayState(
-            settings=cfg, router=tunnels, cache=cache, sink=event_sink, manager=manager, monitor=monitor
+            settings=cfg, router=tunnels, cache=cache, sink=event_sink, manager=manager, monitor=monitor, talk=talk
         )
         app.state.gw = state
         app.state.publisher = publisher
         try:
             yield
         finally:
+            await state.talk.close()
             await state.monitor.close()
             await state.manager.close()
             if publisher is not None:
@@ -88,6 +97,7 @@ def create_app(config: Settings | None = None, sink: EventSink | None = None) ->
     app = FastAPI(title="CamHub Device Gateway", version=__version__, lifespan=lifespan)
     app.add_middleware(InternalTokenMiddleware, token=cfg.internal_token)
     app.include_router(router)
+    app.include_router(ws_router)
 
     @app.exception_handler(DeviceError)
     async def device_error(request: Request, exc: DeviceError) -> JSONResponse:

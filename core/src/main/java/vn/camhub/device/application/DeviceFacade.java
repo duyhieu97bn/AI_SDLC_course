@@ -112,6 +112,34 @@ public class DeviceFacade implements DeviceApi {
     }
 
     @Override
+    public DeviceControlPort.TalkSession openTalk(UUID cameraId) {
+        Camera c = cameras.find(cameraId).orElseThrow(() -> ApiException.notFound("camera"));
+        if (!"ONVIF".equals(c.protocol()) || !capability(c, "audioOut")) {
+            throw new ApiException(409, "TALK_NOT_SUPPORTED", "Camera không có loa hoặc không hỗ trợ âm thanh hai chiều");
+        }
+        Target t = onvifTarget(cameraId);
+        try {
+            return devices.openTalk(t.address());
+        } catch (DeviceControlPort.DeviceException e) {
+            throw switch (e.code()) {
+                case "BUSY" -> new ApiException(409, "TALK_BUSY", e.getMessage());
+                case "NOT_SUPPORTED" -> new ApiException(409, "TALK_NOT_SUPPORTED", e.getMessage());
+                default -> new ApiException(502, "DEVICE_ERROR", e.getMessage());
+            };
+        }
+    }
+
+    @Override
+    public Optional<DeviceControlPort.TalkStatus> talkStatus(String sessionId) {
+        return devices.talkStatus(sessionId);
+    }
+
+    @Override
+    public Optional<DeviceControlPort.TalkStatus> closeTalk(String sessionId) {
+        return devices.closeTalk(sessionId);
+    }
+
+    @Override
     public void setRecording(UUID cameraId, boolean on) {
         Camera c = cameras.find(cameraId).orElseThrow(() -> ApiException.notFound("camera"));
         if (cameras.recordingEnabled(cameraId) == on) {

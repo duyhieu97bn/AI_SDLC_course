@@ -26,12 +26,14 @@ let timer: ReturnType<typeof setInterval> | undefined
 
 const names = computed(() => Object.fromEntries(props.cameras.map((c) => [c.id, c.name])))
 
-function toggle(id: string, on: boolean) {
-  if (!on) {
+function toggle(id: string, box: HTMLInputElement) {
+  if (!box.checked) {
     selected.value = selected.value.filter((x) => x !== id)
   } else {
     const r = addCamera(selected.value, id)
     if (!r.ok) {
+      // Trạng thái không đổi nên Vue không vẽ lại: bỏ chọn ô vừa tích
+      box.checked = false
       toast.push('warn', t('sync.limit', { n: MAX_SYNC_CAMERAS }))
       return
     }
@@ -126,7 +128,7 @@ onBeforeUnmount(() => clearInterval(timer))
             type="checkbox"
             :checked="selected.includes(c.id)"
             :data-testid="`sync-cam-${c.name}`"
-            @change="toggle(c.id, ($event.target as HTMLInputElement).checked)"
+            @change="toggle(c.id, $event.target as HTMLInputElement)"
           >{{ c.name }}
         </label>
       </div>

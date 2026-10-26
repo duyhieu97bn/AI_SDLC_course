@@ -39,6 +39,7 @@ from app.onvif.errors import DeviceError, ErrorCode
 from app.onvif.soap import attr, bool_text, esc, float_of, int_of, local_name, text_of
 
 log = logging.getLogger(__name__)
+_HALF_SECOND = timedelta(milliseconds=500)
 
 SERVICE_NAMESPACES: Final[dict[str, str]] = {
     "http://www.onvif.org/ver10/device/wsdl": "device",
@@ -576,7 +577,8 @@ class OnvifClient:
             sent = datetime.now(UTC)
             clock = await self.get_system_date_and_time(auth=True)
         received = datetime.now(UTC)
-        self._offset = clock.utc - (sent + (received - sent) / 2)
+        # Giờ ONVIF chỉ đến giây (thiết bị cắt phần lẻ) nên giờ thật trung bình muộn hơn 0,5 giây
+        self._offset = clock.utc + _HALF_SECOND - (sent + (received - sent) / 2)
         if abs(self._offset.total_seconds()) > 5:
             log.info("Đồng hồ thiết bị %s lệch %.1f giây, đã bù", self.target.netloc, self._offset.total_seconds())
 

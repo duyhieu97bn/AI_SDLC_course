@@ -1,6 +1,6 @@
 # Ma trận tương thích thiết bị (TS-05.4)
 
-Sinh tự động bởi `device-gateway/tests/compat` lúc 2026-10-26 13:17 UTC. Không sửa tay.
+Sinh tự động bởi `device-gateway/tests/compat` lúc 2026-10-26 14:29 UTC. Không sửa tay.
 
 Ký hiệu: **ĐẠT**, **LỖI**, **KHÔNG HỖ TRỢ** (thiết bị không khai báo năng lực), **BỎ QUA** (không kết nối được, thiếu tài khoản, hoặc phép thử chỉ chạy với bộ giả lập).
 

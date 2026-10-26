@@ -24,11 +24,14 @@ import vn.camhub.liveview.application.LiveSessionService.Stream;
 import vn.camhub.liveview.application.PtzService;
 import vn.camhub.liveview.application.PtzService.PresetView;
 import vn.camhub.liveview.application.PtzService.PtzCommand;
+import vn.camhub.liveview.application.TalkService;
+import vn.camhub.liveview.application.TalkService.TalkEnd;
+import vn.camhub.liveview.application.TalkService.TalkStart;
 import vn.camhub.liveview.domain.ViewLayout;
 import vn.camhub.liveview.domain.ViewLayout.Tile;
 import vn.camhub.platform.security.CurrentUser;
 
-/** Xem trực tiếp (US-08), PTZ và preset (US-12, US-13), bố cục xem (US-10) – SADD 3.7.1 nhóm "Xem trực tiếp". */
+/** Xem trực tiếp (US-08), PTZ và preset (US-12, US-13), đàm thoại (US-15), bố cục xem (US-10) – SADD 3.7.1 nhóm "Xem trực tiếp". */
 @RestController
 @RequestMapping("/api/v1")
 public class LiveController {
@@ -47,11 +50,13 @@ public class LiveController {
 
     private final LiveSessionService sessions;
     private final PtzService ptz;
+    private final TalkService talk;
     private final LayoutService layouts;
 
-    public LiveController(LiveSessionService sessions, PtzService ptz, LayoutService layouts) {
+    public LiveController(LiveSessionService sessions, PtzService ptz, TalkService talk, LayoutService layouts) {
         this.sessions = sessions;
         this.ptz = ptz;
+        this.talk = talk;
         this.layouts = layouts;
     }
 
@@ -71,6 +76,19 @@ public class LiveController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void ptzStop(@PathVariable UUID id) {
         ptz.stop(me(), id);
+    }
+
+    /** Nhấn giữ để nói (US-15): mở kênh âm thanh tới loa camera, trả URL WebSocket gửi âm thanh. */
+    @PostMapping("/cameras/{id}/talk")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TalkStart talkStart(@PathVariable UUID id) {
+        return talk.start(me(), id);
+    }
+
+    /** Nhả nút: kết thúc phiên và ghi TALK_AUDIO kèm thời lượng. */
+    @PostMapping("/cameras/{id}/talk/{sessionId}/end")
+    public TalkEnd talkEnd(@PathVariable UUID id, @PathVariable String sessionId) {
+        return talk.end(me(), id, sessionId);
     }
 
     @GetMapping("/cameras/{id}/presets")

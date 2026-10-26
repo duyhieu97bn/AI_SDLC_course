@@ -107,7 +107,8 @@ def test_time_set_manual_then_ntp(gateway: Gateway, cam: RunningSim) -> None:
     )
     assert res.status_code == 204, res.text
     net = _network(gateway, cam)
-    assert 599 <= net["clockDriftSeconds"] <= 601
+    # Giờ đặt và giờ đọc ONVIF đều chỉ đến giây: sai số tới ±1 giây
+    assert 598.5 <= net["clockDriftSeconds"] <= 601
     assert (net["timeMode"], net["timezone"]) == ("MANUAL", "<+07>-7")
     # Đồng hồ đổi 10 phút nhưng Gateway vẫn xác thực được (đã bỏ độ lệch nhớ trong phiên)
     res = gateway.post(

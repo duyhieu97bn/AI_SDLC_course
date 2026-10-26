@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 import AppIcon from '@/components/AppIcon.vue'
 import PromptDialog from '@/components/PromptDialog.vue'
 import PtzPanel from '@/components/PtzPanel.vue'
+import TalkButton from '@/components/TalkButton.vue'
 import VideoTile from '@/components/VideoTile.vue'
 import {
   cameraApi,
@@ -297,8 +298,11 @@ onMounted(async () => {
             v-for="i in visibleSlots"
             :key="i"
           >
+            <!-- key theo camera: đổi camera trong ô thì dựng lại ô (đóng hẳn phiên cũ), tránh phiên khởi động
+                 chậm của camera trước ghi đè camera mới khi đổi liên tiếp -->
             <VideoTile
               v-if="slots[i] && byId[slots[i]!.cameraId]"
+              :key="`${i}:${slots[i]!.cameraId}`"
               :ref="(el) => (tileRefs[i] = el as InstanceType<typeof VideoTile> | null)"
               :camera="byId[slots[i]!.cameraId]!"
               :grid-size="zoomed !== null ? 1 : grid"
@@ -424,6 +428,7 @@ onMounted(async () => {
         <div class="row">
           <button
             class="btn btn-sm btn-ghost"
+            data-testid="remove-tile"
             @click="removeSelected"
           >
             <AppIcon
@@ -435,6 +440,11 @@ onMounted(async () => {
         <!-- INV-05: bảng PTZ chỉ hiện với camera hỗ trợ PTZ và người có quyền CONTROL_PTZ -->
         <PtzPanel
           v-if="selectedCamera.capabilities?.ptz && auth.can('CONTROL_PTZ')"
+          :camera-id="selectedCamera.id"
+        />
+        <!-- US-15: đàm thoại khi camera có loa và người dùng có quyền TALK_AUDIO -->
+        <TalkButton
+          v-if="selectedCamera.capabilities?.audioOut && auth.can('TALK_AUDIO')"
           :camera-id="selectedCamera.id"
         />
       </div>

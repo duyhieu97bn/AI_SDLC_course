@@ -1,6 +1,7 @@
 package vn.camhub.device.api;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Cổng giao tiếp thiết bị (SADD 3.6 ports and adapters). Bản hiện thực mặc định gọi Device Gateway (ONVIF);
@@ -205,6 +206,26 @@ public interface DeviceControlPort {
 
     /** Khởi động lại thiết bị (ONVIF SystemReboot). */
     void reboot(DeviceAddress a);
+
+    // ---------------------------------------------------------------- Đàm thoại (US-15)
+
+    /** Phiên backchannel đã mở tới loa camera; trình duyệt gửi PCM 16 bit mono {@code sampleRate} Hz qua WebSocket. */
+    record TalkSession(String sessionId, String codec, int expiresInSeconds, int sampleRate) {
+    }
+
+    /** {@code state}: READY, ACTIVE, ENDED, FAILED; {@code durationSeconds}: thời gian nối WebSocket. */
+    record TalkStatus(String sessionId, String state, java.time.Instant startedAt, java.time.Instant endedAt,
+            double durationSeconds, double audioSeconds, String error) {
+    }
+
+    /** Mở kênh âm thanh tới loa camera (ONVIF backchannel); camera đang có người nói thì lỗi mã BUSY. */
+    TalkSession openTalk(DeviceAddress a);
+
+    /** Trạng thái phiên; rỗng khi Gateway không còn giữ phiên (đã quá hạn giữ hoặc Gateway khởi động lại). */
+    Optional<TalkStatus> talkStatus(String sessionId);
+
+    /** Kết thúc phiên (nếu còn mở) và trả trạng thái cuối. */
+    Optional<TalkStatus> closeTalk(String sessionId);
 
     /**
      * Gateway không phản hồi hoặc lỗi nội bộ. Khác {@link DeviceException}: circuit breaker "gateway" đếm lỗi này,

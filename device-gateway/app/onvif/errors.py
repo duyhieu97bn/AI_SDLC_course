@@ -12,6 +12,8 @@ class ErrorCode(StrEnum):
     # Yêu cầu vượt giới hạn thiết bị (số vùng, số điểm) hoặc vùng không hợp lệ với lưới của thiết bị
     LIMIT_EXCEEDED = "LIMIT_EXCEEDED"
     INVALID_ZONE = "INVALID_ZONE"
+    # Tài nguyên thiết bị đang bị chiếm (ví dụ loa camera đang có người đàm thoại)
+    BUSY = "BUSY"
 
 
 class DeviceError(Exception):

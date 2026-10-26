@@ -39,5 +39,10 @@ class Settings(BaseSettings):
     monitor_concurrency: int = 50
     monitor_failure_threshold: int = 2
 
+    # Đàm thoại (US-15): hạn nối WebSocket sau khi mở phiên, độ dài tối đa một phiên, thời gian giữ kết quả
+    talk_ready_timeout_seconds: float = 30.0
+    talk_max_seconds: float = 300.0
+    talk_retain_seconds: float = 600.0
+
 
 settings = Settings()

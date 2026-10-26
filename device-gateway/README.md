@@ -42,6 +42,7 @@ pytest -m compat            # chỉ bộ tương thích thiết bị (TS-05.4), 
 | `CAMHUB_GW_EVENTS_SUBSCRIPTION_TTL_SECONDS` | `60` | Thời hạn PullPoint; gia hạn sau mỗi nửa thời hạn |
 | `CAMHUB_GW_EVENTS_BACKOFF_MAX_SECONDS` | `60` | Backoff tối đa khi mất kết nối camera |
 | `CAMHUB_GW_MONITOR_TIMEOUT_SECONDS` / `_CONCURRENCY` / `_FAILURE_THRESHOLD` | `5` / `50` / `2` | Theo dõi online/offline |
+| `CAMHUB_GW_TALK_READY_TIMEOUT_SECONDS` / `_MAX_SECONDS` / `_RETAIN_SECONDS` | `30` / `300` / `600` | Đàm thoại: hạn nối WebSocket sau khi mở phiên, độ dài tối đa một phiên, thời gian giữ trạng thái cho Core đọc |
 
 Có thể đặt bí mật bằng Docker secret thay cho biến môi trường: file `/run/secrets/camhub_gw_internal_token` và `/run/secrets/camhub_gw_rabbitmq_url`.
 
@@ -91,8 +92,17 @@ Lỗi thiết bị trả **HTTP 424** `{"code","detail"}`, với `code` là mộ
 | `DELETE /v1/events/subscriptions/{cameraId}` | | 204 / 404 |
 | `PUT /v1/monitor/targets` | `{targets[{cameraId, host, port, protocol: ONVIF\|RTSP, rtspHost?, rtspPort?}], intervalSeconds}` | `[{…target, status: ONLINE\|OFFLINE\|UNKNOWN, lastChangeAt, lastCheckAt, lastError}]`; `cameraId` trùng trả 422 `DUPLICATE_CAMERA` |
 | `GET /v1/monitor/targets` | | như trên |
+| `POST /v1/talk/sessions` | `{device}` | 201 `{sessionId, codec: PCMU\|PCMA, expiresInSeconds, sampleRate: 8000}`: đã mở RTSP backchannel tới loa camera (US-15). Camera không có loa → 424 `NOT_SUPPORTED`; đang có người nói → 424 `BUSY` |
+| `GET /v1/talk/sessions/{id}` | | `{sessionId, state: READY\|ACTIVE\|ENDED\|FAILED, startedAt, endedAt, durationSeconds, audioSeconds, error}`; 404 `TALK_SESSION_NOT_FOUND` |
+| `DELETE /v1/talk/sessions/{id}` | | Kết thúc phiên, trả trạng thái cuối |
+| `WS /talk/ws/{id}` (ngoài `/v1`, qua Nginx) | Khung nhị phân PCM 16 bit LE mono 8 kHz; text `end` để kết thúc | Mã phiên dùng một lần; sai hoặc đã dùng → đóng mã 4404; camera đóng kênh → 4502 |
 
 `status` của đăng ký sự kiện là một trong `STARTING`, `ACTIVE`, `RECONNECTING`, `OFFLINE`, `UNSUPPORTED`, `STOPPED`.
+
+Đàm thoại theo ONVIF Streaming Spec mục 5.3:
+- Gateway tìm profile có `AudioOutputConfiguration`, lấy URI RTSP, rồi DESCRIBE kèm `Require: www.onvif.org/ver20/backchannel`.
+- Gateway chọn track `a=sendonly` dùng G.711 và gửi RTP xen kẽ trên cùng kết nối TCP. Kênh này đi được qua tunnel SOCKS5 của địa điểm.
+- MediaMTX 1.12 không chuyển tiếp backchannel, nên âm thanh không đi qua MediaMTX.
 
 Đăng ký sự kiện và danh sách theo dõi chỉ nằm trong bộ nhớ. Core cần gửi lại (idempotent) khi khởi động và khi Gateway khởi động lại (ví dụ khi `/health` đổi `version`, hoặc định kỳ).
 

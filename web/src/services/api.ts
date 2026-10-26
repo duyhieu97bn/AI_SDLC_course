@@ -297,6 +297,28 @@ export const liveApi = {
   deleteLayout: (id: string) => http.delete(`/layouts/${id}`),
 }
 
+// ---------------------------------------------------------------- S9: đàm thoại (US-15)
+
+export interface TalkStart {
+  sessionId: string
+  /** Đường dẫn WebSocket (cùng nguồn) gửi PCM 16 bit mono ``sampleRate`` Hz */
+  wsUrl: string
+  codec: string
+  sampleRate: number
+  expiresInSeconds: number
+}
+export interface TalkEnd {
+  sessionId: string
+  durationSeconds: number
+  audioSeconds: number
+}
+
+export const talkApi = {
+  start: (cameraId: string) => http.post<TalkStart>(`/cameras/${cameraId}/talk`, {}),
+  end: (cameraId: string, sessionId: string) =>
+    http.post<TalkEnd>(`/cameras/${cameraId}/talk/${encodeURIComponent(sessionId)}/end`, {}),
+}
+
 // ---------------------------------------------------------------- S4: ghi hình, xem lại, lưu trữ, cấu hình luồng
 
 export type RecordingMode = 'CONTINUOUS' | 'SCHEDULED' | 'EVENT' | 'OFF'

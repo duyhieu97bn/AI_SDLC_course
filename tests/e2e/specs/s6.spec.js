@@ -84,11 +84,12 @@ test('US-28 Đổi mật khẩu 2 camera ONVIF: kết quả từng camera; khở
   await page.getByTestId('camera-search').fill('onvif-sim')
   await expect
     .poll(async () => {
+      // Tìm kiếm khớp cả địa chỉ: "Loa cổng (SIM)" (host onvif-sim-talk, US-15) cũng hiện ra
       const names = await page.getByTestId('camera-link').allTextContents()
-      return names.length > 0 && names.every((n) => n.includes('onvif-sim'))
+      return names.length > 0 && names.every((n) => /onvif-sim|\(SIM\)/.test(n))
     })
     .toBe(true)
-  const rows = page.locator('tbody tr').filter({ has: page.getByTestId('camera-link') })
+  const rows = page.locator('tbody tr').filter({ has: page.getByTestId('camera-link').filter({ hasText: 'onvif-sim' }) })
   const count = Math.min(2, await rows.count())
   for (let i = 0; i < count; i++) await rows.nth(i).locator('input[type="checkbox"]').check()
   await page.getByTestId('bulk-password').click()

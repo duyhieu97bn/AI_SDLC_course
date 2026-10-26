@@ -10,7 +10,7 @@
 #      lấy mốc thời gian T (không giao dịch nào commit được trong lúc khóa nên T khớp chính xác ảnh chụp)
 #   2. Đẩy WAL chứa T vào kho (pgbackrest check)
 #   3. PITR: pgbackrest restore --type=time --target=T vào volume tạm, khởi động PostgreSQL tạm, chờ promote
-#   4. So sánh số dòng + md5 từng bảng giữa ảnh chụp và bản khôi phục
+#   4. So sánh số dòng + md5 từng bảng giữa ảnh chụp và bản khôi phục; 4b. giải mã thử mọi bí mật bằng camhub_master_key
 #   5. MinIO: dựng MinIO tạm, chép ngược bản sao (volume miniobackup) vào, đếm đối tượng
 set -euo pipefail
 export MSYS_NO_PATHCONV=1   # Git Bash trên Windows: không đổi /var/... thành đường dẫn Windows
@@ -110,6 +110,30 @@ else
 fi
 log "4. So sánh: $PG_RESULT"
 
+# ---------------------------------------------------------------- 4b. Bí mật giải mã được bằng khóa chính
+# Thiếu hoặc sai camhub_master_key thì CSDL khôi phục vẫn đủ dòng nhưng mật khẩu camera, LDAP, TOTP… vô dụng
+docker exec -i "$DRILL_PG" psql -U camhub -d camhub -XqAt -F $'	' -v ON_ERROR_STOP=1 > "$WORK/secrets.tsv" <<'SQL'
+select 'data_key', id, data_key_enc from organization where data_key_enc is not null
+union all select 'camera', organization_id, password_enc from camera where password_enc is not null
+union all select 'recorder', organization_id, password_enc from recorder where password_enc is not null
+union all select 'connector', organization_id, tunnel_password_enc from connector where tunnel_password_enc is not null
+union all select 'totp', organization_id, totp_secret_enc from app_user where totp_secret_enc is not null
+union all select 'channel', organization_id, secret_enc from notification_channel_config where secret_enc is not null
+union all select 'ldap', organization_id, bind_password_enc from directory_connection where bind_password_enc is not null;
+SQL
+MASTER_KEY_FILE="$(pwd)/secrets/camhub_master_key"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if command -v cygpath >/dev/null 2>&1; then
+  MASTER_KEY_FILE="$(cygpath -w "$MASTER_KEY_FILE")"
+  SCRIPT_DIR="$(cygpath -w "$SCRIPT_DIR")"
+fi
+if docker run --rm -i -v "$MASTER_KEY_FILE:/run/secrets/camhub_master_key:ro" -v "$SCRIPT_DIR:/drill:ro"      -v camhub_drill_pip:/root/.cache/pip python:3.12-slim      sh -c 'pip install -q --disable-pip-version-check cryptography >/dev/null 2>&1 && python /drill/verify-secrets.py /run/secrets/camhub_master_key'      < "$WORK/secrets.tsv" > "$WORK/secrets.txt" 2>&1; then
+  SECRETS_RESULT="ĐẠT – $(paste -sd ',' "$WORK/secrets.txt" | sed 's/,/, /g')"
+else
+  SECRETS_RESULT="LỖI – $(paste -sd ',' "$WORK/secrets.txt" | sed 's/,/, /g')"
+fi
+log "4b. Bí mật: $SECRETS_RESULT"
+
 # ---------------------------------------------------------------- 5. MinIO
 log "5. Khôi phục MinIO từ bản sao vào MinIO tạm"
 t_m0=$(ms)
@@ -155,6 +179,7 @@ Replay WAL + promote           : $(secs "$t_restored" "$t_up") s
 Tổng PostgreSQL                : $(secs "$t_start" "$t_verified") s
 Khôi phục MinIO                : $(secs "$t_m0" "$t_m1") s
 PostgreSQL                     : $PG_RESULT
+Bí mật (khóa chính)            : $SECRETS_RESULT
 MinIO                          : $MINIO_RESULT
 Log recovery:
 $(sed 's/^/  /' "$WORK/recovery.log")

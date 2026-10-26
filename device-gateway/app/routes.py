@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
+import contextlib
 import logging
 from dataclasses import dataclass
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Depends, Request, Response, WebSocket, status
 from fastapi.responses import JSONResponse
 
 from app.capabilities.service import classify_profiles, describe
@@ -52,12 +54,15 @@ from app.models import (
     SnapshotRequest,
     SubscriptionRequest,
     SubscriptionStatus,
+    TalkSessionCreated,
+    TalkStatus,
     TimeSetRequest,
     ZonesConfig,
 )
 from app.onvif.client import DeviceTarget, OnvifClient, SessionCache
 from app.onvif.errors import DeviceError, ErrorCode
 from app.settings import Settings
+from app.talk.sessions import TalkManager, TalkSession
 from app.transport.tunnel_router import TunnelRouter
 
 log = logging.getLogger(__name__)
@@ -72,6 +77,7 @@ class GatewayState:
     sink: EventSink
     manager: SubscriptionManager
     monitor: HealthMonitor
+    talk: TalkManager
 
     @staticmethod
     def target(device: DeviceAddress) -> DeviceTarget:
@@ -369,3 +375,91 @@ async def put_monitor_targets(body: MonitorTargetsRequest, gw: State) -> list[Mo
 @router.get("/monitor/targets", response_model=list[MonitorTargetStatus])
 async def get_monitor_targets(gw: State) -> list[MonitorTargetStatus]:
     return gw.monitor.statuses()
+
+
+# ---- Đàm thoại (US-15) ---------------------------------------------------------------------------------
+
+# Khung PCM lớn nhất nhận từ trình duyệt (1 giây âm thanh 8 kHz 16 bit là 16 KB)
+_MAX_TALK_FRAME = 64 * 1024
+
+
+def _talk_status(session: TalkSession) -> TalkStatus:
+    return TalkStatus(
+        session_id=session.id,
+        state=session.state,
+        started_at=session.started_at,
+        ended_at=session.ended_at,
+        duration_seconds=round(session.duration_seconds, 1),
+        audio_seconds=round(session.audio_seconds, 1),
+        error=session.error,
+    )
+
+
+@router.post("/talk/sessions", response_model=TalkSessionCreated, status_code=status.HTTP_201_CREATED)
+async def talk_open(body: DeviceRequest, gw: State) -> TalkSessionCreated:
+    target = gw.target(body.device)
+
+    async def opener(host: str, port: int) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
+        return await gw.router.open_connection(host, port, target.proxy)
+
+    session = await gw.talk.create(
+        f"{target.proxy or ''}|{target.netloc}",
+        gw.client_for_target(target),
+        opener,
+        target.username,
+        target.password,
+    )
+    return TalkSessionCreated(
+        session_id=session.id,
+        codec=session.channel.codec,  # type: ignore[arg-type]
+        expires_in_seconds=int(gw.settings.talk_ready_timeout_seconds),
+    )
+
+
+@router.get("/talk/sessions/{session_id}", response_model=TalkStatus)
+async def talk_get(session_id: str, gw: State) -> TalkStatus | JSONResponse:
+    session = gw.talk.get(session_id)
+    if session is None:
+        return JSONResponse({"code": "TALK_SESSION_NOT_FOUND", "detail": "Phiên không tồn tại"}, status_code=404)
+    return _talk_status(session)
+
+
+@router.delete("/talk/sessions/{session_id}", response_model=TalkStatus)
+async def talk_close(session_id: str, gw: State) -> TalkStatus | JSONResponse:
+    session = await gw.talk.end(session_id)
+    if session is None:
+        return JSONResponse({"code": "TALK_SESSION_NOT_FOUND", "detail": "Phiên không tồn tại"}, status_code=404)
+    return _talk_status(session)
+
+
+# WebSocket nằm ngoài /v1: trình duyệt (qua nginx) nối thẳng, xác thực bằng mã phiên Core cấp
+ws_router = APIRouter()
+
+
+@ws_router.websocket("/talk/ws/{session_id}")
+async def talk_ws(websocket: WebSocket, session_id: str) -> None:
+    """Nhận PCM 16 bit little-endian mono 8 kHz (khung nhị phân); text ``end`` hoặc đóng socket là kết thúc."""
+    gw: GatewayState = websocket.app.state.gw
+    session = gw.talk.attach(session_id)
+    if session is None:
+        await websocket.close(code=4404)
+        return
+    await websocket.accept()
+    error: str | None = None
+    try:
+        while True:
+            message = await websocket.receive()
+            if message["type"] == "websocket.disconnect":
+                break
+            data = message.get("bytes")
+            if data:
+                if len(data) <= _MAX_TALK_FRAME:
+                    await session.channel.send_pcm(data)
+            elif message.get("text") == "end":
+                break
+    except DeviceError as e:
+        error = e.detail
+    finally:
+        await gw.talk.end(session_id, error)
+        with contextlib.suppress(Exception):
+            await websocket.close(code=1000 if error is None else 4502)

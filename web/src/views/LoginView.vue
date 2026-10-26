@@ -136,7 +136,9 @@ function back() {
             id="email"
             v-model="email"
             class="input"
-            type="email"
+            type="text"
+            autocapitalize="none"
+            spellcheck="false"
             autocomplete="username"
             required
             autofocus

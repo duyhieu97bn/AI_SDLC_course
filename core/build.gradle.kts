@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.4.4"
+    id("org.springframework.boot") version "3.5.16"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -25,10 +25,25 @@ repositories {
 
 val testcontainersVersion = "1.20.6"
 
+// Bản vá bảo mật mới hơn BOM của Spring Boot 3.5.16 (TS-08, quét OSV 26/10/2026; xem docs/test/security-review.md).
+// Chỉ nâng bản vá trong cùng nhánh; bỏ khi Spring Boot có bản mới hơn các giá trị này.
+extra["tomcat.version"] = "10.1.61"
+extra["netty.version"] = "4.1.139.Final"
+extra["jackson-bom.version"] = "2.21.8"
+extra["rabbit-amqp-client.version"] = "5.37.0"
+extra["commons-lang3.version"] = "3.21.0"
+extra["log4j2.version"] = "2.26.1"
+
 dependencyManagement {
     imports {
         mavenBom("org.testcontainers:testcontainers-bom:$testcontainersVersion")
     }
+}
+
+// amqp-client 5.37 khai báo Netty 4.2 cho lớp IO Netty tùy chọn; Spring AMQP dùng socket thường. Bỏ để không trộn
+// Netty 4.2 với Netty 4.1 của Lettuce (Redis).
+dependencies.components.withModule("com.rabbitmq:amqp-client") {
+    allVariants { withDependencies { removeIf { it.group == "io.netty" } } }
 }
 
 dependencies {
@@ -41,10 +56,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.80") // Argon2id cho mật khẩu
+    implementation("org.bouncycastle:bcprov-jdk18on:1.86") // Argon2id cho mật khẩu
     implementation("io.github.resilience4j:resilience4j-spring-boot3:2.3.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("io.minio:minio:8.5.17") // đọc/xóa clip đã xuất trong MinIO (US-20)
+    implementation("io.minio:minio:8.6.0") // đọc/xóa clip đã xuất trong MinIO (US-20)
     implementation("org.springframework.boot:spring-boot-starter-mail") // thông báo email (US-34)
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
