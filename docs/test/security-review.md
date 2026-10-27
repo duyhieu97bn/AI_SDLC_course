@@ -66,7 +66,7 @@ Thư viện của các thành phần khác (quét ngày 26/10/2026):
 | --- | --- | --- |
 | G-01 | Chứng chỉ TLS thật (dev dùng tự ký) | Đội vận hành IT |
 | G-02 | Kho sao lưu off-site `repo2` có mã hóa (restore.md mục 3) | Đội vận hành IT |
-| G-03 | Giới hạn 30 yêu cầu/giây theo IP: nhiều người sau cùng một NAT văn phòng dùng chung hạn mức. Đo tải 100 Operator ≈ 10 yêu cầu/giây trung bình (load-report.md), còn dư; theo dõi 429/503 khi pilot | Đội vận hành IT |
+| G-03 | Giới hạn 30 yêu cầu/giây theo IP: nhiều người sau cùng một NAT văn phòng dùng chung hạn mức. Đo tải 100 Operator trong 1 giờ (27/10/2026): trung bình 12,4 yêu cầu/giây cho cả 100 người, còn dư nếu chỉ một NAT; theo dõi 429/503 khi pilot | Đội vận hành IT |
 | G-04 | Đưa quét thư viện (OSV/`npm audit`/`pip-audit`) vào CI để không tụt bản vá như S-01 | DevOps |
 
 ## 5. Hỗ trợ kiểm thử xâm nhập độc lập (TS-08.3)
