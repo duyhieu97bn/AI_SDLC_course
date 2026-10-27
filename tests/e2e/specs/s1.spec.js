@@ -26,6 +26,15 @@ test('US-30 Chưa đăng nhập thì bị chuyển về trang đăng nhập và 
   await expect(page).toHaveURL(/\/cameras$/)
 })
 
+test('US-30 Mở địa chỉ gốc khi chưa đăng nhập thì thấy trang đăng nhập, không treo màn hình trống', async ({ page }) => {
+  const errors = []
+  page.on('pageerror', (e) => errors.push(e.message))
+  await page.goto('/')
+  await expect(page).toHaveURL(/\/login/)
+  await expect(page.locator('#email')).toBeVisible()
+  expect(errors).toEqual([])
+})
+
 test('US-30 Tải lại trang vẫn giữ phiên (refresh cookie), đăng xuất thì mất phiên', async ({ page }) => {
   await login(page, ADMIN.email, ADMIN.password)
   await page.reload()

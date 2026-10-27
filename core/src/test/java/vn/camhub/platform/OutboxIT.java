@@ -92,7 +92,7 @@ class OutboxIT extends IntegrationTestSupport {
     void eventIsPublishedAfterCommitWithMessageId() {
         UUID id = appendInTransaction("ok");
 
-        assertThat(publisher.publishPending()).isEqualTo(1);
+        publisher.publishPending(); // lượt quét định kỳ có thể đã gửi trước
 
         Message m = rabbit.receive(queue, 5_000);
         assertThat(m).isNotNull();
@@ -114,7 +114,8 @@ class OutboxIT extends IntegrationTestSupport {
 
         transport.down.set(false);
         jdbc.update("update outbox_event set next_attempt_at = now() where id = ?", id); // bỏ qua thời gian chờ backoff
-        assertThat(publisher.publishPending()).isEqualTo(1);
+        // Lượt quét định kỳ (mỗi giây) có thể gửi trước lượt gọi tay; kiểm kết quả, không kiểm ai gửi
+        publisher.publishPending();
 
         Message m = rabbit.receive(queue, 5_000);
         assertThat(m).isNotNull();

@@ -21,7 +21,14 @@ export const router = createRouter({
       path: '/',
       component: AppLayout,
       children: [
-        { path: '', redirect: () => useAuthStore().landingPage || '/cameras' },
+        {
+          path: '',
+          // Chưa đăng nhập thì landingPage là '/': chuyển tiếp về chính nó sẽ lặp vô hạn (redirect chạy trước beforeEach)
+          redirect: () => {
+            const landing = useAuthStore().landingPage
+            return landing && landing !== '/' ? landing : '/cameras'
+          },
+        },
         {
           path: 'dashboard',
           component: () => import('@/views/DashboardView.vue'),
