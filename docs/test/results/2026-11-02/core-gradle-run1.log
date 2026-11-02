@@ -1,0 +1,96 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava UP-TO-DATE
+> Task :processTestResources UP-TO-DATE
+> Task :testClasses UP-TO-DATE
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+> Task :test
+> Task :integrationTest
+
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+> Task :integrationTest
+
+TalkIT > operatorNoiQuaLoa_nhaNutGhiNhatKyKemThoiLuong() FAILED
+    java.lang.NullPointerException at TalkIT.java:58
+
+RecordingIT > luuTru_ghiDeTheoCamera_vaGiuLaiPhucVuDieuTra() FAILED
+    org.springframework.dao.DataIntegrityViolationException at RecordingIT.java:230
+        Caused by: org.postgresql.util.PSQLException at RecordingIT.java:230
+
+{"ts":"2026-11-02T21:25:03.8281119+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-5","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:03.830304+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-6","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:03.8320638+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-7","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:03.8331692+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-8","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:03.8347744+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-9","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.088881+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-5","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.1199367+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-8","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.4295562+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-7","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.4819311+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-9","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.4819311+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-6","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.4824366+07:00","message":"Stopping...","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.4827312+07:00","message":"BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@4eace98f]]","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.4827312+07:00","message":"Stopped.","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.5295266+07:00","message":"Closing JPA EntityManagerFactory for persistence unit 'default'","logger_name":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.5337797+07:00","message":"HikariPool-1 - Shutdown initiated...","logger_name":"com.zaxxer.hikari.HikariDataSource","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.5444995+07:00","message":"HikariPool-1 - Shutdown completed.","logger_name":"com.zaxxer.hikari.HikariDataSource","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.5534981+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-5","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.5559807+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-6","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.5576462+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-7","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.559251+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-8","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:04.5609005+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-9","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4343812+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-5","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4343812+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-6","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4767938+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-7","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4767938+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-9","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4767938+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-8","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4767938+07:00","message":"Stopping...","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4767938+07:00","message":"BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@490c059a]]","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4767938+07:00","message":"Stopped.","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.497572+07:00","message":"Closing JPA EntityManagerFactory for persistence unit 'default'","logger_name":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.4986691+07:00","message":"HikariPool-2 - Shutdown initiated...","logger_name":"com.zaxxer.hikari.HikariDataSource","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.5027503+07:00","message":"HikariPool-2 - Shutdown completed.","logger_name":"com.zaxxer.hikari.HikariDataSource","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.5170587+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-5","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.5206162+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-6","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.5227116+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-7","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.5242899+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-8","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.5259016+07:00","message":"Waiting for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-9","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.587694+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-5","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6188498+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-6","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6188498+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-7","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6495916+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-8","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6495916+07:00","message":"Successfully waited for workers to finish.","logger_name":"org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer","thread_name":"rabbit-simple-9","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6505987+07:00","message":"Stopping...","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6515931+07:00","message":"BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@1994528e]]","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6515931+07:00","message":"Stopped.","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.654399+07:00","message":"Error while computing metrics in closeChannel: Cannot read field \"channelState\" because the return value of \"com.rabbitmq.client.impl.AbstractMetricsCollector.connectionState(com.rabbitmq.client.Connection)\" is null","logger_name":"com.rabbitmq.client.impl.AbstractMetricsCollector","thread_name":"rabbit-simple-3","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.654399+07:00","message":"Error while computing metrics in closeChannel: Cannot read field \"channelState\" because the return value of \"com.rabbitmq.client.impl.AbstractMetricsCollector.connectionState(com.rabbitmq.client.Connection)\" is null","logger_name":"com.rabbitmq.client.impl.AbstractMetricsCollector","thread_name":"rabbit-simple-4","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6603209+07:00","message":"Closing JPA EntityManagerFactory for persistence unit 'default'","logger_name":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6608637+07:00","message":"HikariPool-3 - Shutdown initiated...","logger_name":"com.zaxxer.hikari.HikariDataSource","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:25:05.6644251+07:00","message":"HikariPool-3 - Shutdown completed.","logger_name":"com.zaxxer.hikari.HikariDataSource","thread_name":"SpringApplicationShutdownHook","level":"INFO","app":"camhub-core"}
+
+> Task :integrationTest
+
+83 tests completed, 2 failed
+
+> Task :integrationTest FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':integrationTest'.
+> There were failing tests. See the report at: file:///C:/Users/PTC/Desktop/AI%20course/AI_SDLC_course/core/build/reports/tests/integrationTest/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+BUILD FAILED in 3m 8s
+6 actionable tasks: 2 executed, 4 up-to-date
+
+real	3m10.307s
+user	0m0.105s
+sys	0m0.320s
+EXIT=1

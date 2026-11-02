@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="vn.camhub.liveview.TalkIT" tests="2" skipped="0" failures="1" errors="0" timestamp="2026-11-02T14:24:33.488Z" hostname="DUYHIEU" time="1.079">
+  <properties/>
+  <testcase name="dongTabKhongNhaNut_quetDinhKyVanGhiNhatKy()" classname="vn.camhub.liveview.TalkIT" time="0.223"/>
+  <testcase name="operatorNoiQuaLoa_nhaNutGhiNhatKyKemThoiLuong()" classname="vn.camhub.liveview.TalkIT" time="0.855">
+    <failure message="java.lang.NullPointerException: Cannot invoke &quot;com.fasterxml.jackson.databind.JsonNode.asDouble()&quot; because the return value of &quot;com.fasterxml.jackson.databind.JsonNode.get(String)&quot; is null" type="java.lang.NullPointerException">java.lang.NullPointerException: Cannot invoke &quot;com.fasterxml.jackson.databind.JsonNode.asDouble()&quot; because the return value of &quot;com.fasterxml.jackson.databind.JsonNode.get(String)&quot; is null
+	at vn.camhub.liveview.TalkIT.operatorNoiQuaLoa_nhaNutGhiNhatKyKemThoiLuong(TalkIT.java:58)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+</failure>
+  </testcase>
+  <system-out><![CDATA[{"ts":"2026-11-02T21:24:33.4695387+07:00","message":"Could not detect default configuration classes for test class [vn.camhub.liveview.TalkIT]: TalkIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","logger_name":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:33.4831988+07:00","message":"Found @SpringBootConfiguration vn.camhub.CamHubApplication for test class vn.camhub.liveview.TalkIT","logger_name":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:33.5798561+07:00","message":"action=LOGIN result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=USER:de63605c-b123-4e26-9d41-dcabdad16bbc details={sessionId=9b9d031d-e12e-4d8a-afdf-c0357d6269a3}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"19b356e7-0b92-4414-8bde-3a7419f347f9"}
+{"ts":"2026-11-02T21:24:33.5980876+07:00","message":"action=CHANGE_CONFIG result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=SITE:de5a4756-6a22-4220-8a4a-498e3e950430 details={operation=CREATE_SITE, name=Kho quét c9854dfc}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"24c148eb-d17c-4181-96e9-448c0cad7954"}
+{"ts":"2026-11-02T21:24:33.6122589+07:00","message":"action=CHANGE_CONFIG result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=ZONE:22449570-0fe0-4dc2-b79b-d55bd89f40da details={operation=CREATE_ZONE, name=Sân, siteId=de5a4756-6a22-4220-8a4a-498e3e950430}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"b3be1ef9-89ba-4519-88b8-a2c5c3532e95"}
+{"ts":"2026-11-02T21:24:33.6992103+07:00","message":"action=TALK_AUDIO result=FAILURE org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=CAMERA:34ff96f5-2359-4d01-b2ab-c129fd2d110d details={error=Camera đóng kênh âm thanh, state=FAILED, cameraName=Loa sân c9854dfc, audioSeconds=7.5, durationSeconds=7.5}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:33.8356007+07:00","message":"action=LOGIN result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=USER:de63605c-b123-4e26-9d41-dcabdad16bbc details={sessionId=872a4b37-9a75-4bfc-ab73-3189cae6b480}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"aea474a4-a503-4792-859a-6751a0eceb74"}
+{"ts":"2026-11-02T21:24:33.8852485+07:00","message":"action=CHANGE_CONFIG result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=SITE:3be13a2d-49dc-44c6-b9d3-f83685243499 details={operation=CREATE_SITE, name=Kho loa a6c7ee13}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"d3ec4096-8c7d-4616-94eb-a5c73f3ae891"}
+{"ts":"2026-11-02T21:24:33.9058505+07:00","message":"action=CHANGE_CONFIG result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=ZONE:0ea01e76-90fa-4d8e-a102-44d6c80d284c details={operation=CREATE_ZONE, name=Cổng, siteId=3be13a2d-49dc-44c6-b9d3-f83685243499}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"3f039b16-677a-4b78-9a18-76f6acb5ef7b"}
+{"ts":"2026-11-02T21:24:34.0722869+07:00","message":"action=CHANGE_PERMISSION result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=USER:8295e03d-004d-4c8b-9bcd-ddf18bbe4f48 details={assignments=1}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"0ef97980-2725-40a5-a149-8189128a4fc6"}
+{"ts":"2026-11-02T21:24:34.0745258+07:00","message":"action=CHANGE_PERMISSION result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=USER:8295e03d-004d-4c8b-9bcd-ddf18bbe4f48 details={operation=CREATE_USER, email=op-a6c7ee13@camhub.test}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"0ef97980-2725-40a5-a149-8189128a4fc6"}
+{"ts":"2026-11-02T21:24:34.2032+07:00","message":"action=CHANGE_PERMISSION result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=USER:c664d982-18b8-4707-97bd-172386f18ee7 details={assignments=1}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"75a2b334-b4b8-4ab7-97e3-fa2c5f447e7b"}
+{"ts":"2026-11-02T21:24:34.2049685+07:00","message":"action=CHANGE_PERMISSION result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=de63605c-b123-4e26-9d41-dcabdad16bbc ip=127.0.0.1 target=USER:c664d982-18b8-4707-97bd-172386f18ee7 details={operation=CREATE_USER, email=view-a6c7ee13@camhub.test}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"75a2b334-b4b8-4ab7-97e3-fa2c5f447e7b"}
+{"ts":"2026-11-02T21:24:34.3217536+07:00","message":"action=LOGIN result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=8295e03d-004d-4c8b-9bcd-ddf18bbe4f48 ip=127.0.0.1 target=USER:8295e03d-004d-4c8b-9bcd-ddf18bbe4f48 details={sessionId=02e677f1-0c51-4bc3-b5aa-a38b1654d949}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"dedc84a6-3bb0-4079-873e-4626bcb08c3b"}
+{"ts":"2026-11-02T21:24:34.4435347+07:00","message":"action=LOGIN result=SUCCESS org=3541711c-16af-41cc-b956-c3682895a536 actor=c664d982-18b8-4707-97bd-172386f18ee7 ip=127.0.0.1 target=USER:c664d982-18b8-4707-97bd-172386f18ee7 details={sessionId=56283bf7-38ba-4558-86c1-a6838efcab90}","logger_name":"AUDIT","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"b22e5ebc-afa4-4944-af49-275d034496db"}
+{"ts":"2026-11-02T21:24:34.5398851+07:00","message":"Vi phạm ràng buộc dữ liệu: ERROR: no partition of relation \"audit_log\" found for row","logger_name":"vn.camhub.platform.security.ApiExceptionHandler","thread_name":"Test worker","level":"INFO","app":"camhub-core","correlationId":"ef502894-dca6-462d-acf2-963a5d76c167"}
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/auth/login
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Content-Length:"58"]
+             Body = {"password":"Admin-Pass-2026","email":"admin@camhub.test"}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.identity.web.AuthController
+           Method = vn.camhub.identity.web.AuthController#login(LoginRequest, HttpServletRequest)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [X-Request-Id:"aea474a4-a503-4792-859a-6751a0eceb74", Set-Cookie:"camhub_refresh=HhLUWq0EeL_6V-lTcKNvnGoCIONm1_UlL3JJOwHBpgI; Path=/api/v1/auth; Max-Age=43200; Expires=Tue, 3 Nov 2026 02:24:33 GMT; Secure; HttpOnly; SameSite=Strict", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"accessToken":"eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiJkZTYzNjA1Yy1iMTIzLTRlMjYtOWQ0MS1kY2FiZGFkMTZiYmMiLCJleHAiOjE3OTM2MzAzNzMsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3Mywic2lkIjoiODcyYTRiMzctOWE3NS00YmZjLWFiNzMtMzE4OWNhZTZiNDgwIn0.lA9U6m2zXMct_vP0QomvBLZf3oPV-OJAODya1nYWfTw","expiresAt":"2026-11-02T14:39:33.840301800Z","user":{"id":"de63605c-b123-4e26-9d41-dcabdad16bbc","email":"admin@camhub.test","displayName":"Quản trị hệ thống","language":"vi","roles":["Quản trị hệ thống"]},"landingPage":"/dashboard","recoveryCodes":null}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = [[MockCookie@5c8b824c name = 'camhub_refresh', value = 'HhLUWq0EeL_6V-lTcKNvnGoCIONm1_UlL3JJOwHBpgI', comment = [null], domain = [null], maxAge = 43200, path = '/api/v1/auth', secure = true, version = 0, httpOnly = true]]
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/sites
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiJkZTYzNjA1Yy1iMTIzLTRlMjYtOWQ0MS1kY2FiZGFkMTZiYmMiLCJleHAiOjE3OTM2MzAzNzMsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3Mywic2lkIjoiODcyYTRiMzctOWE3NS00YmZjLWFiNzMtMzE4OWNhZTZiNDgwIn0.lA9U6m2zXMct_vP0QomvBLZf3oPV-OJAODya1nYWfTw", Content-Length:"27"]
+             Body = {"name":"Kho loa a6c7ee13"}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.organization.web.OrganizationController
+           Method = vn.camhub.organization.web.OrganizationController#createSite(SiteRequest)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 201
+    Error message = null
+          Headers = [X-Request-Id:"d3ec4096-8c7d-4616-94eb-a5c73f3ae891", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"id":"3be13a2d-49dc-44c6-b9d3-f83685243499"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/sites/3be13a2d-49dc-44c6-b9d3-f83685243499/zones
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiJkZTYzNjA1Yy1iMTIzLTRlMjYtOWQ0MS1kY2FiZGFkMTZiYmMiLCJleHAiOjE3OTM2MzAzNzMsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3Mywic2lkIjoiODcyYTRiMzctOWE3NS00YmZjLWFiNzMtMzE4OWNhZTZiNDgwIn0.lA9U6m2zXMct_vP0QomvBLZf3oPV-OJAODya1nYWfTw", Content-Length:"17"]
+             Body = {"name":"Cổng"}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.organization.web.OrganizationController
+           Method = vn.camhub.organization.web.OrganizationController#createZone(UUID, NameRequest)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 201
+    Error message = null
+          Headers = [X-Request-Id:"3f039b16-677a-4b78-9a18-76f6acb5ef7b", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"id":"0ea01e76-90fa-4d8e-a102-44d6c80d284c"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/users
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiJkZTYzNjA1Yy1iMTIzLTRlMjYtOWQ0MS1kY2FiZGFkMTZiYmMiLCJleHAiOjE3OTM2MzAzNzMsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3Mywic2lkIjoiODcyYTRiMzctOWE3NS00YmZjLWFiNzMtMzE4OWNhZTZiNDgwIn0.lA9U6m2zXMct_vP0QomvBLZf3oPV-OJAODya1nYWfTw", Content-Length:"237"]
+             Body = {"password":"User-Pass-2026","email":"op-a6c7ee13@camhub.test","displayName":"op-a6c7ee13@camhub.test","assignments":[{"scopeId":"3be13a2d-49dc-44c6-b9d3-f83685243499","scopeType":"SITE","roleId":"4ba311fb-935f-4134-b959-1bcacc9cc7d8"}]}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.identity.web.UserController
+           Method = vn.camhub.identity.web.UserController#create(CreateUser)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 201
+    Error message = null
+          Headers = [X-Request-Id:"0ef97980-2725-40a5-a149-8189128a4fc6", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"id":"8295e03d-004d-4c8b-9bcd-ddf18bbe4f48","email":"op-a6c7ee13@camhub.test","displayName":"op-a6c7ee13@camhub.test","authSource":"LOCAL","status":"ACTIVE","language":"vi","twoFactorEnabled":false,"lastLoginAt":null,"createdAt":"2026-11-02T14:24:33.969416Z"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/users
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiJkZTYzNjA1Yy1iMTIzLTRlMjYtOWQ0MS1kY2FiZGFkMTZiYmMiLCJleHAiOjE3OTM2MzAzNzMsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3Mywic2lkIjoiODcyYTRiMzctOWE3NS00YmZjLWFiNzMtMzE4OWNhZTZiNDgwIn0.lA9U6m2zXMct_vP0QomvBLZf3oPV-OJAODya1nYWfTw", Content-Length:"241"]
+             Body = {"password":"User-Pass-2026","email":"view-a6c7ee13@camhub.test","displayName":"view-a6c7ee13@camhub.test","assignments":[{"scopeId":"3be13a2d-49dc-44c6-b9d3-f83685243499","scopeType":"SITE","roleId":"fcdbd275-6722-4d12-b53b-b270e090a356"}]}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.identity.web.UserController
+           Method = vn.camhub.identity.web.UserController#create(CreateUser)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 201
+    Error message = null
+          Headers = [X-Request-Id:"75a2b334-b4b8-4ab7-97e3-fa2c5f447e7b", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"id":"c664d982-18b8-4707-97bd-172386f18ee7","email":"view-a6c7ee13@camhub.test","displayName":"view-a6c7ee13@camhub.test","authSource":"LOCAL","status":"ACTIVE","language":"vi","twoFactorEnabled":false,"lastLoginAt":null,"createdAt":"2026-11-02T14:24:34.100290Z"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/auth/login
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Content-Length:"63"]
+             Body = {"password":"User-Pass-2026","email":"op-a6c7ee13@camhub.test"}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.identity.web.AuthController
+           Method = vn.camhub.identity.web.AuthController#login(LoginRequest, HttpServletRequest)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [X-Request-Id:"dedc84a6-3bb0-4079-873e-4626bcb08c3b", Set-Cookie:"camhub_refresh=WSGgo84FrQjmeoKmc31X_HYzXPRDDmwWutpTF_L5ImI; Path=/api/v1/auth; Max-Age=43200; Expires=Tue, 3 Nov 2026 02:24:34 GMT; Secure; HttpOnly; SameSite=Strict", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"accessToken":"eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiI4Mjk1ZTAzZC0wMDRkLTRjOGItOWJjZC1kZGYxOGJiZTRmNDgiLCJleHAiOjE3OTM2MzAzNzQsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3NCwic2lkIjoiMDJlNjc3ZjEtMGM1MS00YmMzLWI1YWEtYTM4YjE2NTRkOTQ5In0.dX9a0K273JbhPnpF_JFRKcjBuFMgrfklO8HHLCZAznc","expiresAt":"2026-11-02T14:39:34.326934200Z","user":{"id":"8295e03d-004d-4c8b-9bcd-ddf18bbe4f48","email":"op-a6c7ee13@camhub.test","displayName":"op-a6c7ee13@camhub.test","language":"vi","roles":["Nhân viên giám sát"]},"landingPage":"/live","recoveryCodes":null}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = [[MockCookie@1485c38d name = 'camhub_refresh', value = 'WSGgo84FrQjmeoKmc31X_HYzXPRDDmwWutpTF_L5ImI', comment = [null], domain = [null], maxAge = 43200, path = '/api/v1/auth', secure = true, version = 0, httpOnly = true]]
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/auth/login
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Content-Length:"65"]
+             Body = {"password":"User-Pass-2026","email":"view-a6c7ee13@camhub.test"}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.identity.web.AuthController
+           Method = vn.camhub.identity.web.AuthController#login(LoginRequest, HttpServletRequest)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [X-Request-Id:"b22e5ebc-afa4-4944-af49-275d034496db", Set-Cookie:"camhub_refresh=jHd0aspNqXOTnuTnQYdSa92-M2JRvZFGFlZzBQ6KsWA; Path=/api/v1/auth; Max-Age=43200; Expires=Tue, 3 Nov 2026 02:24:34 GMT; Secure; HttpOnly; SameSite=Strict", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"accessToken":"eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiJjNjY0ZDk4Mi0xOGI4LTQ3MDctOTdiZC0xNzIzODZmMThlZTciLCJleHAiOjE3OTM2MzAzNzQsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3NCwic2lkIjoiNTYyODNiZjctMzhiYS00NTU4LTg2YzEtYTY4MzhlZmNhYjkwIn0.ymwWRtHDpSM2BRtuSf4GWAFgYrpBh2Z7xjwiA1NDWYU","expiresAt":"2026-11-02T14:39:34.449980Z","user":{"id":"c664d982-18b8-4707-97bd-172386f18ee7","email":"view-a6c7ee13@camhub.test","displayName":"view-a6c7ee13@camhub.test","language":"vi","roles":["Người xem"]},"landingPage":"/live","recoveryCodes":null}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = [[MockCookie@68d72db0 name = 'camhub_refresh', value = 'jHd0aspNqXOTnuTnQYdSa92-M2JRvZFGFlZzBQ6KsWA', comment = [null], domain = [null], maxAge = 43200, path = '/api/v1/auth', secure = true, version = 0, httpOnly = true]]
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/cameras/3ccdb77b-6924-4e1d-a6d0-1937e2078b57/talk
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiI4Mjk1ZTAzZC0wMDRkLTRjOGItOWJjZC1kZGYxOGJiZTRmNDgiLCJleHAiOjE3OTM2MzAzNzQsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3NCwic2lkIjoiMDJlNjc3ZjEtMGM1MS00YmMzLWI1YWEtYTM4YjE2NTRkOTQ5In0.dX9a0K273JbhPnpF_JFRKcjBuFMgrfklO8HHLCZAznc", Content-Length:"2"]
+             Body = {}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.liveview.web.LiveController
+           Method = vn.camhub.liveview.web.LiveController#talkStart(UUID)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 201
+    Error message = null
+          Headers = [X-Request-Id:"aa686854-32a6-4c94-b5de-a1225c30c92d", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"sessionId":"talk-a6c7ee13","wsUrl":"/talk/ws/talk-a6c7ee13","codec":"PCMU","sampleRate":8000,"expiresInSeconds":30}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/cameras/3ccdb77b-6924-4e1d-a6d0-1937e2078b57/talk/talk-a6c7ee13/end
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiJkZTYzNjA1Yy1iMTIzLTRlMjYtOWQ0MS1kY2FiZGFkMTZiYmMiLCJleHAiOjE3OTM2MzAzNzMsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3Mywic2lkIjoiODcyYTRiMzctOWE3NS00YmZjLWFiNzMtMzE4OWNhZTZiNDgwIn0.lA9U6m2zXMct_vP0QomvBLZf3oPV-OJAODya1nYWfTw", Content-Length:"2"]
+             Body = {}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.liveview.web.LiveController
+           Method = vn.camhub.liveview.web.LiveController#talkEnd(UUID, String)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = vn.camhub.platform.security.ApiException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 404
+    Error message = null
+          Headers = [X-Request-Id:"dc4bffb1-287e-456b-bf3c-74fefb1b41b2", Content-Type:"application/problem+json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/problem+json
+             Body = {"type":"about:blank","title":"Not Found","status":404,"detail":"Không tìm thấy talk-session","instance":"/api/v1/cameras/3ccdb77b-6924-4e1d-a6d0-1937e2078b57/talk/talk-a6c7ee13/end","code":"NOT_FOUND"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/cameras/3ccdb77b-6924-4e1d-a6d0-1937e2078b57/talk/talk-a6c7ee13/end
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjYW1odWIiLCJzdWIiOiI4Mjk1ZTAzZC0wMDRkLTRjOGItOWJjZC1kZGYxOGJiZTRmNDgiLCJleHAiOjE3OTM2MzAzNzQsIm9yZyI6IjM1NDE3MTFjLTE2YWYtNDFjYy1iOTU2LWMzNjgyODk1YTUzNiIsImlhdCI6MTc5MzYyOTQ3NCwic2lkIjoiMDJlNjc3ZjEtMGM1MS00YmMzLWI1YWEtYTM4YjE2NTRkOTQ5In0.dX9a0K273JbhPnpF_JFRKcjBuFMgrfklO8HHLCZAznc", Content-Length:"2"]
+             Body = {}
+    Session Attrs = {}
+
+Handler:
+             Type = vn.camhub.liveview.web.LiveController
+           Method = vn.camhub.liveview.web.LiveController#talkEnd(UUID, String)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = org.springframework.dao.DataIntegrityViolationException
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 400
+    Error message = null
+          Headers = [X-Request-Id:"ef502894-dca6-462d-acf2-963a5d76c167", Content-Type:"application/problem+json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/problem+json
+             Body = {"type":"about:blank","title":"Bad Request","status":400,"detail":"Dữ liệu vi phạm ràng buộc","instance":"/api/v1/cameras/3ccdb77b-6924-4e1d-a6d0-1937e2078b57/talk/talk-a6c7ee13/end","code":"CONSTRAINT"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

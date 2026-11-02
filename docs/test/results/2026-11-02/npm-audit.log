@@ -1,0 +1,5 @@
+found 0 vulnerabilities
+--- full (incl dev)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force

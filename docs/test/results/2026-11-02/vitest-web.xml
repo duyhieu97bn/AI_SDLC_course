@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="20" failures="0" errors="0" time="0.2134628">
+    <testsuite name="src/player/AdaptiveStream.spec.ts" timestamp="2026-11-02T14:31:59.474Z" hostname="DuyHieu" tests="5" failures="0" errors="0" skipped="0" time="0.0075688">
+        <testcase classname="src/player/AdaptiveStream.spec.ts" name="AdaptiveController (US-11) &gt; băng thông dưới bitrate luồng chính liên tục 5 giây thì chuyển luồng phụ" time="0.0024675">
+        </testcase>
+        <testcase classname="src/player/AdaptiveStream.spec.ts" name="AdaptiveController (US-11) &gt; sụt ngắn dưới 5 giây thì không chuyển" time="0.0005758">
+        </testcase>
+        <testcase classname="src/player/AdaptiveStream.spec.ts" name="AdaptiveController (US-11) &gt; quay lại luồng chính khi băng thông ≥ 1,5 lần trong 30 giây" time="0.0005023">
+        </testcase>
+        <testcase classname="src/player/AdaptiveStream.spec.ts" name="AdaptiveController (US-11) &gt; băng thông 1,4 lần thì vẫn ở luồng phụ" time="0.0003818">
+        </testcase>
+        <testcase classname="src/player/AdaptiveStream.spec.ts" name="AdaptiveController (US-11) &gt; ước tính WebRTC từ mất gói" time="0.0011366">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/player/PcmResampler.spec.ts" timestamp="2026-11-02T14:31:59.480Z" hostname="DuyHieu" tests="3" failures="0" errors="0" skipped="0" time="0.070151">
+        <testcase classname="src/player/PcmResampler.spec.ts" name="PcmResampler (US-15) &gt; 48 kHz → 8 kHz: đúng số mẫu khi đẩy theo từng khối, không lệch cao độ" time="0.0187593">
+        </testcase>
+        <testcase classname="src/player/PcmResampler.spec.ts" name="PcmResampler (US-15) &gt; 44,1 kHz (tỉ lệ lẻ) → 8 kHz: sai số tối đa 1 mẫu mỗi giây" time="0.0401553">
+        </testcase>
+        <testcase classname="src/player/PcmResampler.spec.ts" name="PcmResampler (US-15) &gt; giữ biên độ âm tần thấp, chặn tràn và đổi sang int16" time="0.0083774">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/player/player.spec.ts" timestamp="2026-11-02T14:31:59.482Z" hostname="DuyHieu" tests="6" failures="0" errors="0" skipped="0" time="0.0763738">
+        <testcase classname="src/player/player.spec.ts" name="summarize &gt; tính trung bình, p95 nearest-rank và max" time="0.0182686">
+        </testcase>
+        <testcase classname="src/player/player.spec.ts" name="summarize &gt; trả null khi chưa có số đo" time="0.0033792">
+        </testcase>
+        <testcase classname="src/player/player.spec.ts" name="toCsv &gt; thoát dấu ngoặc kép trong thông báo lỗi" time="0.0009456">
+        </testcase>
+        <testcase classname="src/player/player.spec.ts" name="withToken &gt; gắn token vào mọi URL playlist/segment" time="0.004306">
+        </testcase>
+        <testcase classname="src/player/player.spec.ts" name="WhepPlayer &gt; POST offer SDP, áp answer, đo first frame và DELETE phiên khi dừng" time="0.0305232">
+        </testcase>
+        <testcase classname="src/player/player.spec.ts" name="WhepPlayer &gt; báo lỗi khi máy chủ từ chối (token sai)" time="0.0077529">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/player/SyncController.spec.ts" timestamp="2026-11-02T14:31:59.486Z" hostname="DuyHieu" tests="2" failures="0" errors="0" skipped="0" time="0.0085211">
+        <testcase classname="src/player/SyncController.spec.ts" name="SyncController (US-19) &gt; kéo các camera lệch quá 0,4 giây về cùng thời điểm tuyệt đối với camera chuẩn" time="0.003585">
+        </testcase>
+        <testcase classname="src/player/SyncController.spec.ts" name="SyncController (US-19) &gt; tối đa 4 camera" time="0.0022918">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/services/http.spec.ts" timestamp="2026-11-02T14:31:59.488Z" hostname="DuyHieu" tests="4" failures="0" errors="0" skipped="0" time="0.0508481">
+        <testcase classname="src/services/http.spec.ts" name="http &gt; gặp 401 thì làm mới phiên đúng một lần cho mọi request đang chờ, rồi gọi lại" time="0.0337211">
+        </testcase>
+        <testcase classname="src/services/http.spec.ts" name="http &gt; làm mới thất bại thì báo hết phiên và ném ApiError có mã" time="0.004827">
+        </testcase>
+        <testcase classname="src/services/http.spec.ts" name="http &gt; đọc lỗi RFC 7807 kèm trường bổ sung" time="0.0028526">
+        </testcase>
+        <testcase classname="src/services/http.spec.ts" name="i18n (US-41) &gt; tiếng Việt và tiếng Anh có cùng bộ khóa" time="0.0067792">
+        </testcase>
+    </testsuite>
+</testsuites>

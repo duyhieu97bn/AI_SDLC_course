@@ -1,0 +1,15 @@
+SKIPPED [1] tests/compat/test_compat.py:81: thiếu biến môi trường COMPAT_DAHUA_USER/COMPAT_DAHUA_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:81: thiếu biến môi trường COMPAT_HIKPTZ_USER/COMPAT_HIKPTZ_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:99: thiếu biến môi trường COMPAT_HIK_USER/COMPAT_HIK_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:99: thiếu biến môi trường COMPAT_DAHUA_USER/COMPAT_DAHUA_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:99: thiếu biến môi trường COMPAT_HIKPTZ_USER/COMPAT_HIKPTZ_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:121: thiếu biến môi trường COMPAT_HIK_USER/COMPAT_HIK_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:121: thiếu biến môi trường COMPAT_DAHUA_USER/COMPAT_DAHUA_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:121: thiếu biến môi trường COMPAT_HIKPTZ_USER/COMPAT_HIKPTZ_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:128: thiếu biến môi trường COMPAT_HIK_USER/COMPAT_HIK_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:128: thiếu biến môi trường COMPAT_DAHUA_USER/COMPAT_DAHUA_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:128: thiếu biến môi trường COMPAT_HIKPTZ_USER/COMPAT_HIKPTZ_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:134: thiếu biến môi trường COMPAT_HIK_USER/COMPAT_HIK_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:134: thiếu biến môi trường COMPAT_DAHUA_USER/COMPAT_DAHUA_PASSWORD
+SKIPPED [1] tests/compat/test_compat.py:134: thiếu biến môi trường COMPAT_HIKPTZ_USER/COMPAT_HIKPTZ_PASSWORD
+204 passed, 29 skipped, 1 warning in 25.30s

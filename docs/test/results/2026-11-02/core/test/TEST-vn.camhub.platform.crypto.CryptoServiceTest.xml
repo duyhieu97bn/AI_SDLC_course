@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="vn.camhub.platform.crypto.CryptoServiceTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-02T14:40:19.160Z" hostname="DUYHIEU" time="0.039">
+  <properties/>
+  <testcase name="masterKeyMustBe256Bits()" classname="vn.camhub.platform.crypto.CryptoServiceTest" time="0.006"/>
+  <testcase name="dataKeySurvivesRestartWithSameMasterKey()" classname="vn.camhub.platform.crypto.CryptoServiceTest" time="0.01"/>
+  <testcase name="ciphertextCannotBeMovedToAnotherOrganization()" classname="vn.camhub.platform.crypto.CryptoServiceTest" time="0.003"/>
+  <testcase name="roundTrip()" classname="vn.camhub.platform.crypto.CryptoServiceTest" time="0.002"/>
+  <testcase name="wrongMasterKeyCannotUnwrap()" classname="vn.camhub.platform.crypto.CryptoServiceTest" time="0.002"/>
+  <testcase name="sameInputGivesDifferentCiphertext()" classname="vn.camhub.platform.crypto.CryptoServiceTest" time="0.002"/>
+  <testcase name="tamperedCiphertextIsRejected()" classname="vn.camhub.platform.crypto.CryptoServiceTest" time="0.002"/>
+  <testcase name="eachOrganizationHasOwnDataKeyWrappedByMasterKey()" classname="vn.camhub.platform.crypto.CryptoServiceTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

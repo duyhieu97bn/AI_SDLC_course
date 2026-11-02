@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,9 +41,13 @@ class TalkIT extends ApiTestSupport {
 
         String sid = "talk-" + suffix;
         when(devices.openTalk(any())).thenReturn(new TalkSession(sid, "PCMU", 30, 8000));
-        Instant started = Instant.parse("2026-10-26T08:00:00Z");
+        // Thời điểm tương đối: audit_log chỉ có phân vùng từ tháng hiện tại, ngày cố định sẽ hỏng khi sang tháng
+        Instant started = Instant.now().minusSeconds(5).truncatedTo(ChronoUnit.MILLIS);
         when(devices.closeTalk(sid)).thenReturn(Optional.of(new TalkStatus(sid, "ENDED", started,
                 started.plusMillis(4200), 4.2, 4.0, null)));
+        // Lượt quét định kỳ (15 s) có thể chạy giữa chừng: Gateway phải báo phiên còn mở, như khi đang nói thật
+        when(devices.talkStatus(sid)).thenReturn(Optional.of(new TalkStatus(sid, "ACTIVE", started, null,
+                0, 0, null)));
 
         JsonNode start = json.readTree(postJson("/api/v1/cameras/" + speaker + "/talk", Map.of(), operator)
                 .getResponse().getContentAsString());
@@ -53,8 +58,10 @@ class TalkIT extends ApiTestSupport {
         assertThat(postJson("/api/v1/cameras/" + speaker + "/talk/" + sid + "/end", Map.of(), admin)
                 .getResponse().getStatus()).isEqualTo(404);
 
-        JsonNode end = json.readTree(postJson("/api/v1/cameras/" + speaker + "/talk/" + sid + "/end", Map.of(),
-                operator).getResponse().getContentAsString());
+        var endResponse = postJson("/api/v1/cameras/" + speaker + "/talk/" + sid + "/end", Map.of(), operator)
+                .getResponse();
+        assertThat(endResponse.getStatus()).as(endResponse.getContentAsString()).isEqualTo(200);
+        JsonNode end = json.readTree(endResponse.getContentAsString());
         assertThat(end.get("durationSeconds").asDouble()).isEqualTo(4.2);
         JsonNode details = json.readTree(OrganizationContext.callAs(orgId(), () -> jdbc.sql(
                 "select details::text from audit_log where action = 'TALK_AUDIO' and target_id = ?")

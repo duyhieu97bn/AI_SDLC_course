@@ -1,0 +1,12 @@
+== lint
+lint exit=0
+== typecheck
+== vitest
+ [32m✓[39m src/player/player.spec.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m      Tests [22m [1m[32m20 passed[39m[22m[90m (20)[39m
+[2m   Start at [22m 21:31:51
+[2m   Duration [22m 7.02s[2m (transform 817ms, setup 0ms, collect 1.30s, tests 213ms, environment 23.48s, prepare 4.35s)[22m
+
+JUNIT report written to C:/Users/PTC/Desktop/AI course/AI_SDLC_course/docs/test/results/2026-11-02/vitest-web.xml

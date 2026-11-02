@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="vn.camhub.liveview.MediaTokenServiceTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-02T14:40:18.917Z" hostname="DUYHIEU" time="0.238">
+  <properties/>
+  <testcase name="internalAccountMayReadForTranscoding()" classname="vn.camhub.liveview.MediaTokenServiceTest" time="0.052"/>
+  <testcase name="validTokenForSamePathAndAction()" classname="vn.camhub.liveview.MediaTokenServiceTest" time="0.127"/>
+  <testcase name="tokenAlsoCoversTranscodedPath()" classname="vn.camhub.liveview.MediaTokenServiceTest" time="0.007"/>
+  <testcase name="tokenFromAnotherOrganizationIsDenied()" classname="vn.camhub.liveview.MediaTokenServiceTest" time="0.012"/>
+  <testcase name="authorizeEndpointChecksEverySession()" classname="vn.camhub.liveview.MediaTokenServiceTest" time="0.014"/>
+  <testcase name="rejectsOtherPathActionExpiredOrForged()" classname="vn.camhub.liveview.MediaTokenServiceTest" time="0.006"/>
+  <testcase name="publishOnlyWithInternalCredentials()" classname="vn.camhub.liveview.MediaTokenServiceTest" time="0.004"/>
+  <testcase name="revokedPermissionDeniesNewSessionEvenWithValidToken()" classname="vn.camhub.liveview.MediaTokenServiceTest" time="0.006"/>
+  <system-out><![CDATA[21:40:18.968 [Test worker] INFO vn.camhub.liveview.web.MediaAuthController -- Từ chối phiên media action=read path=cam-1 protocol=rtsp ip=127.0.0.1
+21:40:19.119 [Test worker] INFO vn.camhub.liveview.web.MediaAuthController -- Từ chối phiên media action=read path=cam-1 protocol=webrtc ip=10.0.0.5
+21:40:19.133 [Test worker] INFO vn.camhub.liveview.web.MediaAuthController -- Từ chối phiên media action=read path=cam-1 protocol=webrtc ip=10.0.0.5
+21:40:19.134 [Test worker] INFO vn.camhub.liveview.web.MediaAuthController -- Từ chối phiên media action=read path=cam-9 protocol=hls ip=10.0.0.5
+21:40:19.134 [Test worker] INFO vn.camhub.liveview.web.MediaAuthController -- Từ chối phiên media action=api path= protocol= ip=10.0.0.5
+21:40:19.146 [Test worker] INFO vn.camhub.liveview.web.MediaAuthController -- Từ chối phiên media action=publish path=sim-1 protocol=rtsp ip=
+21:40:19.147 [Test worker] INFO vn.camhub.liveview.web.MediaAuthController -- Từ chối phiên media action=publish path=sim-1 protocol=rtsp ip=
+21:40:19.156 [Test worker] INFO vn.camhub.liveview.web.MediaAuthController -- Từ chối phiên media action=read path=cam-1 protocol=webrtc ip=10.0.0.5
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (C:\Users\PTC\.gradle\caches\modules-2\files-2.1\net.bytebuddy\byte-buddy-agent\1.17.8\f09415827a71be7ed621c7bd02550678f28bc81c\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

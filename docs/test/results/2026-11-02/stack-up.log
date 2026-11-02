@@ -1,0 +1,561 @@
+[36m[camhub][0m Build và khởi động (lần đầu mất vài phút để tải thư viện)…
+2026/11/02 21:42:56 http2: server: error reading preface from client //./pipe/dockerDesktopLinuxEngine: file has already been closed
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [media-worker internal] load build definition from Dockerfile
+#1 transferring dockerfile: 667B 0.0s done
+#1 DONE 0.1s
+
+#2 [tunnelauth-init internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.05kB 0.0s done
+#2 DONE 0.1s
+
+#3 [media-worker internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 0.0s
+
+#4 [chat-mock internal] load build definition from Dockerfile
+#4 transferring dockerfile: 582B 0.0s done
+#4 DONE 0.1s
+
+#5 [media-worker internal] load .dockerignore
+#5 transferring context: 123B 0.0s done
+#5 DONE 0.1s
+
+#6 [tunnelauth-init internal] load metadata for docker.io/jpillora/chisel:1.12.1
+#6 DONE 0.0s
+
+#7 [postgres internal] load build definition from Dockerfile
+#7 transferring dockerfile: 1.38kB 0.0s done
+#7 DONE 0.1s
+
+#8 [postgres internal] load metadata for docker.io/bitnamilegacy/minio:2025.7.23
+#8 DONE 0.0s
+
+#9 [postgres internal] load metadata for docker.io/library/postgres:16-alpine
+#9 DONE 0.0s
+
+#10 [onvif-sim-1 internal] load build definition from Dockerfile
+#10 transferring dockerfile: 630B 0.0s done
+#10 DONE 0.1s
+
+#11 [device-gateway internal] load build definition from Dockerfile
+#11 transferring dockerfile: 525B 0.0s done
+#11 DONE 0.1s
+
+#12 [media-worker internal] load build context
+#12 DONE 0.0s
+
+#13 [media-worker 1/6] FROM docker.io/library/python:3.12-slim
+#13 DONE 0.0s
+
+#3 [device-gateway internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 0.0s
+
+#14 [postgres internal] load .dockerignore
+#14 transferring context: 259B 0.0s done
+#14 DONE 0.1s
+
+#15 [chat-mock internal] load .dockerignore
+#15 transferring context: 87B done
+#15 DONE 0.1s
+
+#13 [device-gateway 1/6] FROM docker.io/library/python:3.12-slim
+#13 DONE 0.0s
+
+#16 [postgres] FROM docker.io/bitnamilegacy/minio:2025.7.23
+#16 DONE 0.0s
+
+#17 [postgres stage-0 1/6] FROM docker.io/library/postgres:16-alpine
+#17 DONE 0.0s
+
+#18 [onvif-sim-1 internal] load .dockerignore
+#18 transferring context: 85B done
+#18 DONE 0.1s
+
+#19 [device-gateway internal] load .dockerignore
+#19 transferring context: 123B 0.0s done
+#19 DONE 0.0s
+
+#12 [media-worker internal] load build context
+#12 transferring context: 46.33kB 0.0s done
+#12 DONE 0.1s
+
+#20 [media-worker 3/6] WORKDIR /srv
+#20 CACHED
+
+#21 [media-worker 2/6] RUN apt-get update     && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
+#21 CACHED
+
+#22 [media-worker 4/6] COPY pyproject.toml ./
+#22 CACHED
+
+#23 [media-worker 5/6] COPY media_worker ./media_worker
+#23 CACHED
+
+#24 [media-worker 6/6] RUN pip install --no-cache-dir .     && useradd --system --uid 10001 camhub
+#24 CACHED
+
+#25 [media-worker] exporting to image
+#25 exporting layers done
+#25 writing image sha256:abd826c721a46ede7244ad8b2af57eaffb5c6f25561156799262ca1c0c3cec9b 0.0s done
+#25 naming to docker.io/camhub/media-worker:dev 0.0s done
+#25 DONE 0.0s
+
+#26 [chat-mock internal] load build context
+#26 transferring context: 9.74kB 0.0s done
+#26 DONE 0.1s
+
+#27 [onvif-sim-1 internal] load build context
+#27 transferring context: 330.85kB 0.1s done
+#27 DONE 0.1s
+
+#28 [chat-mock 4/5] COPY chat_mock ./chat_mock
+#28 CACHED
+
+#29 [chat-mock 3/5] COPY pyproject.toml ./
+#29 CACHED
+
+#30 [chat-mock 5/5] RUN pip install --no-cache-dir .     && useradd --system --uid 10001 camhub
+#30 CACHED
+
+#31 [postgres internal] load build context
+#31 transferring context: 14.05kB 0.1s done
+#31 DONE 0.1s
+
+#32 [device-gateway internal] load build context
+#32 transferring context: 242.71kB 0.0s done
+#32 DONE 0.1s
+
+#33 [onvif-sim-1 4/5] COPY onvif_sim ./onvif_sim
+#33 CACHED
+
+#34 [onvif-sim-1 3/5] COPY pyproject.toml ./
+#34 CACHED
+
+#35 [onvif-sim-1 2/5] WORKDIR /srv
+#35 CACHED
+
+#36 [onvif-sim-1 5/5] RUN pip install --no-cache-dir .     && useradd --system --uid 10001 camhub
+#36 CACHED
+
+#37 [chat-mock] exporting to image
+#37 exporting layers done
+#37 writing image sha256:888ebc910049440a3f1a89a95fff0f1b9f69259ec0005d7ab39d5907ff6cb4ce done
+#37 naming to docker.io/camhub/chat-mock:dev done
+#37 DONE 0.1s
+
+#38 [postgres stage-0 3/6] RUN apk add --no-cache pgbackrest jq  && mkdir -p /var/lib/pgbackrest /var/log/pgbackrest /backup-status /miniobackup  && chown postgres:postgres /var/lib/pgbackrest /var/log/pgbackrest /backup-status /miniobackup  && chmod 750 /var/lib/pgbackrest
+#38 CACHED
+
+#39 [postgres stage-0 4/6] COPY backup/pgbackrest.conf /etc/pgbackrest/pgbackrest.conf
+#39 CACHED
+
+#40 [postgres stage-0 2/6] COPY --from=bitnamilegacy/minio:2025.7.23 /opt/bitnami/minio-client/bin/mc /usr/local/bin/mc
+#40 CACHED
+
+#41 [postgres stage-0 5/6] COPY backup/camhub-backup.sh /usr/local/bin/camhub-backup
+#41 CACHED
+
+#42 [postgres stage-0 6/6] RUN sed -i 's/\r$//' /etc/pgbackrest/pgbackrest.conf /usr/local/bin/camhub-backup  && chmod 644 /etc/pgbackrest/pgbackrest.conf  && chmod 755 /usr/local/bin/camhub-backup /usr/local/bin/mc
+#42 CACHED
+
+#43 [onvif-sim-1] exporting to image
+#43 exporting layers done
+#43 writing image sha256:d139015a65bd5337016188f026b3b33c5bfa3c1c9961867715f2f0da220acf25 done
+#43 naming to docker.io/camhub/onvif-sim:dev 0.0s done
+#43 DONE 0.2s
+
+#35 [device-gateway 2/5] WORKDIR /srv
+#35 CACHED
+
+#44 [device-gateway 3/5] COPY pyproject.toml ./
+#44 CACHED
+
+#45 [device-gateway 4/5] COPY app ./app
+#45 CACHED
+
+#46 [device-gateway 5/5] RUN pip install --no-cache-dir .     && useradd --system --uid 10001 camhub
+#46 CACHED
+
+#47 [postgres] exporting to image
+#47 exporting layers done
+#47 writing image sha256:a5cfb3ab5e23ccae4d79b53df4248b494daa57014cbd8a35566ba66e9ef78a00 0.0s done
+#47 naming to docker.io/camhub/postgres:dev done
+#47 DONE 0.0s
+
+#48 [device-gateway] exporting to image
+#48 exporting layers done
+#48 writing image sha256:2c3a4759a57b9214e56161c137d8313c3362aa1083bcc8eea614c525634e9b5f done
+#48 naming to docker.io/camhub/device-gateway:dev done
+#48 DONE 0.0s
+
+#49 [tunnelauth-init internal] load metadata for docker.io/library/alpine:3.22
+#49 DONE 3.5s
+2026/11/02 21:43:04 http2: server: error reading preface from client //./pipe/dockerDesktopLinuxEngine: file has already been closed
+2026/11/02 21:43:04 http2: server: error reading preface from client //./pipe/dockerDesktopLinuxEngine: file has already been closed
+
+#50 [tunnelauth-init internal] load .dockerignore
+#50 transferring context: 2B done
+#50 DONE 0.0s
+
+#51 [tunnelauth-init chisel 1/1] FROM docker.io/jpillora/chisel:1.12.1
+#51 DONE 0.0s
+
+#52 [tunnelauth-init stage-1 1/4] FROM docker.io/library/alpine:3.22@sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f
+#52 DONE 0.0s
+
+#53 [tunnelauth-init internal] load build context
+#53 transferring context: 3.01kB done
+#53 DONE 0.0s
+
+#54 [tunnelauth-init stage-1 3/4] COPY --from=chisel /ko-app/chisel /usr/local/bin/chisel
+#54 CACHED
+
+#55 [tunnelauth-init stage-1 2/4] RUN apk add --no-cache jq     && adduser -S -D -H -u 10001 camhub     && mkdir -p /run/chisel && chown 10001 /run/chisel
+#55 CACHED
+
+#56 [tunnelauth-init stage-1 4/4] COPY entrypoint.sh /usr/local/bin/tunnel-entrypoint
+#56 CACHED
+
+#57 [tunnelauth-init] exporting to image
+#57 exporting layers done
+#57 writing image sha256:d02200e193e929787d8a6cbc39cdf33fee55b4ac1b742aa8f79e412b6763e79c done
+#57 naming to docker.io/camhub/tunnel:dev done
+#57 DONE 0.0s
+
+#58 [tunnel internal] load build definition from Dockerfile
+#58 transferring dockerfile: 1.05kB 0.0s done
+#58 DONE 0.0s
+
+#6 [tunnel internal] load metadata for docker.io/jpillora/chisel:1.12.1
+#6 DONE 0.0s
+
+#59 [core internal] load build definition from Dockerfile
+#59 transferring dockerfile: 906B done
+#59 DONE 0.0s
+
+#60 [core] resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#60 ...
+
+#49 [tunnel internal] load metadata for docker.io/library/alpine:3.22
+#49 DONE 4.8s
+
+#61 [tunnel internal] load .dockerignore
+#61 transferring context: 2B done
+#61 DONE 0.0s
+
+#52 [tunnel stage-1 1/4] FROM docker.io/library/alpine:3.22@sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f
+#52 DONE 0.0s
+
+#51 [tunnel chisel 1/1] FROM docker.io/jpillora/chisel:1.12.1
+#51 DONE 0.0s
+
+#62 [tunnel internal] load build context
+#62 transferring context: 35B done
+#62 DONE 0.0s
+
+#55 [tunnel stage-1 2/4] RUN apk add --no-cache jq     && adduser -S -D -H -u 10001 camhub     && mkdir -p /run/chisel && chown 10001 /run/chisel
+#55 CACHED
+
+#54 [tunnel stage-1 3/4] COPY --from=chisel /ko-app/chisel /usr/local/bin/chisel
+#54 CACHED
+
+#63 [tunnel stage-1 4/4] COPY entrypoint.sh /usr/local/bin/tunnel-entrypoint
+#63 CACHED
+
+#64 [tunnel] exporting to image
+#64 exporting layers done
+#64 writing image sha256:9dde478f563920580658d6f7704b360398e97c2de00372d9b1b877a3b0f60ca2 done
+#64 naming to docker.io/camhub/tunnel:dev 0.0s done
+#64 DONE 0.0s
+
+#60 [core] resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#60 DONE 2.7s
+
+#65 [core] docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#65 CACHED
+
+#66 [core internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+#66 DONE 0.0s
+
+#67 [core internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+#67 DONE 0.0s
+
+#68 [core internal] load .dockerignore
+#68 transferring context: 62B done
+#68 DONE 0.0s
+
+#69 [core build 1/8] FROM docker.io/library/eclipse-temurin:21-jdk-alpine
+#69 DONE 0.0s
+
+#70 [core stage-1 1/3] FROM docker.io/library/eclipse-temurin:21-jre-alpine
+#70 DONE 0.0s
+
+#71 [core internal] load build context
+#71 transferring context: 1.10MB 0.1s done
+#71 DONE 0.1s
+
+#72 [core build 2/8] WORKDIR /src
+#72 CACHED
+
+#73 [core build 3/8] COPY gradlew settings.gradle.kts build.gradle.kts ./
+#73 CACHED
+
+#74 [core build 4/8] COPY gradle ./gradle
+#74 CACHED
+
+#75 [core build 5/8] RUN chmod +x gradlew
+#75 CACHED
+
+#76 [core build 6/8] RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -q dependencies > /dev/null
+#76 CACHED
+
+#77 [core build 7/8] COPY src ./src
+#77 DONE 0.1s
+
+#78 [core build 8/8] RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -q bootJar -x test     && cp build/libs/*.jar /app.jar
+#78 30.57 /root/.gradle/caches/modules-2/files-2.1/io.minio/minio/8.6.0/327afdf89f12a2e46c989bd8d8c2a6d9f379ccff/minio-8.6.0.jar(/io/minio/MinioClient.class): warning: Cannot find annotation method 'value()' in type 'SuppressFBWarnings': class file for edu.umd.cs.findbugs.annotations.SuppressFBWarnings not found
+#78 30.57 /root/.gradle/caches/modules-2/files-2.1/io.minio/minio/8.6.0/327afdf89f12a2e46c989bd8d8c2a6d9f379ccff/minio-8.6.0.jar(/io/minio/MinioClient.class): warning: Cannot find annotation method 'justification()' in type 'SuppressFBWarnings'
+#78 31.77 /root/.gradle/caches/modules-2/files-2.1/io.minio/minio/8.6.0/327afdf89f12a2e46c989bd8d8c2a6d9f379ccff/minio-8.6.0.jar(/io/minio/errors/ErrorResponseException.class): warning: Cannot find annotation method 'value()' in type 'SuppressFBWarnings'
+#78 31.77 /root/.gradle/caches/modules-2/files-2.1/io.minio/minio/8.6.0/327afdf89f12a2e46c989bd8d8c2a6d9f379ccff/minio-8.6.0.jar(/io/minio/errors/ErrorResponseException.class): warning: Cannot find annotation method 'justification()' in type 'SuppressFBWarnings'
+#78 36.37 4 warnings
+#78 DONE 42.0s
+
+#79 [core stage-1 2/3] RUN apk add --no-cache wget && adduser -S -u 10001 camhub
+#79 CACHED
+
+#80 [core stage-1 3/3] COPY --from=build /app.jar /opt/camhub/app.jar
+#80 DONE 0.2s
+
+#81 [core] exporting to image
+#81 exporting layers
+#81 exporting layers 0.3s done
+#81 writing image sha256:2df44b091e187b1d2e1d5a8ae70911fb40ba8fb7692d4f7b7775efa5399c32fc done
+#81 naming to docker.io/camhub/core:dev done
+#81 DONE 0.3s
+
+#82 [nginx internal] load build definition from Dockerfile
+#82 transferring dockerfile: 445B done
+#82 DONE 0.0s
+
+#60 [nginx] resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#60 DONE 4.1s
+
+#65 [nginx] docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#65 CACHED
+
+#83 [nginx internal] load metadata for docker.io/library/nginx:1.27-alpine
+#83 DONE 0.0s
+
+#84 [nginx internal] load metadata for docker.io/library/node:22-alpine
+#84 DONE 0.0s
+
+#85 [nginx internal] load .dockerignore
+#85 transferring context: 70B done
+#85 DONE 0.0s
+
+#86 [nginx build 1/6] FROM docker.io/library/node:22-alpine
+#86 DONE 0.0s
+
+#87 [nginx stage-1 1/2] FROM docker.io/library/nginx:1.27-alpine
+#87 DONE 0.0s
+
+#88 [nginx internal] load build context
+#88 transferring context: 678.38kB 0.1s done
+#88 DONE 0.1s
+
+#89 [nginx build 2/6] WORKDIR /src
+#89 CACHED
+
+#90 [nginx build 6/6] RUN npm run build
+#90 CACHED
+
+#91 [nginx build 3/6] COPY package.json package-lock.json ./
+#91 CACHED
+
+#92 [nginx build 4/6] RUN --mount=type=cache,target=/root/.npm npm ci --no-fund --no-audit
+#92 CACHED
+
+#93 [nginx build 5/6] COPY . .
+#93 CACHED
+
+#94 [nginx stage-1 2/2] COPY --from=build /src/dist /usr/share/nginx/html
+#94 CACHED
+
+#95 [nginx] exporting to image
+#95 exporting layers done
+#95 writing image sha256:a4b01985895bb8c9de660b3a3196bec38d2e270976f28fd8f495eb974e0da454 done
+#95 naming to docker.io/camhub/web:dev done
+#95 DONE 0.0s
+ Container camhub-chat-mock-1  Created
+ Container camhub-camera-sim-1  Created
+ Container camhub-tunnelauth-init-1  Created
+ Container camhub-onvif-sim-1-1  Created
+ Container camhub-prometheus-1  Created
+ Container camhub-ldap-1  Created
+ Container camhub-minio-1  Created
+ Container camhub-postgres-1  Created
+ Container camhub-onvif-sim-2-1  Created
+ Container camhub-rabbitmq-1  Created
+ Container camhub-recordings-init-1  Created
+ Container camhub-redis-1  Created
+ Container camhub-mailpit-1  Created
+ Container camhub-mediamtx-1  Created
+ Container camhub-rtsp-sim-1  Created
+ Container camhub-device-gateway-1  Created
+ Container camhub-postgres-exporter-1  Created
+ Container camhub-media-worker-1  Created
+ Container camhub-loki-1  Created
+ Container camhub-onvif-nvr-1-1  Created
+ Container camhub-grafana-1  Created
+ Container camhub-tunnel-1  Created
+ Container camhub-promtail-1  Created
+ Container camhub-onvif-sim-talk-1  Created
+ Container camhub-core-1  Recreate
+ Container camhub-backup-1  Created
+ Container camhub-core-1  Recreated
+ Container camhub-nginx-1  Recreate
+ Container camhub-nginx-1  Recreated
+ Container camhub-prometheus-1  Starting
+ Container camhub-rabbitmq-1  Starting
+ Container camhub-onvif-sim-2-1  Starting
+ Container camhub-camera-sim-1  Starting
+ Container camhub-chat-mock-1  Starting
+ Container camhub-minio-1  Starting
+ Container camhub-tunnelauth-init-1  Starting
+ Container camhub-recordings-init-1  Starting
+ Container camhub-loki-1  Starting
+ Container camhub-postgres-1  Starting
+ Container camhub-mailpit-1  Starting
+ Container camhub-ldap-1  Starting
+ Container camhub-onvif-sim-1-1  Starting
+ Container camhub-redis-1  Starting
+ Container camhub-tunnelauth-init-1  Started
+ Container camhub-tunnelauth-init-1  Waiting
+ Container camhub-tunnelauth-init-1  Exited
+ Container camhub-tunnel-1  Starting
+ Container camhub-prometheus-1  Started
+ Container camhub-onvif-sim-2-1  Started
+ Container camhub-camera-sim-1  Started
+ Container camhub-rtsp-sim-1  Starting
+ Container camhub-onvif-sim-1-1  Started
+ Container camhub-onvif-nvr-1-1  Starting
+ Container camhub-onvif-sim-talk-1  Starting
+ Container camhub-minio-1  Started
+ Container camhub-rabbitmq-1  Started
+ Container camhub-rabbitmq-1  Waiting
+ Container camhub-redis-1  Started
+ Container camhub-postgres-1  Started
+ Container camhub-minio-1  Waiting
+ Container camhub-postgres-1  Waiting
+ Container camhub-postgres-1  Waiting
+ Container camhub-ldap-1  Started
+ Container camhub-chat-mock-1  Started
+ Container camhub-mailpit-1  Started
+ Container camhub-recordings-init-1  Started
+ Container camhub-recordings-init-1  Waiting
+ Container camhub-postgres-1  Waiting
+ Container camhub-rabbitmq-1  Waiting
+ Container camhub-redis-1  Waiting
+ Container camhub-recordings-init-1  Waiting
+ Container camhub-tunnelauth-init-1  Waiting
+ Container camhub-loki-1  Started
+ Container camhub-promtail-1  Starting
+ Container camhub-grafana-1  Starting
+ Container camhub-tunnelauth-init-1  Exited
+ Container camhub-tunnel-1  Started
+ Container camhub-rtsp-sim-1  Started
+ Container camhub-recordings-init-1  Exited
+ Container camhub-recordings-init-1  Exited
+ Container camhub-mediamtx-1  Starting
+ Container camhub-onvif-nvr-1-1  Started
+ Container camhub-onvif-sim-talk-1  Started
+ Container camhub-promtail-1  Started
+ Container camhub-grafana-1  Started
+ Container camhub-mediamtx-1  Started
+ Container camhub-rabbitmq-1  Waiting
+ Container camhub-minio-1  Waiting
+ Container camhub-redis-1  Healthy
+ Container camhub-postgres-1  Healthy
+ Container camhub-postgres-1  Healthy
+ Container camhub-postgres-1  Healthy
+ Container camhub-postgres-exporter-1  Starting
+ Container camhub-postgres-exporter-1  Started
+ Container camhub-minio-1  Healthy
+ Container camhub-minio-1  Healthy
+ Container camhub-backup-1  Starting
+ Container camhub-backup-1  Started
+ Container camhub-rabbitmq-1  Healthy
+ Container camhub-core-1  Starting
+ Container camhub-rabbitmq-1  Healthy
+ Container camhub-device-gateway-1  Starting
+ Container camhub-rabbitmq-1  Healthy
+ Container camhub-media-worker-1  Starting
+ Container camhub-core-1  Started
+ Container camhub-core-1  Waiting
+ Container camhub-device-gateway-1  Started
+ Container camhub-media-worker-1  Started
+ Container camhub-core-1  Healthy
+ Container camhub-nginx-1  Starting
+ Container camhub-nginx-1  Started
+ Container camhub-minio-1  Waiting
+ Container camhub-onvif-sim-2-1  Waiting
+ Container camhub-mailpit-1  Waiting
+ Container camhub-ldap-1  Waiting
+ Container camhub-core-1  Waiting
+ Container camhub-onvif-sim-talk-1  Waiting
+ Container camhub-rabbitmq-1  Waiting
+ Container camhub-tunnelauth-init-1  Waiting
+ Container camhub-chat-mock-1  Waiting
+ Container camhub-onvif-sim-1-1  Waiting
+ Container camhub-onvif-nvr-1-1  Waiting
+ Container camhub-redis-1  Waiting
+ Container camhub-prometheus-1  Waiting
+ Container camhub-backup-1  Waiting
+ Container camhub-loki-1  Waiting
+ Container camhub-postgres-1  Waiting
+ Container camhub-tunnel-1  Waiting
+ Container camhub-promtail-1  Waiting
+ Container camhub-media-worker-1  Waiting
+ Container camhub-grafana-1  Waiting
+ Container camhub-mediamtx-1  Waiting
+ Container camhub-postgres-exporter-1  Waiting
+ Container camhub-rtsp-sim-1  Waiting
+ Container camhub-device-gateway-1  Waiting
+ Container camhub-nginx-1  Waiting
+ Container camhub-recordings-init-1  Waiting
+ Container camhub-camera-sim-1  Waiting
+ Container camhub-camera-sim-1  Healthy
+ Container camhub-onvif-sim-1-1  Healthy
+ Container camhub-recordings-init-1  Exited
+ Container camhub-onvif-nvr-1-1  Healthy
+ Container camhub-backup-1  Healthy
+ Container camhub-onvif-sim-2-1  Healthy
+ Container camhub-postgres-1  Healthy
+ Container camhub-redis-1  Healthy
+ Container camhub-mailpit-1  Healthy
+ Container camhub-mediamtx-1  Healthy
+ Container camhub-prometheus-1  Healthy
+ Container camhub-grafana-1  Healthy
+ Container camhub-loki-1  Healthy
+ Container camhub-minio-1  Healthy
+ Container camhub-device-gateway-1  Healthy
+ Container camhub-tunnel-1  Healthy
+ Container camhub-rtsp-sim-1  Healthy
+ Container camhub-postgres-exporter-1  Healthy
+ Container camhub-promtail-1  Healthy
+ Container camhub-chat-mock-1  Healthy
+ Container camhub-tunnelauth-init-1  Exited
+ Container camhub-ldap-1  Healthy
+ Container camhub-media-worker-1  Healthy
+ Container camhub-onvif-sim-talk-1  Healthy
+ Container camhub-rabbitmq-1  Healthy
+ Container camhub-core-1  Healthy
+ Container camhub-nginx-1  Healthy
+[36m[camhub][0m Sẵn sàng: https://localhost:8443
+[36m[camhub][0m   Đăng nhập: admin@camhub.local / mật khẩu trong secrets/bootstrap_admin_password
+[36m[camhub][0m   Grafana: http://localhost:3000 (admin / secrets/grafana_admin_password)
+
+real	2m53.354s
+user	0m0.152s
+sys	0m0.213s

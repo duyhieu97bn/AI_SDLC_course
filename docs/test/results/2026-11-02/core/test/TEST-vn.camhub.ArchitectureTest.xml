@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="vn.camhub.ArchitectureTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-02T14:40:15.842Z" hostname="DUYHIEU" time="0.945">
+  <properties/>
+  <testcase name="platformDoesNotDependOnBusinessModules()" classname="vn.camhub.ArchitectureTest" time="0.125"/>
+  <testcase name="modulesTalkThroughApiOnly()" classname="vn.camhub.ArchitectureTest" time="0.199"/>
+  <testcase name="cycleRuleDetectsCycles()" classname="vn.camhub.ArchitectureTest" time="0.172"/>
+  <testcase name="layersPointInward()" classname="vn.camhub.ArchitectureTest" time="0.038"/>
+  <testcase name="modulesHaveNoCycles()" classname="vn.camhub.ArchitectureTest" time="0.405"/>
+  <system-out><![CDATA[21:40:10.885 [Test worker] INFO com.tngtech.archunit.core.PluginLoader -- Detected Java version 23.0.2
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

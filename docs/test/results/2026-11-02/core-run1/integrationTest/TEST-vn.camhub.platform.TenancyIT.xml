@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="vn.camhub.platform.TenancyIT" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-02T14:24:58.017Z" hostname="DUYHIEU" time="0.23">
+  <properties/>
+  <testcase name="dataKeyIsStoredPerOrganizationUnderRls()" classname="vn.camhub.platform.TenancyIT" time="0.028"/>
+  <testcase name="pooledConnectionDoesNotLeakOrganization()" classname="vn.camhub.platform.TenancyIT" time="0.143"/>
+  <testcase name="noOrganizationContextSeesNothing()" classname="vn.camhub.platform.TenancyIT" time="0.018"/>
+  <testcase name="queryWithoutOrganizationFilterOnlySeesOwnRows()" classname="vn.camhub.platform.TenancyIT" time="0.017"/>
+  <testcase name="cannotWriteIntoAnotherOrganization()" classname="vn.camhub.platform.TenancyIT" time="0.02"/>
+  <system-out><![CDATA[{"ts":"2026-11-02T21:24:47.462077+07:00","message":"Could not detect default configuration classes for test class [vn.camhub.platform.TenancyIT]: TenancyIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.","logger_name":"org.springframework.test.context.support.AnnotationConfigContextLoaderUtils","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:47.4682298+07:00","message":"Found @SpringBootConfiguration vn.camhub.CamHubApplication for test class vn.camhub.platform.TenancyIT","logger_name":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+{"ts":"2026-11-02T21:24:47.5040399+07:00","message":"Starting TenancyIT using Java 23.0.2 with PID 15248 (started by PTC in C:\\Users\\PTC\\Desktop\\AI course\\AI_SDLC_course\\core)","logger_name":"vn.camhub.platform.TenancyIT","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:47.5040399+07:00","message":"No active profile set, falling back to 1 default profile: \"default\"","logger_name":"vn.camhub.platform.TenancyIT","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:48.7215996+07:00","message":"Multiple Spring Data modules found, entering strict repository configuration mode","logger_name":"org.springframework.data.repository.config.RepositoryConfigurationDelegate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:48.7215996+07:00","message":"Bootstrapping Spring Data JPA repositories in DEFAULT mode.","logger_name":"org.springframework.data.repository.config.RepositoryConfigurationDelegate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:48.7804744+07:00","message":"Finished Spring Data repository scanning in 58 ms. Found 0 JPA repository interfaces.","logger_name":"org.springframework.data.repository.config.RepositoryConfigurationDelegate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:48.7828176+07:00","message":"Multiple Spring Data modules found, entering strict repository configuration mode","logger_name":"org.springframework.data.repository.config.RepositoryConfigurationDelegate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:48.7838154+07:00","message":"Bootstrapping Spring Data Redis repositories in DEFAULT mode.","logger_name":"org.springframework.data.repository.config.RepositoryConfigurationDelegate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:48.8250369+07:00","message":"Finished Spring Data repository scanning in 39 ms. Found 0 Redis repository interfaces.","logger_name":"org.springframework.data.repository.config.RepositoryConfigurationDelegate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.0989465+07:00","message":"Database: jdbc:postgresql://localhost:59000/camhub?loggerLevel=OFF (PostgreSQL 16.15)","logger_name":"org.flywaydb.core.FlywayExecutor","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.1591966+07:00","message":"Successfully validated 18 migrations (execution time 00:00.038s)","logger_name":"org.flywaydb.core.internal.command.DbValidate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.1961757+07:00","message":"Current version of schema \"public\": 8.3","logger_name":"org.flywaydb.core.internal.command.DbMigrate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.1977082+07:00","message":"Schema \"public\" is up to date. No migration necessary.","logger_name":"org.flywaydb.core.internal.command.DbMigrate","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.3152751+07:00","message":"HHH000204: Processing PersistenceUnitInfo [name: default]","logger_name":"org.hibernate.jpa.internal.util.LogHelper","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.3233162+07:00","message":"HHH000026: Second-level cache disabled","logger_name":"org.hibernate.cache.internal.RegionFactoryInitiator","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.343151+07:00","message":"No LoadTimeWeaver setup: ignoring JPA class transformer","logger_name":"org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.3456656+07:00","message":"HikariPool-3 - Starting...","logger_name":"com.zaxxer.hikari.HikariDataSource","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.3704725+07:00","message":"HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@3ed90cfc","logger_name":"com.zaxxer.hikari.pool.HikariPool","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.3704725+07:00","message":"HikariPool-3 - Start completed.","logger_name":"com.zaxxer.hikari.HikariDataSource","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.3840289+07:00","message":"HHH10001005: Database info:\n\tDatabase JDBC URL [Connecting through datasource 'vn.camhub.platform.tenancy.TenantAwareDataSource@4d956153']\n\tDatabase driver: undefined/unknown\n\tDatabase version: 16.15\n\tAutocommit mode: undefined/unknown\n\tIsolation level: undefined/unknown\n\tMinimum pool size: undefined/unknown\n\tMaximum pool size: undefined/unknown","logger_name":"org.hibernate.orm.connections.pooling","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.4150985+07:00","message":"HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)","logger_name":"org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:49.416099+07:00","message":"Initialized JPA EntityManagerFactory for persistence unit 'default'","logger_name":"org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:52.0056887+07:00","message":"Exposing 2 endpoints beneath base path '/actuator'","logger_name":"org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:53.4461777+07:00","message":"Starting...","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:53.4461777+07:00","message":"BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@1994528e]]","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:53.4485231+07:00","message":"Started.","logger_name":"org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:53.4497129+07:00","message":"Attempting to connect to: [localhost:59002]","logger_name":"org.springframework.amqp.rabbit.connection.CachingConnectionFactory","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:53.4599394+07:00","message":"Created new connection: rabbitConnectionFactory#3df6babd:0/SimpleConnection@1e3d60c2 [delegate=amqp://guest@127.0.0.1:59002/, localPort=61740]","logger_name":"org.springframework.amqp.rabbit.connection.CachingConnectionFactory","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:53.5679119+07:00","message":"Started TenancyIT in 6.097 seconds (process running for 142.474)","logger_name":"vn.camhub.platform.TenancyIT","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:57.9089537+07:00","message":"Đã đồng bộ 573 camera lên MediaMTX","logger_name":"vn.camhub.device.application.DeviceSync","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+{"ts":"2026-11-02T21:24:58.0156139+07:00","message":"Đã ghi authfile đường hầm: 3 bộ kết nối","logger_name":"vn.camhub.device.application.TunnelAuthWriter","thread_name":"Test worker","level":"INFO","app":"camhub-core"}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

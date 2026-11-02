@@ -224,6 +224,8 @@ class RecordingIT extends ApiTestSupport {
     }
 
     private void insertRawSegment(UUID cam, Instant start) {
+        // Đoạn cũ có thể rơi vào tháng chưa có phân vùng (migration chỉ tạo từ tháng trước): tạo thêm 2 tháng lùi
+        jdbc.sql("select camhub_segment_ensure_partitions(2, 0)").query(Integer.class).single();
         OrganizationContext.runAs(orgId(), () -> jdbc.sql("""
                 insert into recording_segment (organization_id, camera_id, start_at, end_at, storage_location, size_bytes)
                 values (?, ?, ?, ?, '/recordings/khong-ton-tai.mp4', 1000)

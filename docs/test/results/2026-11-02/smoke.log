@@ -1,0 +1,14 @@
+Smoke test CamHub – https://localhost:8443
+  [32mĐẠT[0m  Mọi container đang chạy và healthy
+  [32mĐẠT[0m  Nginx trả SPA (index.html)
+  [32mĐẠT[0m  SPA fallback cho đường dẫn của Vue Router
+  [32mĐẠT[0m  Core healthy (readiness qua mạng nội bộ)
+  [32mĐẠT[0m  Nginx chặn /internal từ bên ngoài
+  [32mĐẠT[0m  Nginx chặn /actuator từ bên ngoài
+  [32mĐẠT[0m  API PoC cấp token xem qua /api
+  [32mĐẠT[0m  MediaMTX hỏi Core và từ chối WHEP thiếu token
+  [32mĐẠT[0m  RabbitMQ có exchange jobs
+  [32mĐẠT[0m  PostgreSQL đã chạy migration nền
+  [32mĐẠT[0m  Prometheus thu được metric Core
+  [32mĐẠT[0m  Grafana đang chạy
+Kết quả: 12 đạt, 0 lỗi
